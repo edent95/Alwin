@@ -53,6 +53,9 @@ html[lang="zh"] h2, html[lang="zh"] h3 { font-family: var(--serif-zh); letter-sp
 .masthead-inner { display: flex; align-items: center; gap: 32px; height: 68px; }
 .brand { display: flex; align-items: baseline; gap: 10px; margin-right: auto; white-space: nowrap; }
 .brand-en { font-family: var(--serif); font-weight: 700; font-size: 22px; letter-spacing: -.01em; }
+/* 中文名只在中文版显示 */
+html:not([lang="zh"]) .brand-zh,
+html:not([lang="zh"]) .name-zh { display: none; }
 .brand-zh { font-family: var(--serif-zh); font-weight: 700; font-size: 18px; color: var(--wine); }
 .nav { display: flex; align-items: center; gap: 28px; font-size: 15px; font-weight: 500; }
 .nav a { position: relative; padding: 6px 0; color: var(--ink-2); transition: color .2s; }
@@ -116,7 +119,6 @@ h1 { margin: 28px 0 24px; }
 .pull p { font-family: var(--serif); font-weight: 400; font-size: clamp(28px, 3.7vw, 48px); line-height: 1.2; letter-spacing: -.01em; color: #fff; }
 html[lang="zh"] .pull p { font-family: var(--serif-zh); font-weight: 600; line-height: 1.45; letter-spacing: .02em; }
 .pull footer { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: 15px; color: #e7c6c0; }
-html[lang="zh"] .pull .orig { display: none; }
 .pull cite { font-style: normal; }
 .planks { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border-top: 1px solid rgba(255,255,255,.28); }
 .plank { padding: 28px 24px 8px 0; }
@@ -171,6 +173,7 @@ html[lang="zh"] .pull .orig { display: none; }
 .story-body { display: flex; flex-direction: column; gap: 10px; padding: 20px 22px 22px; flex: 1; }
 .story-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 13px; color: var(--ink-3); }
 .story-src { font-family: var(--serif-zh); font-weight: 700; font-size: 15px; color: var(--ink); }
+.story-src:not(:lang(zh)) { font-family: var(--serif); }
 .story-src small { font-family: var(--sans); font-weight: 500; font-size: 12px; color: var(--ink-3); margin-left: 4px; }
 .story-meta time { font-variant-numeric: tabular-nums; }
 .story h3 { font-size: 19px; font-weight: 700; line-height: 1.45; }
