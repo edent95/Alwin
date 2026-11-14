@@ -1,0 +1,10 @@
+{
+  "name": "alwin-site",
+  "private": true,
+  "description": "Static personal site for Alwin Lim 林智成. No build step, no dependencies; scripts are only for the change log.",
+  "scripts": {
+    "log:append": "node scripts/append-log.mjs",
+    "log:check": "node scripts/append-log.mjs --check",
+    "log:home": "node scripts/build-home.mjs"
+  }
+}

@@ -12,7 +12,20 @@ function setLang(lang) {
   });
   document.querySelectorAll('.lang button').forEach((b) =>
     b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
+  orderNews(lang);
   try { localStorage.setItem('lang', lang); } catch {}
+}
+
+// News: stories in the reader's language first, then the rest; newest first within each group.
+// The first story becomes the wide feature card, but only if it has a photo (a plain type cover looks empty that wide).
+function orderNews(lang) {
+  const list = document.querySelector('.stories');
+  if (!list) return;
+  const items = [...list.querySelectorAll('.story')];
+  items.forEach((el, i) => { if (el.dataset.i == null) el.dataset.i = i; });
+  const match = (el) => (el.dataset.srcLang || '').split(' ').includes(lang) ? 0 : 1;
+  items.sort((a, b) => match(a) - match(b) || a.dataset.i - b.dataset.i);
+  items.forEach((el, i) => { el.classList.toggle('is-feature', i === 0 && !!el.querySelector('.cover img')); list.appendChild(el); });
 }
 document.querySelectorAll('.lang button').forEach((b) =>
   b.addEventListener('click', () => setLang(b.dataset.lang)));
@@ -21,7 +34,7 @@ let initial = null;
 try { initial = localStorage.getItem('lang'); } catch {}
 const urlLang = new URLSearchParams(location.search).get('lang');
 if (urlLang) initial = urlLang;
-if (initial && initial !== 'ms') setLang(initial);
+if (initial && initial !== 'ms') setLang(initial); else orderNews('ms');
 
 // ---------- Mobile menu ----------
 const nav = document.getElementById('nav');
