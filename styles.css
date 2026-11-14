@@ -140,13 +140,13 @@ html[lang="zh"] .pull p { font-family: var(--serif-zh); font-weight: 600; line-h
 }
 .timeline { list-style: none; position: relative; padding-top: 10px; }
 .timeline::before { content: ""; position: absolute; left: 7px; top: 18px; bottom: 18px; width: 1px; background: var(--rule); }
-.timeline li { position: relative; padding: 0 0 48px 44px; }
-.timeline li:last-child { padding-bottom: 0; }
-.timeline li::before {
+.timeline > li { position: relative; padding: 0 0 48px 44px; }
+.timeline > li:last-child { padding-bottom: 0; }
+.timeline > li::before {
   content: ""; position: absolute; left: 0; top: 9px; width: 15px; height: 15px; border-radius: 50%;
   background: var(--paper); border: 2px solid var(--wine);
 }
-.timeline li:last-child::before { background: var(--wine); }
+.timeline > li:last-child::before { background: var(--wine); }
 .when { font-size: 13px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--wine); }
 .timeline h3 { margin: 6px 0 8px; font-family: var(--serif); font-weight: 600; font-size: 26px; line-height: 1.2; letter-spacing: -.01em; }
 .timeline p { color: var(--ink-2); max-width: 36em; }
@@ -197,6 +197,14 @@ html[lang="zh"] .pull p { font-family: var(--serif-zh); font-weight: 600; line-h
 .stats .has-logo:has(.square) { display: grid; grid-template-columns: auto 1fr; column-gap: 12px; align-items: center; }
 .stats .has-logo:has(.square) dd { grid-column: 1 / -1; }
 .stat-logo.square { height: 38px; }
+.wins { list-style: none; margin: 14px 0 4px; padding: 0; display: grid; gap: 8px; max-width: 36em; }
+.wins li { position: relative; padding-left: 20px; font-size: 15px; line-height: 1.5; color: var(--ink-2); }
+.wins li::before { content: ""; position: absolute; left: 2px; top: .62em; width: 8px; height: 8px; transform: rotate(45deg); background: var(--wine); }
+.job-link { margin-top: 10px; }
+.job-link + .job-link { margin-top: 6px; }
+.job-link a { display: inline-flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 600; color: var(--wine); border-bottom: 1px solid color-mix(in srgb, var(--wine) 30%, transparent); padding-bottom: 2px; }
+.job-link a:hover { border-bottom-color: var(--wine); }
+.job-link .arrow { width: 14px; height: 14px; flex: none; }
 .edu { display: flex; flex-direction: column; gap: 12px; }
 .edu img { height: 34px; width: auto; align-self: flex-start; margin-top: 8px; }
 
