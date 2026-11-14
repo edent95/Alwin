@@ -1,0 +1,7 @@
+{
+  "_comment": "wt.mjs preview 读这份:纯静态站,用 python 内置 http.server 起预览。",
+  "url": "http://127.0.0.1:{port}/",
+  "procs": [
+    { "cwd": ".", "argv": ["python3", "-m", "http.server", "{port}", "--bind", "127.0.0.1"] }
+  ]
+}
