@@ -75,7 +75,6 @@ html[lang="zh"] h2, html[lang="zh"] h3 { font-family: var(--serif-zh); letter-sp
 .hero-grid { display: grid; grid-template-columns: 1.15fr .85fr; align-items: end; gap: 24px; }
 .hero-copy { padding: 48px 0 72px; }
 .kicker { display: inline-flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; color: var(--ink-2); padding: 7px 14px 7px 12px; border: 1px solid var(--rule); border-radius: 999px; background: #fbf8f2; }
-.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--wine); box-shadow: 0 0 0 4px color-mix(in srgb, var(--wine) 18%, transparent); }
 h1 { margin: 28px 0 24px; }
 .name-en { display: block; font-family: var(--serif); font-weight: 600; font-size: clamp(54px, 8.4vw, 116px); line-height: .92; letter-spacing: -.035em; }
 .name-en em { font-style: italic; font-weight: 400; color: var(--wine); }
@@ -219,6 +218,32 @@ html[lang="zh"] .pull .orig { display: none; }
 .no-js .reveal { opacity: 1; transform: none; }
 .hero-photo img { animation: rise 1.1s var(--ease) both .1s; }
 @keyframes rise { from { opacity: 0; transform: translateY(24px); } }
+/* ---------- Penang / Malaysia motifs ---------- */
+/* Bunga raya (hibiscus), national flower */
+.hibiscus { width: 18px; height: 18px; flex: none; color: var(--wine); overflow: visible; }
+.hibiscus .hib-eye { fill: #f3c9c0; }
+.hibiscus .hib-st { stroke: #f3c9c0; stroke-width: 1.2; stroke-linecap: round; }
+.hibiscus .hib-tip { fill: #e8b54d; }
+
+/* Songket "pucuk rebung" border on the stance band */
+.stance { position: relative; }
+.stance::before, .stance::after {
+  content: ""; position: absolute; left: 0; right: 0; height: 20px; pointer-events: none; opacity: .55;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='20' viewBox='0 0 28 20'%3E%3Cg fill='none' stroke='%23d9b46a' stroke-width='1.2'%3E%3Cpath d='M0 19.4H28M2 19.4 14 2l12 17.4M8 19.4 14 11l6 8.4'/%3E%3Cpath d='M14 14.6v2' /%3E%3C/g%3E%3C/svg%3E") repeat-x center / 28px 20px;
+}
+.stance::before { top: 18px; }
+.stance::after { bottom: 18px; transform: scaleY(-1); }
+
+/* Penang skyline rising into the footer */
+.skyline { background: var(--paper-2); color: var(--ink); line-height: 0; }
+.skyline-art { display: block; width: 100%; height: auto; max-height: 220px; }
+.skyline-art .sun { fill: var(--wine); opacity: .16; }
+.skyline-art .wire { fill: none; stroke: currentColor; stroke-width: 1; }
+.skyline-art .wave { fill: none; stroke: #f4efe6; stroke-opacity: .22; stroke-width: 1.2; stroke-linecap: round; }
+.skyline-art .track { fill: none; stroke: var(--paper-2); stroke-opacity: .55; stroke-width: 1.6; stroke-dasharray: 5 3; }
+.skyline-art .car { fill: var(--wine); }
+.footer { padding-top: 72px; }
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .reveal { opacity: 1; transform: none; transition: none; }
@@ -295,6 +320,7 @@ html[lang="zh"] .pull .orig { display: none; }
   .footer-meta .brand { justify-content: flex-start; }
 }
 @media (max-width: 560px) {
+  .skyline-art { height: 120px; }
   .brand-zh { display: none; }
   .brand-en { font-size: 20px; }
   .masthead-inner { gap: 8px; }
