@@ -8,4 +8,4 @@ Personal site for Alwin Lim (Naib Ketua DAPSY Bukit Bendera, Penang). Static HTM
 
 Preview locally: `python3 -m http.server 4719` then open http://127.0.0.1:4719/
 
-TODO: real contact links (WhatsApp / Facebook / Instagram) in the footer.
+Before changing anything, read `AGENTS.md`. Change log: `log.md` + `logs/entries/` (append with `npm run log:append < entry.md`).
