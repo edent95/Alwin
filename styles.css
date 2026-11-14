@@ -53,6 +53,9 @@ html[lang="zh"] h2, html[lang="zh"] h3 { font-family: var(--serif-zh); letter-sp
 .masthead-inner { display: flex; align-items: center; gap: 32px; height: 68px; }
 .brand { display: flex; align-items: baseline; gap: 10px; margin-right: auto; white-space: nowrap; }
 .brand-en { font-family: var(--serif); font-weight: 700; font-size: 22px; letter-spacing: -.01em; }
+/* 中文名只在中文版显示 */
+html:not([lang="zh"]) .brand-zh,
+html:not([lang="zh"]) .name-zh { display: none; }
 .brand-zh { font-family: var(--serif-zh); font-weight: 700; font-size: 18px; color: var(--wine); }
 .nav { display: flex; align-items: center; gap: 28px; font-size: 15px; font-weight: 500; }
 .nav a { position: relative; padding: 6px 0; color: var(--ink-2); transition: color .2s; }

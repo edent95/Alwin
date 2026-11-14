@@ -5,6 +5,7 @@ const htmlLang = { ms: 'ms', en: 'en', zh: 'zh' };
 function setLang(lang) {
   if (!LANGS.includes(lang)) lang = 'ms';
   document.documentElement.lang = htmlLang[lang];
+  document.title = lang === 'zh' ? '林智成 · Alwin Lim Zh Chen' : 'Alwin Lim Zh Chen';
   document.querySelectorAll('[data-ms]').forEach((el) => {
     const v = el.dataset[lang];
     if (v != null) el.innerHTML = v;
