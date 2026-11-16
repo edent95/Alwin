@@ -16,7 +16,7 @@ main 分支 → GitHub Pages(根目录)→ https://alwinlim.com/(合并后约 1 
 **三件必须先知道的事:**
 
 1. **仓库是公开的。** `profile.md`(收集的背景资料)和 `images/team.jpg` 只在用户本机，已 gitignore、也从历史里清掉了。不要把私人资料、未公开的电话 / 地址提交进来。
-2. **合并到 main 就是上线**(Pages 从 main 根目录发布)。没有 CI,面板不会自动合并;PR 由用户按 Merge,或用户明说才由 agent 合并。
+2. **合并到 main 就是上线**(Pages 从 main 根目录发布)。PR 上的检查 `ci`(`.github/workflows/ci.yml`:三语结构 + 日志体检)全过,面板 / GitHub 就**自动合并 = 自动上线**。检查只管结构，不管措辞与排版 —— 改内容的 PR 开出来前先自己截图看过。
 3. 网站以朋友的名义对外发言：引语、立场、新闻标题的马来文 / 英文是 agent 翻译的，改措辞前想清楚，新增的翻译要在交付时提醒用户请本人确认。
 
 ## 1. 开学礼包：必读顺序
@@ -53,6 +53,7 @@ node /Users/MacBookPro/Developer/Project/personal-dashboard/scripts/wt.mjs previ
 ## 4. 改完怎么自证
 
 ```bash
+npm run check        # 三语结构 + 日志体检(和 PR 上的 ci 同一套)
 # 桌面 + 手机两档整页截图，三种语言各看一次
 node ~/.claude/skills/ui-review/scripts/shoot.mjs "<预览链接>?lang=ms" --full --wait 1500 --out <scratchpad>/ms
 node ~/.claude/skills/ui-review/scripts/shoot.mjs "<预览链接>?lang=zh" --full --wait 1500 --out <scratchpad>/zh
