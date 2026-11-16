@@ -10,7 +10,7 @@
 index.html(全部文字，每个可翻译元素带 data-ms / data-en / data-zh)
    └─ script.js setLang(lang) → 把对应 data-* 写进 innerHTML、改 <html lang>、存 localStorage、排新闻
 styles.css(纸色 + 酒红设计 token、版式、槟城元素)
-main 分支 → GitHub Pages(根目录)→ https://edent95.github.io/Alwin/(合并后约 1 分钟生效)
+main 分支 → GitHub Pages(根目录)→ https://alwinlim.com/(合并后约 1 分钟生效;旧址 edent95.github.io/Alwin/ 会自动跳转)
 ```
 
 **三件必须先知道的事:**
@@ -55,7 +55,7 @@ node /Users/MacBookPro/Developer/Project/personal-dashboard/scripts/wt.mjs previ
 node ~/.claude/skills/ui-review/scripts/shoot.mjs "<预览链接>?lang=ms" --full --wait 1500 --out <scratchpad>/ms
 node ~/.claude/skills/ui-review/scripts/shoot.mjs "<预览链接>?lang=zh" --full --wait 1500 --out <scratchpad>/zh
 # 上线后
-curl -s -o /dev/null -w "%{http_code}\n" https://edent95.github.io/Alwin/
+curl -s -o /dev/null -w "%{http_code}\n" https://alwinlim.com/
 ```
 
 `?lang=` 参数会覆盖 localStorage 里存的语言，截图时用它切语言。
@@ -79,6 +79,7 @@ curl -s -o /dev/null -w "%{http_code}\n" https://edent95.github.io/Alwin/
 | Facebook 帖子抓不到正文 | Facebook 对程序只给标题。帖子网址里的 slug 往往就是标题，可以从 slug 取 |
 | Sidang Muda 页面的 og 图片 | 看起来是另一个人，不要用 |
 | 改了中文版的显示，马来文版没变 | `[lang="zh"]` 的 CSS 只在中文版生效;非中文版的规则写 `html:not([lang="zh"])` |
+| 改了 Exabytes 的 DNS / 删了根目录 `CNAME` 文件 | 域名 alwinlim.com 在 Exabytes 注册,DNS 区域在 Exabytes DNS Manager(4 条 `@ A 185.199.108-111.153` + `www CNAME edent95.github.io`)。`CNAME` 文件被删,Pages 会丢掉自定义域名 |
 | 手机版天际线只露左半边 | 故意的:`preserveAspectRatio="xMinYMax slice"`,保住升旗山(Bukit Bendera) |
 
 ## 7. 还没做的
