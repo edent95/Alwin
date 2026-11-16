@@ -1,0 +1,30 @@
+# PR 检查:面板的「PR 自动合并」等的就是这一项(必需检查名 = job 名 ci)。全过就合并 = 上线,所以别为了变绿删检查。
+# 公开仓库:跑在 GitHub 托管的 ubuntu-latest(公开仓库免费,不占 Actions 分钟);不要设 CI_RUNS_ON 上 M1 ——
+# 自托管 runner 会执行 fork PR 的代码。见技能 m1-auto-merge。
+name: CI
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - name: 三语结构(data-ms / data-en / data-zh 齐全、BM / EN 里没有中文、新闻卡片有 data-src-lang)
+        run: npm run -s check:i18n
+      - name: 日志体检(重号 / 天标题顺序 / logs/entries/)
+        run: npm run -s log:check
