@@ -47,6 +47,8 @@ node /Users/MacBookPro/Developer/Project/personal-dashboard/scripts/wt.mjs previ
 - 中文全文用全角标点(,。:;)。
 - 照片用 `mix-blend-mode: multiply` 融进纸色背景，放照片的容器必须有纸色底，不然会透出下层。
 - 新闻卡片带 `data-src-lang`(报道的原文语言，可多个、空格分隔);新加卡片不写它，就永远排在后面(PR #4 起)。
+- **三个页面(index / about / gallery)各有一份页首导航和页脚**,没有共用模板 —— 改其中一个要三处同步。
+- 加相册：图片放 `images/gallery/<id>/NN.jpg` + `NN-t.jpg`,再在 `gallery.js` 的 `ALBUMS` 加一项;`gallery.js` 必须在 `script.js` 之前载入。
 
 ## 4. 改完怎么自证
 
@@ -80,6 +82,7 @@ curl -s -o /dev/null -w "%{http_code}\n" https://alwinlim.com/
 | Sidang Muda 页面的 og 图片 | 看起来是另一个人，不要用 |
 | 改了中文版的显示，马来文版没变 | `[lang="zh"]` 的 CSS 只在中文版生效;非中文版的规则写 `html:not([lang="zh"])` |
 | 改了 Exabytes 的 DNS / 删了根目录 `CNAME` 文件 | 域名 alwinlim.com 在 Exabytes 注册,DNS 区域在 Exabytes DNS Manager(4 条 `@ A 185.199.108-111.153` + `www CNAME edent95.github.io`)。`CNAME` 文件被删,Pages 会丢掉自定义域名 |
+| Facebook 抓图第二张起没下载 | Chrome 每个分页只放行第一次自动下载，每张开新分页 |
 | 手机版天际线只露左半边 | 故意的:`preserveAspectRatio="xMinYMax slice"`,保住升旗山(Bukit Bendera) |
 
 ## 7. 还没做的
