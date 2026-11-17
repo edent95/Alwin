@@ -83,6 +83,7 @@ curl -s -o /dev/null -w "%{http_code}\n" https://alwinlim.com/
 | Sidang Muda 页面的 og 图片 | 看起来是另一个人，不要用 |
 | 改了中文版的显示，马来文版没变 | `[lang="zh"]` 的 CSS 只在中文版生效;非中文版的规则写 `html:not([lang="zh"])` |
 | 改了 Exabytes 的 DNS / 删了根目录 `CNAME` 文件 | 域名 alwinlim.com 在 Exabytes 注册,DNS 区域在 Exabytes DNS Manager(4 条 `@ A 185.199.108-111.153` + `www CNAME edent95.github.io`)。`CNAME` 文件被删,Pages 会丢掉自定义域名 |
+| 删了 / 改了页面 `<head>` 里的 GA 代码(`G-QY6LH8XMJN`) | Search Console(网址资源 `https://alwinlim.com/`)是**靠这段 GA 代码验证的**,删掉它验证就掉，面板 SEO 页的排名 / 收录跟着停更。新加页面要贴同一段代码;要换掉 GA,先在 Search Console 设置 → 所有权验证里加 DNS TXT 等别的验证方式。GA 账户「Alwin Lim」,媒体资源 ID 564806669 |
 | Facebook 抓图第二张起没下载 | Chrome 每个分页只放行第一次自动下载，每张开新分页 |
 | 手机版天际线只露左半边 | 故意的:`preserveAspectRatio="xMinYMax slice"`,保住升旗山(Bukit Bendera) |
 
