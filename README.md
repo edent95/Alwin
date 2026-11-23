@@ -1,6 +1,6 @@
 # Alwin Lim Zh Chen · 林智成
 
-Personal site for Alwin Lim (Naib Ketua DAPSY Bukit Bendera, Penang). Static HTML/CSS/JS, trilingual (BM / EN / 中文).
+Personal site for Alwin Lim (Ketua DAPSY Bukit Bendera 2024–2026, Penang). Static HTML/CSS/JS, trilingual (BM / EN / 中文).
 
 - `index.html` — page content (each translatable element carries `data-ms` / `data-en` / `data-zh`)
 - `styles.css`, `script.js` — styles, language toggle, scroll reveal

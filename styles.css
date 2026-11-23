@@ -189,6 +189,52 @@ html[lang="zh"] .pull p { font-family: var(--serif-zh); font-weight: 600; line-h
 .story.is-feature .story-body { padding: 28px 30px; justify-content: center; }
 .story.is-feature h3 { font-size: 26px; }
 
+/* ---------- Views(Pandangan:自己的时事评论 / 发言,一块一篇) ---------- */
+.views { padding: 112px 0 96px; }
+.chips { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 8px; }
+.chips button { height: 36px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--rule); background: #fbf8f2; color: var(--ink-2); font: 500 14px/1 var(--sans); cursor: pointer; transition: background .2s, color .2s, border-color .2s; }
+.chips button:hover { border-color: var(--ink); color: var(--ink); }
+.chips button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.view-grid { margin-top: 32px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.view a { display: flex; flex-direction: column; gap: 12px; height: 100%; padding: 26px 26px 24px; background: #fbf8f2; border: 1px solid var(--rule); border-top: 4px solid var(--wine); border-radius: 10px; transition: transform .3s var(--ease), box-shadow .3s var(--ease); }
+.view a:hover { transform: translateY(-3px); box-shadow: 0 14px 30px -12px rgba(23,19,15,.22); }
+.view-meta { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 13px; color: var(--ink-3); }
+.view-meta time { font-variant-numeric: tabular-nums; }
+.view-cat { font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--wine); }
+.view h3 { font-size: 22px; font-weight: 700; line-height: 1.3; }
+.view h3:not(:lang(zh)) { font-family: var(--serif); font-weight: 600; }
+.view p:not(.view-meta) { color: var(--ink-2); font-size: 15.5px; }
+.view a:hover h3 { color: var(--wine); }
+.view a:hover .arrow { transform: translate(2px, -2px); }
+
+/* ---------- Projects(Projek:卡片由 projects.js 渲染) ---------- */
+.projects { padding: 104px 0; border-top: 1px solid var(--rule); }
+.projects-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; }
+.projects-count { display: flex; align-items: baseline; gap: 10px; max-width: 16em; color: var(--ink-3); font-size: 14px; line-height: 1.4; }
+.projects-count strong { font-family: var(--serif); font-weight: 600; font-size: 56px; line-height: 1; letter-spacing: -.03em; color: var(--wine); font-variant-numeric: tabular-nums; }
+.project-grid { margin-top: 32px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.project[hidden], .view[hidden] { display: none; }
+.project { min-width: 0; animation: pop .45s var(--ease) both; }
+@keyframes pop { from { opacity: 0; transform: translateY(8px); } }
+.project a { display: flex; flex-direction: column; height: 100%; background: #fbf8f2; border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; transition: transform .3s var(--ease), box-shadow .3s var(--ease); }
+.project a:hover { transform: translateY(-3px); box-shadow: 0 14px 30px -12px rgba(23,19,15,.22); }
+.project-img { position: relative; aspect-ratio: 4/3; background: var(--paper-2); overflow: hidden; }
+.project-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--ease); }
+.project a:hover .project-img img { transform: scale(1.04); }
+.tag { position: absolute; left: 12px; top: 12px; padding: 5px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; letter-spacing: .04em; }
+.tag-sale { background: var(--wine); color: #fff; }
+.tag-rent { background: var(--ink); color: var(--paper); }
+.project-body { display: flex; flex-direction: column; gap: 8px; padding: 16px 18px 18px; flex: 1; }
+.project h3 { font-family: var(--serif); font-size: 17px; font-weight: 600; line-height: 1.35; }
+.project a:hover h3 { color: var(--wine); }
+.project-meta { margin-top: auto; font-size: 18px; font-variant-numeric: tabular-nums; }
+.project-meta small { font-size: 13px; color: var(--ink-3); }
+.project-sub { font-size: 13px; color: var(--ink-3); }
+.projects-foot { margin-top: 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 16px 28px; }
+.projects-foot .btn[hidden] { display: none; }
+.job-link-inline { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: var(--wine); }
+.job-link-inline:hover .arrow { transform: translate(2px, -2px); }
+
 /* ---------- Logos ---------- */
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .stat-logo { height: 38px; width: auto; align-self: flex-start; }
@@ -336,13 +382,14 @@ html[lang="zh"] .about-quote p { font-family: var(--serif-zh); }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .reveal { opacity: 1; transform: none; transition: none; }
-  .hero-photo img { animation: none; }
+  .hero-photo img, .project { animation: none; }
   * { transition-duration: 0s !important; }
 }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 1080px) {
   .stories { grid-template-columns: repeat(2, 1fr); }
+  .view-grid, .project-grid { grid-template-columns: repeat(2, 1fr); }
   .story.is-feature { grid-column: 1 / -1; }
   .nav { gap: 20px; }
   .planks { grid-template-columns: repeat(2, 1fr); }
@@ -404,6 +451,16 @@ html[lang="zh"] .about-quote p { font-family: var(--serif-zh); }
 
   .news { padding: 80px 0; }
   .stories { grid-template-columns: 1fr; gap: 18px; }
+  .view-grid { grid-template-columns: 1fr; }
+  .project-grid { grid-template-columns: 1fr; gap: 12px; }
+  .project a { flex-direction: row; }
+  .project-img { flex: 0 0 38%; aspect-ratio: auto; min-height: 128px; }
+  .project-body { padding: 12px 14px; gap: 4px; }
+  .project h3 { font-size: 15px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .project-meta { font-size: 16px; }
+  .tag { left: 8px; top: 8px; padding: 4px 8px; font-size: 11px; }
+  .views, .projects { padding: 72px 0; }
+  .projects-count strong { font-size: 44px; }
   .story.is-feature { grid-column: auto; }
   .story.is-feature a { display: flex; }
   .story.is-feature .cover { aspect-ratio: 16/10; min-height: 0; }
