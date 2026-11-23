@@ -250,6 +250,31 @@ html[lang="zh"] .pull p { font-family: var(--serif-zh); font-weight: 600; line-h
 .va-badge { fill: var(--wine); }
 .va-check { fill: none; stroke: #fff; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; animation: va-draw 6s var(--ease) infinite; }
 
+/* 新观点卡插图(2026-11-23 第二批) */
+.va-box, .va-box-lid { fill: var(--paper); }
+.va-slot { fill: var(--ink); }
+.va-floor { stroke: rgba(244,239,230,.3); stroke-width: 1; }
+.va-slip { fill: #fbf8f2; stroke: var(--wine); stroke-width: 1.5; animation: va-drop 3.6s var(--ease) infinite; animation-delay: calc(var(--i) * 1.2s); }
+@keyframes va-drop { 0% { transform: translateY(-30px); opacity: 0; } 15% { opacity: 1; } 55% { transform: translateY(40px); opacity: 1; } 62%, 100% { transform: translateY(48px); opacity: 0; } }
+.va-tick { fill: none; stroke: var(--wine); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; animation: va-draw 5s var(--ease) infinite; }
+.va-phone { fill: #fbf8f2; }
+.va-bub { fill: var(--wine); opacity: .25; animation: va-bub 5s steps(1) infinite; animation-delay: calc(var(--i) * 300ms); }
+@keyframes va-bub { 0% { opacity: 0; } 10%, 100% { opacity: .35; } }
+.va-ban, .va-ban-x { fill: none; stroke: #fff; stroke-width: 7; stroke-linecap: round; stroke-dasharray: 1; animation: va-draw 5s var(--ease) infinite; }
+.va-shield { fill: #fbf8f2; stroke: var(--wine); stroke-width: 3; stroke-linejoin: round; stroke-dasharray: 1; animation: va-draw 5s var(--ease) infinite; }
+.va-check2 { fill: none; stroke: var(--wine); stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; animation: va-draw 5s var(--ease) infinite .4s; }
+.va-siren-base { fill: var(--ink); }
+.va-siren { fill: #c2414f; animation: va-siren 1s steps(1) infinite; }
+@keyframes va-siren { 50% { fill: #3a6fb0; } }
+.va-rays line { stroke: var(--wine); stroke-width: 2.5; stroke-linecap: round; animation: va-blink 1s steps(1) infinite; }
+@keyframes va-blink { 50% { opacity: 0; } }
+.va-step { fill: rgba(255,255,255,.14); stroke: rgba(255,255,255,.35); stroke-width: 1; }
+.va-climber { fill: #fff; opacity: .25; animation: va-climb 4s steps(1) infinite; animation-delay: calc(var(--i) * 450ms); }
+@keyframes va-climb { 0% { opacity: .25; } 10%, 90% { opacity: 1; } }
+.va-pole2 { stroke: #f0dcd8; stroke-width: 2; }
+.va-flag { fill: #e8b54a; transform-box: fill-box; transform-origin: left center; animation: va-wave 1.6s ease-in-out infinite alternate; }
+@keyframes va-wave { to { transform: scaleX(.8); } }
+
 /* ---------- Projects(Projek:卡片由 projects.js 渲染) ---------- */
 .projects { padding: 104px 0; border-top: 1px solid var(--rule); }
 .projects-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; }
