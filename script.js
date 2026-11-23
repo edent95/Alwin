@@ -156,3 +156,10 @@ if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: re
   }), { threshold: 0.6 });
   countEls.forEach((el) => co.observe(el));
 }
+
+// ---------- 观点卡插图:在视口里才动 ----------
+const arts = document.querySelectorAll('.view-art');
+if ('IntersectionObserver' in window) {
+  const ao = new IntersectionObserver((entries) => entries.forEach((e) => e.target.classList.toggle('is-on', e.isIntersecting)), { threshold: 0.2 });
+  arts.forEach((el) => ao.observe(el));
+} else arts.forEach((el) => el.classList.add('is-on'));
