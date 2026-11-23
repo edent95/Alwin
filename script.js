@@ -1,11 +1,14 @@
-// ---------- Projects(首页「Projek」:数据在 projects.js,由 scripts/zeon-projects.py 生成) ----------
+// ---------- Projek(新盘,projects.js)与 Senarai(房源,listings.js):两份都由 scripts/zeon-projects.py 生成 ----------
 // 必须在下面 setLang 之前渲染:卡片里的 data-ms / data-en / data-zh 要被第一次 setLang 一起切换。
-const PROJECT_LIMIT = 9;
+// Alwin 2026-11-23 定义:Projects = 我们在卖的新盘项目;Listings = 房源(二手 / 出租)。
+const LISTING_LIMIT = 9;
 const T = (ms, en, zh) => `data-ms="${ms}" data-en="${en}" data-zh="${zh}">${ms}`;
 const KIND = {
   condo: T('Kondominium', 'Condominium', '公寓'),
   house: T('Rumah', 'House', '住宅'),
   commercial: T('Komersial', 'Commercial', '商业'),
+  residential: T('Kediaman', 'Residential', '住宅'),
+  mixed: T('Pembangunan bercampur', 'Mixed development', '综合发展'),
 };
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 (function renderProjects() {
@@ -14,6 +17,31 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
   const total = document.getElementById('project-total');
   if (total) total.textContent = window.PROJECTS.length;
   grid.innerHTML = window.PROJECTS.map((p) => {
+    const status = p.st === 'upcoming' ? T('Akan datang', 'Upcoming', '即将推出') : T('Pelancaran baharu', 'New launch', '新盘推出');
+    const price = p.p ? `<p class="project-meta"><small ${T('Dari', 'From', '起价')}</small> <strong>RM ${p.p.toLocaleString('en')}</strong></p>` : '';
+    const facts = [
+      KIND[p.k] ? `<span ${KIND[p.k]}</span>` : '',
+      p.sz ? `<span>${esc(p.sz)}</span>` : '',
+      p.ten === 'freehold' ? `<span ${T('Pegangan bebas', 'Freehold', '永久地契')}</span>` : p.ten === 'leasehold' ? `<span ${T('Pajakan', 'Leasehold', '租赁地契')}</span>` : '',
+      p.done ? `<span data-ms="Siap ${esc(p.done)}" data-en="Completion ${esc(p.done)}" data-zh="${esc(p.done)} 年完工">Siap ${esc(p.done)}</span>` : '',
+    ].filter(Boolean).join(' · ');
+    return `<article class="project project-launch" data-cat="${p.k}"><a href="${esc(p.u)}" target="_blank" rel="noopener">
+      <div class="project-img">${p.img ? `<img src="${esc(p.img)}" alt="" loading="lazy" decoding="async">` : ''}<span class="tag tag-launch" ${status}</span></div>
+      <div class="project-body">
+        <h3>${esc(p.t)}</h3>
+        ${p.a ? `<p class="project-addr">${esc(p.a)}</p>` : ''}
+        <p class="project-sub">${facts}</p>
+        ${p.dev ? `<p class="project-dev">${esc(p.dev)}</p>` : ''}
+        ${price}
+      </div></a></article>`;
+  }).join('');
+})();
+(function renderListings() {
+  const grid = document.getElementById('listing-grid');
+  if (!grid || !Array.isArray(window.LISTINGS)) return;
+  const total = document.getElementById('listing-total');
+  if (total) total.textContent = window.LISTINGS.length;
+  grid.innerHTML = window.LISTINGS.map((p) => {
     const cats = [p.s, p.k === 'commercial' ? 'commercial' : ''].join(' ').trim();
     const status = p.s === 'rent' ? T('Disewa', 'For rent', '出租') : T('Dijual', 'For sale', '出售');
     const per = p.s === 'rent' ? ` <small ${T('/ bulan', '/ month', '/ 月')}</small>` : '';
@@ -112,20 +140,20 @@ if ('IntersectionObserver' in window) {
 
 document.getElementById('year').textContent = new Date().getFullYear();
 
-// ---------- Category chips(Pandangan / Projek 共用) ----------
-// 容器 .chips[data-filter=<网格选择器>];网格里每张卡 data-cat 是空格分隔的分类。项目网格另有「先显示 9 个」的上限。
-const moreBtn = document.getElementById('project-more');
-let projectsExpanded = false;
+// ---------- Category chips(Pandangan / Projek / Senarai 共用) ----------
+// 容器 .chips[data-filter=<网格选择器>];网格里每张卡 data-cat 是空格分隔的分类。房源网格另有「先显示 9 个」的上限。
+const moreBtn = document.getElementById('listing-more');
+let listingsExpanded = false;
 function applyFilter(grid, cat) {
   const cards = [...grid.querySelectorAll('[data-cat]')];
   let shown = 0;
   cards.forEach((el) => {
     const match = cat === 'all' || el.dataset.cat.split(' ').includes(cat);
-    const overLimit = grid.id === 'project-grid' && !projectsExpanded && match && shown >= PROJECT_LIMIT;
+    const overLimit = grid.id === 'listing-grid' && !listingsExpanded && match && shown >= LISTING_LIMIT;
     el.hidden = !match || overLimit;
     if (match) shown++;
   });
-  if (grid.id === 'project-grid' && moreBtn) moreBtn.hidden = projectsExpanded || shown <= PROJECT_LIMIT;
+  if (grid.id === 'listing-grid' && moreBtn) moreBtn.hidden = listingsExpanded || shown <= LISTING_LIMIT;
 }
 document.querySelectorAll('.chips[data-filter]').forEach((chips) => {
   const grid = document.querySelector(chips.dataset.filter);
@@ -135,12 +163,12 @@ document.querySelectorAll('.chips[data-filter]').forEach((chips) => {
     chips.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
     applyFilter(grid, b.dataset.cat);
   }));
-  if (moreBtn && grid.id === 'project-grid') moreBtn.addEventListener('click', () => { projectsExpanded = true; applyFilter(grid, current()); });
+  if (moreBtn && grid.id === 'listing-grid') moreBtn.addEventListener('click', () => { listingsExpanded = true; applyFilter(grid, current()); });
   applyFilter(grid, current());
 });
 
 // ---------- Count up(数字滚到视口才从 0 数上去;减少动效时直接显示终值) ----------
-const countEls = document.querySelectorAll('#project-total');
+const countEls = document.querySelectorAll('#project-total, #listing-total');
 if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
   const co = new IntersectionObserver((entries) => entries.forEach((e) => {
     if (!e.isIntersecting) return;

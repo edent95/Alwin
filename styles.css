@@ -553,3 +553,18 @@ html[lang="zh"] .about-quote p { font-family: var(--serif-zh); }
   .lang { font-size: 12px; }
   .lang button { min-width: 34px; padding: 0 7px; }
 }
+
+/* ---------- Hero:DAPSY 胶囊旁的 AL Team 胶囊(Alwin 2026-11-23 要的) ---------- */
+.kickers { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.kicker-team { padding: 7px 16px; transition: border-color .2s; }
+.kicker-team:hover { border-color: var(--wine); }
+.kicker-team img { display: block; height: 20px; width: auto; mix-blend-mode: multiply; }
+
+/* ---------- 新盘卡(Projek):比房源卡多地址、开发商、起价 ---------- */
+.tag-launch { background: #c8322d; color: #fff; text-transform: uppercase; }
+.project-addr { font-size: 13px; color: var(--ink-2); line-height: 1.4; }
+.project-dev { font-size: 12px; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-3); }
+.project-launch .project-meta small { font-size: 13px; color: var(--ink-3); margin-right: 2px; }
+@media (max-width: 560px) {
+  .project-addr, .project-dev { display: none; }
+}
