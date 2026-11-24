@@ -22,20 +22,23 @@ Alwin 在 /admin 改 → 保存 = 提交到 main → deploy.yml:npm run build(�
 
 不在后台:新盘 / 房源(`projects.js`、`listings.js`,由 `scripts/zeon-projects.py` 从 Zeon 抓)、版式和颜色(`styles.css`)、观点卡的插画(`src/art/*.svg`,后台里只能从现有七张里选)。
 
-## 第一次设置(Eden 做一次)
+## 第一次设置(2026-11-24 已做完,留作重装 / 排错参考)
 
 1. **登录服务(Sveltia CMS Additions)**:Alwin 用账号密码登录,不用 GitHub 帐号。免费,跑在 Cloudflare Workers 免费档。
-   - 已部署(2026-11-24):Worker `alwin-cms`,网址 <https://alwin-cms.d-tytern.workers.dev>(Eden 的 Cloudflare 帐号),已填进 `admin/config.yml` 的 `backend.base_url`。
-   - `ADMIN_SECRET` 存在 Eden 的 macOS 钥匙串,名字「alwin-cms ADMIN_SECRET」:`security find-generic-password -s "alwin-cms ADMIN_SECRET" -w`。
-   - 升级:用 <https://github.com/sveltia/sveltia-cms-additions> 的 `templates/cloudflare`,`wrangler.jsonc` 的 `name` 改成 `alwin-cms`,在**仓库外**的目录 `pnpm install --ignore-workspace && pnpm exec wrangler deploy`(在 monorepo 里装会解析不到 `@sveltia/cms-additions/cloudflare`)。
-   - 第一次打开 alwinlim.com/admin → **使用管理员密钥** → 建第一个管理员(Eden)→ 建 GitHub App,只装在 `edent95/Alwin`。
-   - 后台工具栏 **Administration** → 加 Alwin 的帐号(角色 editor);要在本机试就把 `localhost`、`127.0.0.1` 加进 allowed domains。
-2. **让后台的保存能直接进 main**:main 有分支保护(必须过 `ci` 检查才能合并),后台的 GitHub App 直接提交会被拒。
-   在仓库 Settings → Rules 加一个 ruleset(要求 `ci` 检查、禁止强推 / 删除),把 Additions 的 GitHub App 放进 **bypass list**,再关掉旧的分支保护。
-   内容检查不会因此跳过:deploy.yml 构建时照样检查,没过就不上线。
-3. **一键翻译**:Alwin 写中文或英文,另外两种语言按翻译按钮生成。推荐 Google Gemini(AI Studio 免费 API key,不用绑卡;免费档的输入可能被 Google 用来改进产品,网站内容本来就公开,问题不大)。
-   在后台 Administration → Credentials 填一次,所有人共用。
-4. **Pages 来源改成 GitHub Actions**:Settings → Pages → Build and deployment → Source 选 **GitHub Actions**(这一步在合并引入构建的那个 PR 时做,见下面)。
+   - Worker `alwin-cms`,网址 <https://alwin-cms.d-tytern.workers.dev>(Eden 的 Cloudflare 帐号),已填进 `admin/config.yml` 的 `backend.base_url`。
+   - `ADMIN_SECRET` 存在 Eden 的 macOS 钥匙串,名字「alwin-cms ADMIN_SECRET」:`security find-generic-password -s "alwin-cms ADMIN_SECRET" -w | pbcopy`。
+   - 帐号:`lengzaialwin`(Eden,admin)、`alwin`(Alwin,editor)。在后台 Administration → Users 管理、重设密码。
+   - GitHub App `sveltia-cms-edent95-alwin-4ecf`(App ID 5905724,私有,只装在 `edent95/Alwin`)。
+   - **升级 / 重新部署**:用 <https://github.com/sveltia/sveltia-cms-additions> 的 `templates/cloudflare`,`wrangler.jsonc` 的 `name` 改成 `alwin-cms`,在**仓库外**的目录 `pnpm install --ignore-workspace && pnpm exec wrangler deploy`(在 monorepo 里装会解析不到 `@sveltia/cms-additions/cloudflare`)。
+   - **坑:设置向导的「Connect to GitHub」报「GitHub responded with an error」**:1.0.0 建 App 前会不带身份查 `GET /users/edent95`,Cloudflare 共用出口 IP 常被 GitHub 限流。当时在部署目录里把 `lib/git/github/app.js` 的 `getAccountType` 改成查不到就当 `User` 再部署;升级后补丁会消失,但只有重新建 App 时才用得到。
+   - **坑:GitHub 先要「Confirm access」时,建 App 的 manifest 会丢**(页面显示 We didn't find an App Manifest)。确认身份后回 /admin 重做一次向导即可。
+2. **后台保存直接进 main**:旧的分支保护已删,改成两条 ruleset(Settings → Rules):
+   - 「main: 禁止强推和删除」:没有任何人可绕过(Sveltia 要求这一条不能让 App 绕过,不然后台 GitHub 页会一直警告)。
+   - 「main: 必须过 ci(后台 App 可直接提交)」:要求 `ci` 检查;bypass = 后台 App(5905724)+ 仓库 admin(对应旧保护的 enforce_admins 关闭)。PR 仍要过 `ci` 才会被面板自动合并。
+   - 内容检查不会因此跳过:deploy.yml 构建时照样检查,没过就不上线、自动开 issue。
+   - 取舍:能登录后台的人等于能直接写 main。后台只有 Eden 和 Alwin;要更保险就把 App 从第二条的 bypass 拿掉、`admin/config.yml` 改成 PR 模式。
+3. **一键翻译**:Google Gemini(AI Studio 免费 API key,不用绑卡;免费档的输入可能被 Google 用来改进产品,网站内容本来就公开)。在后台 Administration → Credentials 填一次,所有人共用。
+4. **Pages 来源**:GitHub Actions(2026-11-24 切换,PR #24 合并前)。
 
 ## 本机预览后台
 
