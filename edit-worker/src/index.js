@@ -1,6 +1,7 @@
 // 简易后台 /edit 的服务端(Cloudflare Worker「alwin-edit」)
 // 登录(账号密码,KV 存 PBKDF2 哈希)、翻译(Gemini)、读报道链接、上传照片、发布(一次提交写进 GitHub main)、查上线进度。
-// 密钥都在 Worker secrets:GITHUB_TOKEN(细粒度 PAT,只有 edent95/Alwin 的 Contents 读写 + Actions 读)、GEMINI_KEY、SESSION_SECRET。
+// 密钥都在 Worker secrets:GITHUB_TOKEN(细粒度 PAT,只有 edent95/Alwin 的 Contents 读写 + Actions 读)、SESSION_SECRET。
+// 翻译用 Cloudflare Workers AI(binding AI,不用 key);每天最多 TRANSLATE_PER_DAY 次,免得超出免费额度。
 
 const REPO = 'edent95/Alwin';
 const BRANCH = 'main';
@@ -8,6 +9,8 @@ const ALLOWED_ORIGINS = ['https://alwinlim.com', 'https://www.alwinlim.com'];
 const LOCAL_ORIGIN = /^http:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/;
 const SESSION_DAYS = 60;
 const PBKDF2_ITER = 100000;
+const TRANSLATE_PER_DAY = 100;
+const AI_MODEL = '@cf/aisingapore/gemma-sea-lion-v4-27b-it';
 const CJK = /[㐀-鿿豈-﫿]/;
 
 // ------------------------------------------------------------------ 小工具
@@ -140,17 +143,24 @@ ${GLOSSARY}
 Return JSON: { ${to.map((l) => `"${l}": { same keys }`).join(', ')} }.
 Input:
 ${JSON.stringify(src, null, 1)}`;
-  const model = env.GEMINI_MODEL || 'gemini-3.5-flash-lite';
-  const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json', 'x-goog-api-key': env.GEMINI_KEY },
-    body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }], generationConfig: { temperature: 0.2, responseMimeType: 'application/json' } }),
-  });
-  if (!r.ok) { console.log('gemini', r.status, (await r.text()).slice(0, 300)); throw new HttpError(502, r.status === 429 ? '翻译服务太忙，请过一分钟再试' : '翻译服务出错了，请再试一次'); }
-  const j = await r.json();
-  const text = j.candidates?.[0]?.content?.parts?.map((p) => p.text).join('') || '';
+  const day = `ai:${new Date().toISOString().slice(0, 10)}`;
+  const used = +(await env.KV.get(day)) || 0;
+  if (used >= TRANSLATE_PER_DAY) throw new HttpError(429, '今天的自动翻译次数用完了，明天再试；或者先在「自己改一下」里手动填');
+  await env.KV.put(day, String(used + 1), { expirationTtl: 3 * 86400 });
   let got;
-  try { got = JSON.parse(text.replace(/^```(json)?|```$/g, '').trim()); } catch { throw new HttpError(502, '翻译结果读不懂，请再试一次'); }
+  for (let attempt = 0; attempt < 2 && !got; attempt++) {
+    let text = '';
+    try {
+      const r = await env.AI.run(env.AI_MODEL || AI_MODEL, {
+        messages: [{ role: 'system', content: 'You are a careful professional translator. Reply with JSON only, no explanations, no code fences.' }, { role: 'user', content: prompt }],
+        max_tokens: 2500, temperature: 0.2,
+      });
+      const resp = r?.response ?? r?.choices?.[0]?.message?.content ?? '';
+      text = typeof resp === 'string' ? resp : JSON.stringify(resp);
+    } catch (e) { console.log('ai error', e.message); if (attempt) throw new HttpError(502, '翻译服务出错了，请再试一次'); continue; }
+    try { const m = text.match(/\{[\s\S]*\}/); got = JSON.parse(m ? m[0] : text); } catch { console.log('ai unparsable', text.slice(0, 300)); }
+  }
+  if (!got) throw new HttpError(502, '翻译结果读不懂，请再试一次');
   for (const l of to) for (const k of keys) out[l][k] = String(got?.[l]?.[k] ?? '').trim();
   return out;
 }
@@ -257,9 +267,9 @@ async function route(req, env) {
   if (p === '/api/publish' && req.method === 'POST') return publish(env, user, await body());
   if (p === '/api/status') return status(env, url.searchParams.get('commit'));
   if (p === '/api/health' && user.role === 'admin') {
-    const models = await fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=200', { headers: { 'x-goog-api-key': env.GEMINI_KEY || '' } }).then((r) => r.json()).catch((e) => ({ error: e.message }));
     const repo = await gh(env, '').catch((e) => ({ error: e.message }));
-    return { gemini: models.models?.map((m) => m.name).filter((n) => /flash/.test(n)) ?? models, model: env.GEMINI_MODEL || 'gemini-3.5-flash-lite', repo: repo.full_name || repo, push: repo.permissions?.push };
+    const used = +(await env.KV.get(`ai:${new Date().toISOString().slice(0, 10)}`)) || 0;
+    return { model: env.AI_MODEL || AI_MODEL, translationsToday: `${used} / ${TRANSLATE_PER_DAY}`, repo: repo.full_name || repo, push: repo.permissions?.push };
   }
   throw new HttpError(404, 'not found');
 }
