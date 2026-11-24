@@ -4,19 +4,22 @@
 
 ## 0. 三十秒了解
 
-朋友 Alwin Lim Zh Chen(林智成,DAPSY Bukit Bendera 副团长、槟城)的个人政治人物网站。纯静态 HTML/CSS/JS,没有框架、没有构建、没有依赖;三语(BM / EN / 中文)。
+朋友 Alwin Lim Zh Chen(林智成,DAPSY Bukit Bendera 团长、槟城)的个人政治人物网站。静态站，零依赖的小构建;三语(BM / EN / 中文)。
+Alwin 自己在 **alwinlim.com/admin**(Sveltia CMS)改内容，说明见 `docs/admin.md`。
 
 ```
-index.html(全部文字，每个可翻译元素带 data-ms / data-en / data-zh)
-   └─ script.js setLang(lang) → 把对应 data-* 写进 innerHTML、改 <html lang>、存 localStorage、排新闻
-styles.css(纸色 + 酒红设计 token、版式、槟城元素)
-main 分支 → GitHub Pages(根目录)→ https://alwinlim.com/(合并后约 1 分钟生效;旧址 edent95.github.io/Alwin/ 会自动跳转)
+content/*.json(全部文字与资料，{ ms, en, zh } 三段;后台 /admin 改的就是它们)
+src/layout.mjs + src/pages/*.mjs(模板)──scripts/build.mjs──▶ _site/index.html、about.html、gallery.html、gallery-data.js
+   └─ 页面里每个可翻译元素带 data-ms / data-en / data-zh;script.js setLang(lang) 把对应 data-* 写进 innerHTML
+styles.css(纸色 + 酒红设计 token、版式、槟城元素)、script.js、gallery.js、images/ 原样拷进 _site/
+main 有新提交 → .github/workflows/deploy.yml 构建 + 检查 → GitHub Pages → https://alwinlim.com/(约 1–2 分钟)
 ```
 
 **三件必须先知道的事:**
 
 1. **仓库是公开的。** `profile.md`(收集的背景资料)和 `images/team.jpg` 只在用户本机，已 gitignore、也从历史里清掉了。不要把私人资料、未公开的电话 / 地址提交进来。
-2. **合并到 main 就是上线**(Pages 从 main 根目录发布)。PR 上的检查 `ci`(`.github/workflows/ci.yml`:三语结构 + 日志体检)全过,面板 / GitHub 就**自动合并 = 自动上线**。检查只管结构，不管措辞与排版 —— 改内容的 PR 开出来前先自己截图看过。
+2. **合并到 main 就是上线**(deploy.yml 构建 `_site/` 发布到 Pages;Pages 来源是「GitHub Actions」,不是分支根目录)。PR 上的检查 `ci`(构建 + 内容检查 + 三语结构 + 日志体检)全过,面板 / GitHub 就**自动合并 = 自动上线**。检查只管结构，不管措辞与排版 —— 改内容的 PR 开出来前先自己截图看过。
+   **根目录没有 index.html 了**:要改文字改 `content/*.json`(或让 Alwin 在后台改),要改结构改 `src/`。直接写 `_site/` 下次构建就被覆盖。
 3. 网站以朋友的名义对外发言：引语、立场、新闻标题的马来文 / 英文是 agent 翻译的，改措辞前想清楚，新增的翻译要在交付时提醒用户请本人确认。
 
 ## 1. 开学礼包：必读顺序
@@ -24,8 +27,9 @@ main 分支 → GitHub Pages(根目录)→ https://alwinlim.com/(合并后约 1 
 | # | 文件 | 读它是为了 | 时间 |
 |---|---|---|---|
 | 1 | 本文件 | 硬约束与坑 | 3 min |
-| 2 | `index.html` | 内容与三语结构 | 5 min |
-| 3 | `script.js` | 语言切换、新闻排序、滚动显现 | 2 min |
+| 2 | `docs/admin.md` + `admin/config.yml` | 后台能改什么、内容字段 | 5 min |
+| 3 | `scripts/build.mjs` + `src/pages/index.mjs` | 内容怎么变成页面、内容检查 | 5 min |
+| 3b | `script.js` | 语言切换、新闻排序、滚动显现 | 2 min |
 | 4 | **`log.md` + `logs/entries/`** | **改动史。重点读每条的 `ripples`** —— git log 里读不到 | 5 min |
 
 **接手具体任务前**,先用关键词搜一遍改动史里你要动的模块:`grep -rn "<关键词>" log.md logs/entries/`
@@ -34,26 +38,30 @@ main 分支 → GitHub Pages(根目录)→ https://alwinlim.com/(合并后约 1 
 
 ```bash
 node /Users/MacBookPro/Developer/Project/personal-dashboard/scripts/wt.mjs preview <worktree 目录>
-# 读 .worktree-preview.json:python3 http.server,端口现取空闲的
+# 读 .worktree-preview.json:build.mjs --watch(改 content/ src/ 自动重建)+ python3 http.server 伺服 _site/,端口现取空闲的
+npm run build        # 只构建一次
 ```
+预览链接后面加 `/admin/` → 「使用本地仓库」选 worktree 根目录，可以在本机用后台改内容(写进本机 content/,不提交)。
 
 坑：用户自己开着的预览显示的是主目录，看不到 worktree 的改动 —— 每轮都要把 `wt.mjs preview` 打印的链接给用户。
 
 ## 3. 硬约束 —— 违反不会报错，只会静默出错
 
-- **元素的默认文字必须是马来文(BM)。** `script.js` 加载时只有语言不是 `ms` 才调用 `setLang`;默认文字写成英文 / 中文，马来文版就会显示错的语言。
-- **加可翻译的元素要三个 `data-*` 都写。** `setLang` 只遍历 `[data-ms]`;漏了 `data-ms` 的元素不会被切换，漏了 `data-en` / `data-zh` 的会停在旧语言。
+- **模板里可翻译的元素一律用 `src/h.mjs` 的 `T()`**:`<h2${T(x)}</h2>` 会写出三个 `data-*` 并把马来文当默认文字(三种语言相同时只写文字)。`script.js` 加载时只有语言不是 `ms` 才调用 `setLang`,默认文字不是马来文，马来文版就会显示错的语言。
+- **后台字段 ↔ 模板是一对**:改 `admin/config.yml` 的字段名 / 加字段，要同步改 `src/pages/*.mjs`;反过来模板读了新字段，后台没有就改不了。列表字段一律 `i18n: duplicate` + 子字段 `i18n: true`(三种语言条数自动同步)。
+- **内容检查在 `scripts/build.mjs`**(缺翻译、BM / EN 里有中文、中文半角标点、图片找不到…),构建失败 = CI 红 = 不上线。`seo` 下的字段不查中文(搜索描述里故意放了中文名)。
 - **马来文 / 英文版不能出现中文**(用户 2026-11-15 定的):中文名用 `.brand-zh` / `.name-zh`(CSS 在非 `zh` 时隐藏),新闻标题、来源名都要有 BM / EN 翻译。**图片里烧进去的中文也算** —— 新加新闻图先看一眼，有中文字就裁掉。
 - 中文全文用全角标点(,。:;)。
 - 照片用 `mix-blend-mode: multiply` 融进纸色背景，放照片的容器必须有纸色底，不然会透出下层。
 - 新闻卡片带 `data-src-lang`(报道的原文语言，可多个、空格分隔);新加卡片不写它，就永远排在后面(PR #4 起)。
-- **三个页面(index / about / gallery)各有一份页首导航和页脚**,没有共用模板 —— 改其中一个要三处同步。
-- 加相册：图片放 `images/gallery/<id>/NN.jpg` + `NN-t.jpg`,再在 `gallery.js` 的 `ALBUMS` 加一项;`gallery.js` 必须在 `script.js` 之前载入。
+- 三页的 `<head>`(含 GA)、页首导航、天际线、页脚都在 `src/layout.mjs`,只有一份。
+- 相册数据在 `content/gallery/*.json`,构建时写成 `_site/gallery-data.js`(`window.GALLERY`),`gallery.js` 读它;载入顺序 gallery-data.js → gallery.js → script.js。缩略图:有 `<名>-t.jpg` 就用，没有就构建时生成(本机 sips、CI 上 ImageMagick)。
+- 后台上传的图片在 `images/uploads/`(自动转 webp、长边 ≤1600)。内容里的本地图片路径以 `/images/` 开头。
 
 ## 4. 改完怎么自证
 
 ```bash
-npm run check        # 三语结构 + 日志体检(和 PR 上的 ci 同一套)
+npm run check        # 构建 + 内容检查 + 三语结构 + 日志体检(和 PR 上的 ci 同一套)
 # 桌面 + 手机两档整页截图，三种语言各看一次
 node ~/.claude/skills/ui-review/scripts/shoot.mjs "<预览链接>?lang=ms" --full --wait 1500 --out <scratchpad>/ms
 node ~/.claude/skills/ui-review/scripts/shoot.mjs "<预览链接>?lang=zh" --full --wait 1500 --out <scratchpad>/zh

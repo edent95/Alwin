@@ -1,0 +1,80 @@
+{
+  "ms": {
+    "id": "perayaan",
+    "order": 90,
+    "cat": "perayaan",
+    "date": "2024–2026",
+    "title": "Ucapan perayaan",
+    "place": "Tahun Baharu Cina, Hari Raya, Krismas",
+    "photos": [
+      {
+        "image": "/images/gallery/perayaan/01.jpg",
+        "caption": "Tahun Baharu Cina"
+      },
+      {
+        "image": "/images/gallery/perayaan/02.jpg",
+        "caption": "Selamat Hari Raya Aidilfitri"
+      },
+      {
+        "image": "/images/gallery/perayaan/03.jpg",
+        "caption": "Krismas"
+      },
+      {
+        "image": "/images/gallery/perayaan/04.jpg",
+        "caption": "Tahun Baharu Cina"
+      }
+    ]
+  },
+  "en": {
+    "id": "perayaan",
+    "order": 90,
+    "cat": "perayaan",
+    "date": "2024–2026",
+    "title": "Festive greetings",
+    "place": "Chinese New Year, Hari Raya, Christmas",
+    "photos": [
+      {
+        "image": "/images/gallery/perayaan/01.jpg",
+        "caption": "Chinese New Year"
+      },
+      {
+        "image": "/images/gallery/perayaan/02.jpg",
+        "caption": "Hari Raya Aidilfitri"
+      },
+      {
+        "image": "/images/gallery/perayaan/03.jpg",
+        "caption": "Christmas"
+      },
+      {
+        "image": "/images/gallery/perayaan/04.jpg",
+        "caption": "Chinese New Year"
+      }
+    ]
+  },
+  "zh": {
+    "id": "perayaan",
+    "order": 90,
+    "cat": "perayaan",
+    "date": "2024–2026",
+    "title": "节日祝福",
+    "place": "农历新年、开斋节、圣诞节",
+    "photos": [
+      {
+        "image": "/images/gallery/perayaan/01.jpg",
+        "caption": "农历新年"
+      },
+      {
+        "image": "/images/gallery/perayaan/02.jpg",
+        "caption": "开斋节"
+      },
+      {
+        "image": "/images/gallery/perayaan/03.jpg",
+        "caption": "圣诞节"
+      },
+      {
+        "image": "/images/gallery/perayaan/04.jpg",
+        "caption": "农历新年"
+      }
+    ]
+  }
+}

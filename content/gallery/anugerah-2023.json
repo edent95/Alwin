@@ -1,0 +1,86 @@
+{
+  "ms": {
+    "id": "anugerah-2023",
+    "order": 100,
+    "cat": "hartanah",
+    "date": "2023",
+    "title": "Malam Anugerah Tahunan Zeon 2023",
+    "place": "Tema “The Great Gatsby”",
+    "photos": [
+      {
+        "image": "/images/gallery/anugerah-2023/01.jpg"
+      },
+      {
+        "image": "/images/gallery/anugerah-2023/02.jpg"
+      },
+      {
+        "image": "/images/gallery/anugerah-2023/03.jpg"
+      },
+      {
+        "image": "/images/gallery/anugerah-2023/04.jpg"
+      },
+      {
+        "image": "/images/gallery/anugerah-2023/05.jpg"
+      },
+      {
+        "image": "/images/gallery/anugerah-2023/06.jpg"
+      }
+    ]
+  },
+  "en": {
+    "id": "anugerah-2023",
+    "order": 100,
+    "cat": "hartanah",
+    "date": "2023",
+    "title": "Zeon Annual Award Night 2023",
+    "place": "“The Great Gatsby” theme",
+    "photos": [
+      {
+        "image": "/images/gallery/anugerah-2023/01.jpg"
+      },
+      {
+        "image": "/images/gallery/anugerah-2023/02.jpg"
+      },
+      {
+        "image": "/images/gallery/anugerah-2023/03.jpg"
+      },
+      {
+        "image": "/images/gallery/anugerah-2023/04.jpg"
+      },
+      {
+        "image": "/images/gallery/anugerah-2023/05.jpg"
+      },
+      {
+        "image": "/images/gallery/anugerah-2023/06.jpg"
+      }
+    ]
+  },
+  "zh": {
+    "id": "anugerah-2023",
+    "order": 100,
+    "cat": "hartanah",
+    "date": "2023",
+    "title": "Zeon 2023 年度颁奖晚宴",
+    "place": "主题“The Great Gatsby”",
+    "photos": [
+      {
+        "image": "/images/gallery/anugerah-2023/01.jpg"
+      },
+      {
+        "image": "/images/gallery/anugerah-2023/02.jpg"
+      },
+      {
+        "image": "/images/gallery/anugerah-2023/03.jpg"
+      },
+      {
+        "image": "/images/gallery/anugerah-2023/04.jpg"
+      },
+      {
+        "image": "/images/gallery/anugerah-2023/05.jpg"
+      },
+      {
+        "image": "/images/gallery/anugerah-2023/06.jpg"
+      }
+    ]
+  }
+}

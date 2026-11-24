@@ -1,0 +1,83 @@
+{
+  "ms": {
+    "id": "al-team",
+    "order": 110,
+    "cat": "hartanah",
+    "date": "2021–2024",
+    "url": "https://www.facebook.com/alteampenang",
+    "title": "AL Team Penang",
+    "place": "Pasukan hartanah yang dipimpin Alwin",
+    "photos": [
+      {
+        "image": "/images/gallery/al-team/01.jpg",
+        "caption": "Pameran di National Exhibition and Convention Center, Shanghai · 09.11.2024"
+      },
+      {
+        "image": "/images/gallery/al-team/02.jpg",
+        "caption": "Eastern & Oriental Hotel, George Town · 04.03.2024"
+      },
+      {
+        "image": "/images/gallery/al-team/03.jpg",
+        "caption": "Juara Jualan City of Dreams, Jan–Jun 2021"
+      },
+      {
+        "image": "/images/gallery/al-team/04.jpg",
+        "caption": "Tarian singa Tahun Baharu Cina, Queensbay Mall · 02.02.2022"
+      }
+    ]
+  },
+  "en": {
+    "id": "al-team",
+    "order": 110,
+    "cat": "hartanah",
+    "date": "2021–2024",
+    "url": "https://www.facebook.com/alteampenang",
+    "title": "AL Team Penang",
+    "place": "The property team Alwin leads",
+    "photos": [
+      {
+        "image": "/images/gallery/al-team/01.jpg",
+        "caption": "Expo at the National Exhibition and Convention Center, Shanghai · 09.11.2024"
+      },
+      {
+        "image": "/images/gallery/al-team/02.jpg",
+        "caption": "Eastern & Oriental Hotel, George Town · 04.03.2024"
+      },
+      {
+        "image": "/images/gallery/al-team/03.jpg",
+        "caption": "City of Dreams Top Sales Champion, Jan–Jun 2021"
+      },
+      {
+        "image": "/images/gallery/al-team/04.jpg",
+        "caption": "Chinese New Year lion dance, Queensbay Mall · 02.02.2022"
+      }
+    ]
+  },
+  "zh": {
+    "id": "al-team",
+    "order": 110,
+    "cat": "hartanah",
+    "date": "2021–2024",
+    "url": "https://www.facebook.com/alteampenang",
+    "title": "AL Team Penang",
+    "place": "他带领的房地产团队",
+    "photos": [
+      {
+        "image": "/images/gallery/al-team/01.jpg",
+        "caption": "上海国家会展中心展会 · 2024 年 11 月 9 日"
+      },
+      {
+        "image": "/images/gallery/al-team/02.jpg",
+        "caption": "乔治市东方大酒店 · 2024 年 3 月 4 日"
+      },
+      {
+        "image": "/images/gallery/al-team/03.jpg",
+        "caption": "City of Dreams 销售冠军，2021 年 1–6 月"
+      },
+      {
+        "image": "/images/gallery/al-team/04.jpg",
+        "caption": "皇后湾广场新春舞狮 · 2022 年 2 月 2 日"
+      }
+    ]
+  }
+}

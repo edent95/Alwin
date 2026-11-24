@@ -24,6 +24,8 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 24
+      - name: 构建 + 内容检查(缺翻译、马来文 / 英文里有中文、中文半角标点、图片找不到…)
+        run: npm run -s build
       - name: 三语结构(data-ms / data-en / data-zh 齐全、BM / EN 里没有中文、新闻卡片有 data-src-lang)
         run: npm run -s check:i18n
       - name: 日志体检(重号 / 天标题顺序 / logs/entries/)

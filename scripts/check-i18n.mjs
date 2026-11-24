@@ -2,7 +2,7 @@
 /**
  * 三语结构检查(CI 与本地共用,零依赖):把 AGENTS.md「硬约束」里静默出错的几条变成会报错的检查。
  *
- *   node scripts/check-i18n.mjs            # 查仓库根目录全部 *.html
+ *   node scripts/check-i18n.mjs            # 查构建产物 _site/ 里全部 *.html(先跑 npm run build)
  *
  * 1. 带 data-ms / data-en / data-zh 任意一个的元素,三个都要有,且不能是空的。
  *    (setLang 只遍历 [data-ms];漏 data-ms 不会切换,漏 data-en / data-zh 会停在旧语言)
@@ -82,8 +82,10 @@ export function checkHtml(html, file = '') {
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const files = fs.readdirSync(ROOT).filter((f) => f.endsWith('.html') && f !== 'home.html').sort()
-  const problems = files.flatMap((f) => checkHtml(fs.readFileSync(path.join(ROOT, f), 'utf8'), f))
+  const SITE = path.join(ROOT, '_site')
+  if (!fs.existsSync(SITE)) { console.error('✗ 没有 _site/:先跑 npm run build'); process.exit(1) }
+  const files = fs.readdirSync(SITE).filter((f) => f.endsWith('.html')).sort()
+  const problems = files.flatMap((f) => checkHtml(fs.readFileSync(path.join(SITE, f), 'utf8'), f))
   if (problems.length) {
     console.error(problems.join('\n'))
     console.error(`\n✗ ${problems.length} 处三语问题(${files.join('、')})`)

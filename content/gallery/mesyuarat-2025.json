@@ -1,0 +1,50 @@
+{
+  "ms": {
+    "id": "mesyuarat-2025",
+    "order": 30,
+    "cat": "politik",
+    "date": "11.06.2025",
+    "title": "Mesyuarat DAPSY Bukit Bendera",
+    "place": "Bersama barisan jawatankuasa",
+    "photos": [
+      {
+        "image": "/images/gallery/mesyuarat-2025/01.jpg"
+      },
+      {
+        "image": "/images/gallery/mesyuarat-2025/02.jpg"
+      }
+    ]
+  },
+  "en": {
+    "id": "mesyuarat-2025",
+    "order": 30,
+    "cat": "politik",
+    "date": "11.06.2025",
+    "title": "DAPSY Bukit Bendera meeting",
+    "place": "With the committee",
+    "photos": [
+      {
+        "image": "/images/gallery/mesyuarat-2025/01.jpg"
+      },
+      {
+        "image": "/images/gallery/mesyuarat-2025/02.jpg"
+      }
+    ]
+  },
+  "zh": {
+    "id": "mesyuarat-2025",
+    "order": 30,
+    "cat": "politik",
+    "date": "11.06.2025",
+    "title": "升旗山社青团会议",
+    "place": "与理事会成员",
+    "photos": [
+      {
+        "image": "/images/gallery/mesyuarat-2025/01.jpg"
+      },
+      {
+        "image": "/images/gallery/mesyuarat-2025/02.jpg"
+      }
+    ]
+  }
+}

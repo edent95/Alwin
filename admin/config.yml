@@ -1,0 +1,592 @@
+# yaml-language-server: $schema=https://unpkg.com/@sveltia/cms/schema/sveltia-cms.json
+#
+# alwinlim.com 后台(Sveltia CMS)配置。
+# 内容文件:content/*.json，格式 { "ms": {...}, "en": {...}, "zh": {...} }(i18n single_file)。
+# 构建:scripts/build.mjs 读这些文件生成网页;字段名改了,src/pages/*.mjs 模板要跟着改。
+# 规矩:
+#   - 要翻译的文字 i18n: true;网址、图片、日期、选项这类三种语言一样的 i18n: duplicate(三份都存,构建取哪份都行)。
+#   - 列表 i18n: duplicate + 子字段 i18n: true:增删、排序只在默认语言做,三种语言自动同步条数。
+#   - Sveltia 的字段默认必填,选填的要写 required: false。
+
+backend:
+  name: github
+  repo: edent95/Alwin
+  branch: main
+  # Alwin 用账号密码登录(不用 GitHub 帐号):Sveltia CMS Additions,部署在 Cloudflare Workers 免费档。
+  # Worker 名 alwin-cms(Eden 的 Cloudflare 帐号);ADMIN_SECRET 在 Eden 的 macOS 钥匙串「alwin-cms ADMIN_SECRET」。见 docs/admin.md。
+  auth_type: additions
+  base_url: https://alwin-cms.d-tytern.workers.dev
+  commit_messages:
+    create: "content: 新增 {{collection}}「{{slug}}」(后台)"
+    update: "content: 修改 {{collection}}「{{slug}}」(后台)"
+    delete: "content: 删除 {{collection}}「{{slug}}」(后台)"
+    uploadMedia: "content: 上传图片 {{path}}(后台)"
+    deleteMedia: "content: 删除图片 {{path}}(后台)"
+
+site_url: https://alwinlim.com
+display_url: https://alwinlim.com
+
+# 上传的图片放进 images/uploads/;自动转 webp、长边不超过 1600px(手机拍的原图也不会拖慢网站)
+media_folder: /images/uploads
+public_folder: /images/uploads
+media_libraries:
+  default:
+    config:
+      max_file_size: 15000000
+      transformations:
+        raster_image:
+          format: webp
+          quality: 82
+          width: 1600
+          height: 1600
+
+# 默认语言设成英文:Alwin 平时用中文 / 英文写;网址、日期、图片这些共用字段在英文那栏填。
+# 网站本身的默认显示语言仍是马来文(构建决定,和这里无关)。
+i18n:
+  structure: single_file
+  locales: [en, zh, ms]
+  default_locale: en
+
+editor:
+  preview: false
+
+collections:
+  # ------------------------------------------------------------------ 新闻
+  - name: news
+    label: 新闻报道 News
+    label_singular: 新闻
+    description: 媒体对 Alwin 的报道。首页「Berita」一栏,按日期新到旧;读者看哪种语言,就把那种语言的报道排在前面。
+    folder: content/news
+    format: json
+    extension: json
+    create: true
+    delete: true
+    i18n: true
+    identifier_field: title
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    summary: "{{date}} · {{title}}"
+    sortable_fields:
+      fields: [date, title]
+      default: { field: date, direction: descending }
+    fields:
+      - { name: title, label: 标题 Title, widget: text, i18n: true }
+      - { name: date, label: 日期 Date, widget: datetime, type: date, format: YYYY-MM-DD, i18n: duplicate }
+      - { name: month_only, label: 只知道月份(网页上显示「10.2026」), widget: boolean, default: false, required: false, i18n: duplicate }
+      - { name: url, label: 报道链接 Link, widget: string, i18n: duplicate, pattern: ['^https?://', '要以 http:// 或 https:// 开头'] }
+      - name: src_lang
+        label: 报道原文语言 Original language
+        hint: 原文是什么语言就选什么(可多选)。读者切到这种语言时,这篇排在前面。
+        widget: select
+        multiple: true
+        i18n: duplicate
+        options: [{ label: 马来文 BM, value: ms }, { label: 英文 English, value: en }, { label: 中文, value: zh }]
+      - { name: source, label: 媒体名称 Source, hint: 例:Oriental Daily / 东方日报, widget: string, i18n: true }
+      - { name: source_sub, label: 媒体副标(选填), hint: 例:Facebook、PYDC, widget: string, required: false, i18n: duplicate }
+      - { name: excerpt, label: 摘要(选填)Excerpt, widget: text, required: false, i18n: true }
+      - name: image
+        label: 封面照片(选填)Photo
+        hint: 有照片的报道会更醒目。照片里有中文字的话,马来文 / 英文版也会看到,请先裁掉。
+        widget: object
+        required: false
+        i18n: duplicate
+        fields:
+          - { name: src, label: 照片, widget: image, i18n: duplicate }
+          - { name: alt, label: 照片说明(给视障读者 / 搜索引擎), widget: string, required: false, i18n: duplicate }
+      - { name: mast, label: 没有照片时:报头大字, hint: 不填就用媒体名称, widget: string, required: false, i18n: true }
+      - { name: mast_sub, label: 没有照片时:报头小字, widget: string, required: false, i18n: duplicate }
+      - name: tone
+        label: 没有照片时:报头颜色
+        widget: select
+        required: false
+        default: ink
+        i18n: duplicate
+        options: [{ label: 深色, value: ink }, { label: 纸色, value: paper }, { label: 酒红, value: wine }]
+      - { name: hidden, label: 暂时不在网站上显示, widget: boolean, default: false, required: false, i18n: duplicate }
+
+  # ------------------------------------------------------------------ 观点
+  - name: views
+    label: 观点 Views
+    label_singular: 观点
+    description: Alwin 自己的时事评论 / 发言,首页「Pandangan」一栏,按日期新到旧。
+    folder: content/views
+    format: json
+    extension: json
+    create: true
+    delete: true
+    i18n: true
+    identifier_field: title
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    summary: "{{date}} · {{title}}"
+    sortable_fields:
+      fields: [date, title]
+      default: { field: date, direction: descending }
+    fields:
+      - { name: title, label: 标题 Title, widget: string, i18n: true }
+      - { name: excerpt, label: 内容摘要 Summary, hint: 两三句话, widget: text, i18n: true }
+      - { name: date, label: 日期 Date, widget: datetime, type: date, format: YYYY-MM-DD, i18n: duplicate }
+      - name: cat
+        label: 分类 Category
+        widget: select
+        i18n: duplicate
+        options: [{ label: 政治 Politics, value: politics }, { label: 经济 Economy, value: economy }, { label: 槟城 Penang, value: penang }, { label: 房地产 Property, value: property }, { label: 青年 Youth, value: youth }]
+      - { name: url, label: 链接(IG / FB 帖子、文章), hint: "站内链接写 #stance 这样", widget: string, i18n: duplicate }
+      - name: cta
+        label: 按钮文字
+        widget: select
+        default: post
+        i18n: duplicate
+        options: [{ label: 看原帖(社交媒体帖子), value: post }, { label: 阅读(文章), value: read }]
+      - name: image
+        label: 配图照片(选填)
+        hint: 放了照片就不用下面的插画
+        widget: object
+        required: false
+        i18n: duplicate
+        fields:
+          - { name: src, label: 照片, widget: image, i18n: duplicate }
+          - { name: alt, label: 照片说明, widget: string, required: false, i18n: duplicate }
+      - name: art
+        label: 没有照片时:插画
+        widget: select
+        required: false
+        default: ballot
+        i18n: duplicate
+        options:
+          - { label: 柱状图上升(工资、经济), value: wage }
+          - { label: 投票箱(选举、政党), value: ballot }
+          - { label: 手机 + 禁止(网络言论), value: phone-ban }
+          - { label: 盾牌 + 警报(执法、报案), value: shield }
+          - { label: 阶梯 + 旗(青年、晋升), value: stairs }
+          - { label: 塞车 + 红绿灯(交通), value: traffic }
+          - { label: 一排房子(房地产), value: houses }
+      - name: tone
+        label: 没有照片时:插画底色
+        widget: select
+        required: false
+        default: wine
+        i18n: duplicate
+        options: [{ label: 酒红, value: wine }, { label: 深色, value: ink }, { label: 浅纸色, value: paper2 }]
+      - { name: hidden, label: 暂时不在网站上显示, widget: boolean, default: false, required: false, i18n: duplicate }
+
+  # ------------------------------------------------------------------ 相册
+  - name: gallery
+    label: 相册 Gallery
+    label_singular: 相册
+    description: 相册页的每个活动。照片上传后自动压缩;缩略图在上线时自动生成。
+    folder: content/gallery
+    format: json
+    extension: json
+    create: true
+    delete: true
+    i18n: true
+    identifier_field: title
+    slug: "{{slug}}"
+    summary: "{{date}} · {{title}}"
+    sortable_fields:
+      fields: [order, cat, title]
+      default: { field: order, direction: ascending }
+    media_folder: /images/uploads/gallery
+    public_folder: /images/uploads/gallery
+    fields:
+      - { name: title, label: 活动名称 Title, widget: string, i18n: true }
+      - { name: place, label: 地点 / 一句说明, widget: string, i18n: true }
+      - name: cat
+        label: 分类
+        widget: select
+        i18n: duplicate
+        options: [{ label: 政治 Politik, value: politik }, { label: 社区 Komuniti, value: komuniti }, { label: 节庆 Perayaan, value: perayaan }, { label: 房地产 Hartanah, value: hartanah }]
+      - { name: date, label: 显示的日期, hint: 例:14.06.2026，或 2024–2026, widget: string, i18n: duplicate }
+      - { name: order, label: 排序(同一分类里，数字小的在前), widget: number, value_type: int, default: 100, i18n: duplicate }
+      - { name: url, label: 原帖链接(选填), widget: string, required: false, i18n: duplicate }
+      - name: photos
+        label: 照片 Photos
+        label_singular: 照片
+        widget: list
+        i18n: duplicate
+        summary: "{{caption}}"
+        fields:
+          - { name: image, label: 照片, widget: image, i18n: duplicate }
+          - { name: caption, label: 照片说明(选填，不填就显示活动名称), widget: string, required: false, i18n: true }
+      - { name: hidden, label: 暂时不在网站上显示, widget: boolean, default: false, required: false, i18n: duplicate }
+
+  # ------------------------------------------------------------------ 页面文字
+  - name: pages
+    label: 页面文字 Pages
+    description: 首页、关于页、相册页上固定的文字、个人资料和照片。
+    i18n: true
+    files:
+      # ---------------- 首页
+      - name: home
+        label: 首页 Home
+        file: content/home.json
+        format: json
+        i18n: true
+        fields:
+          - name: hero
+            label: 首屏
+            widget: object
+            i18n: duplicate
+            fields:
+              - { name: kicker, label: 名字上方的小字, widget: string, i18n: true }
+              - { name: role, label: 一句话介绍, widget: text, i18n: true }
+              - name: photo
+                label: 大照片
+                widget: object
+                i18n: duplicate
+                fields:
+                  - { name: src, label: 照片, widget: image, i18n: duplicate }
+                  - { name: alt, label: 照片说明, widget: string, i18n: duplicate }
+              - name: team
+                label: 名字上方的团队标志(AL Team)
+                widget: object
+                required: false
+                i18n: duplicate
+                fields:
+                  - { name: url, label: 点击后去的链接, widget: string, i18n: duplicate }
+                  - name: logo
+                    label: 标志
+                    widget: object
+                    i18n: duplicate
+                    fields:
+                      - { name: src, label: 图片, widget: image, i18n: duplicate }
+                      - { name: alt, label: 说明, widget: string, i18n: duplicate }
+              - name: buttons
+                label: 按钮
+                label_singular: 按钮
+                widget: list
+                i18n: duplicate
+                fields:
+                  - { name: label, label: 按钮文字, widget: string, i18n: true }
+                  - { name: href, label: 链接, hint: 例:#stance(跳到立场)、#contact(跳到联系), widget: string, i18n: duplicate }
+                  - name: style
+                    label: 样式
+                    widget: select
+                    default: solid
+                    i18n: duplicate
+                    options: [{ label: 实心, value: solid }, { label: 线框, value: line }]
+              - name: stats
+                label: 照片下方的四张数字卡
+                label_singular: 数字卡
+                widget: list
+                i18n: duplicate
+                summary: "{{value}} · {{label}}"
+                fields:
+                  - { name: value, label: 大数字 / 大字, widget: string, i18n: true }
+                  - { name: label, label: 说明, widget: string, i18n: true }
+                  - name: logo
+                    label: 标志(选填)
+                    widget: object
+                    required: false
+                    i18n: duplicate
+                    fields:
+                      - { name: src, label: 图片, widget: image, i18n: duplicate }
+                      - { name: alt, label: 说明, widget: string, i18n: duplicate }
+          - name: stance
+            label: 立场
+            widget: object
+            i18n: duplicate
+            fields:
+              - { name: label, label: 小标题, widget: string, i18n: true }
+              - { name: quote, label: 引语(带引号), widget: text, i18n: true }
+              - { name: cite, label: 引语出处, widget: string, i18n: true }
+              - name: planks
+                label: 主张(编号 01、02… 自动排)
+                label_singular: 主张
+                widget: list
+                i18n: duplicate
+                summary: "{{title}}"
+                fields:
+                  - { name: title, label: 标题, widget: string, i18n: true }
+                  - { name: body, label: 说明, widget: text, i18n: true }
+              - { name: note, label: 底部注脚, widget: text, i18n: true }
+          - name: views
+            label: 「观点」栏的标题(文章本身在左边「观点」里加)
+            widget: object
+            i18n: duplicate
+            fields:
+              - { name: label, label: 小标题, widget: string, i18n: true }
+              - { name: title, label: 大标题, widget: string, i18n: true }
+              - { name: all, label: 「全部」按钮, widget: string, i18n: true }
+              - name: cats
+                label: 分类按钮的文字(分类本身是固定的五个)
+                widget: list
+                i18n: duplicate
+                allow_add: false
+                allow_remove: false
+                allow_reorder: true
+                summary: "{{label}}"
+                fields:
+                  - { name: key, label: 代号(别改), widget: hidden, i18n: duplicate }
+                  - { name: label, label: 显示文字, widget: string, i18n: true }
+          - name: journey
+            label: 历程
+            widget: object
+            i18n: duplicate
+            fields:
+              - { name: label, label: 小标题, widget: string, i18n: true }
+              - { name: title, label: 大标题, widget: string, i18n: true }
+              - name: photo
+                label: 侧边照片
+                widget: object
+                i18n: duplicate
+                fields:
+                  - { name: src, label: 照片, widget: image, i18n: duplicate }
+                  - { name: alt, label: 照片说明, widget: string, i18n: duplicate }
+              - name: items
+                label: 历程(从上到下的顺序就是网页上的顺序)
+                label_singular: 一段历程
+                widget: list
+                i18n: duplicate
+                summary: "{{when}} · {{title}}"
+                fields:
+                  - { name: when, label: 年份 / 类别, hint: 例:2024、学历, widget: string, i18n: true }
+                  - { name: title, label: 标题, widget: string, i18n: true }
+                  - { name: body, label: 说明, widget: text, required: false, i18n: true }
+                  - name: logo
+                    label: 学校 / 机构标志(选填)
+                    widget: object
+                    required: false
+                    i18n: duplicate
+                    fields:
+                      - { name: src, label: 图片, widget: image, i18n: duplicate }
+                      - { name: alt, label: 说明, widget: string, i18n: duplicate }
+                  - { name: sub_title, label: 第二个标题(选填，例如第二所学校), widget: string, required: false, i18n: true }
+                  - { name: sub_body, label: 第二段说明(选填), widget: text, required: false, i18n: true }
+                  - name: wins
+                    label: 成绩 / 要点(选填)
+                    label_singular: 要点
+                    widget: list
+                    required: false
+                    i18n: duplicate
+                    summary: "{{text}}"
+                    fields:
+                      - { name: text, label: 内容, widget: text, i18n: true }
+                  - name: links
+                    label: 链接(选填)
+                    label_singular: 链接
+                    widget: list
+                    required: false
+                    i18n: duplicate
+                    summary: "{{label}}"
+                    fields:
+                      - { name: label, label: 链接文字, widget: string, i18n: true }
+                      - { name: url, label: 网址, widget: string, i18n: duplicate }
+          - name: projects
+            label: 「新盘项目」栏的文字(项目本身每天从 Zeon 自动更新)
+            widget: object
+            i18n: duplicate
+            fields:
+              - { name: label, label: 小标题, widget: string, i18n: true }
+              - { name: title, label: 大标题, widget: string, i18n: true }
+              - { name: count, label: 数字后面的说明, widget: string, i18n: true }
+              - { name: all, label: 底部链接文字, widget: string, i18n: true }
+          - name: listings
+            label: 「房源」栏的文字(房源本身从 Zeon 自动更新)
+            widget: object
+            i18n: duplicate
+            fields:
+              - { name: label, label: 小标题, widget: string, i18n: true }
+              - { name: title, label: 大标题, widget: string, i18n: true }
+              - { name: count, label: 数字后面的说明, widget: string, i18n: true }
+              - name: chips
+                label: 筛选按钮
+                widget: object
+                i18n: duplicate
+                fields:
+                  - { name: all, label: 全部, widget: string, i18n: true }
+                  - { name: sale, label: 出售, widget: string, i18n: true }
+                  - { name: rent, label: 出租, widget: string, i18n: true }
+                  - { name: commercial, label: 商业, widget: string, i18n: true }
+              - { name: more, label: 「显示全部」按钮, widget: string, i18n: true }
+              - { name: all, label: 底部链接文字, widget: string, i18n: true }
+          - name: news
+            label: 「新闻」栏的标题(报道本身在左边「新闻报道」里加)
+            widget: object
+            i18n: duplicate
+            fields:
+              - { name: label, label: 小标题, widget: string, i18n: true }
+              - { name: title, label: 大标题, widget: string, i18n: true }
+          - name: seo
+            label: 搜索引擎 / 分享预览(Google、WhatsApp 分享时显示的)
+            widget: object
+            i18n: duplicate
+            collapsed: true
+            fields:
+              - { name: title, label: 网页标题(浏览器分页上的), widget: string, i18n: true }
+              - { name: description, label: 搜索结果里的描述(网站只用马来文这栏), widget: text, i18n: true }
+              - { name: og_description, label: 分享预览的描述(只用马来文这栏), widget: text, i18n: true }
+              - { name: image, label: 分享预览的照片, widget: image, i18n: duplicate }
+              - { name: job_title, label: 职业(给 Google 看，只用马来文这栏), widget: string, i18n: true }
+              - { name: person_description, label: 个人简介(给 Google 看，只用马来文这栏), widget: text, i18n: true }
+              - name: same_as
+                label: 本人的其他页面(Facebook、Instagram、经纪页…)
+                widget: list
+                i18n: duplicate
+                summary: "{{url}}"
+                fields:
+                  - { name: url, label: 网址, widget: string, i18n: duplicate }
+
+      # ---------------- 关于页
+      - name: about
+        label: 关于页 About
+        file: content/about.json
+        format: json
+        i18n: true
+        fields:
+          - { name: label, label: 小标题, widget: string, i18n: true }
+          - { name: lead, label: 开头一段介绍, widget: text, i18n: true }
+          - name: photo
+            label: 照片
+            widget: object
+            i18n: duplicate
+            fields:
+              - { name: src, label: 照片, widget: image, i18n: duplicate }
+              - { name: alt, label: 照片说明, widget: string, i18n: duplicate }
+          - name: facts
+            label: 基本资料
+            label_singular: 一项资料
+            widget: list
+            i18n: duplicate
+            summary: "{{term}}:{{value}}"
+            fields:
+              - { name: term, label: 项目, hint: 例:职务、学历, widget: string, i18n: true }
+              - { name: value, label: 内容, widget: string, i18n: true }
+          - name: chapters
+            label: 章节(从上到下的顺序;编号自动排)
+            label_singular: 章节
+            widget: list
+            i18n: duplicate
+            summary: "{{title}}"
+            fields:
+              - { name: title, label: 章节标题, widget: string, i18n: true }
+              - { name: anchor, label: 网址锚点(英文小写，别和别的章节重复), hint: 例:kerjaya, widget: string, i18n: duplicate, pattern: ['^[a-z0-9-]+$', '只能用小写英文、数字和 -'] }
+              - name: logo
+                label: 标志(选填)
+                widget: object
+                required: false
+                i18n: duplicate
+                fields:
+                  - { name: src, label: 图片, widget: image, i18n: duplicate }
+                  - { name: alt, label: 说明, widget: string, i18n: duplicate }
+              - name: paragraphs
+                label: 段落
+                label_singular: 段落
+                widget: list
+                i18n: duplicate
+                summary: "{{text}}"
+                fields:
+                  - { name: text, label: 段落, widget: text, i18n: true }
+              - name: wins
+                label: 要点列表(选填)
+                label_singular: 要点
+                widget: list
+                required: false
+                i18n: duplicate
+                summary: "{{text}}"
+                fields:
+                  - { name: text, label: 内容, widget: text, i18n: true }
+              - { name: quote, label: 引语(选填), widget: text, required: false, i18n: true }
+              - { name: quote_cite, label: 引语出处(选填), widget: string, required: false, i18n: true }
+              - name: links
+                label: 链接(选填)
+                label_singular: 链接
+                widget: list
+                required: false
+                i18n: duplicate
+                summary: "{{label}}"
+                fields:
+                  - { name: label, label: 链接文字, widget: string, i18n: true }
+                  - { name: url, label: 网址, widget: string, i18n: duplicate }
+          - name: seo
+            label: 搜索引擎
+            widget: object
+            i18n: duplicate
+            collapsed: true
+            fields:
+              - { name: title, label: 网页标题, widget: string, i18n: true }
+              - { name: description, label: 搜索结果里的描述(只用马来文这栏), widget: text, i18n: true }
+
+      # ---------------- 相册页
+      - name: gallery_page
+        label: 相册页 Gallery page
+        file: content/gallery-page.json
+        format: json
+        i18n: true
+        fields:
+          - { name: label, label: 小标题, widget: string, i18n: true }
+          - { name: title, label: 大标题, widget: string, i18n: true }
+          - { name: lead, label: 开头一段, widget: text, i18n: true }
+          - { name: all, label: 「全部」按钮, widget: string, i18n: true }
+          - name: cats
+            label: 分类按钮的文字(分类本身是固定的四个)
+            widget: list
+            i18n: duplicate
+            allow_add: false
+            allow_remove: false
+            allow_reorder: true
+            summary: "{{label}}"
+            fields:
+              - { name: key, label: 代号(别改), widget: hidden, i18n: duplicate }
+              - { name: label, label: 显示文字, widget: string, i18n: true }
+          - { name: note, label: 底部注脚, widget: text, i18n: true }
+          - name: seo
+            label: 搜索引擎
+            widget: object
+            i18n: duplicate
+            collapsed: true
+            fields:
+              - { name: title, label: 网页标题, widget: string, i18n: true }
+              - { name: description, label: 搜索结果里的描述(只用马来文这栏), widget: text, i18n: true }
+
+      # ---------------- 全站
+      - name: site
+        label: 全站:导航、页脚、联系方式 Site
+        file: content/site.json
+        format: json
+        i18n: true
+        fields:
+          - { name: name, label: 名字(英文), widget: string, i18n: duplicate }
+          - { name: name_rest, label: 名字后半(关于页第二行), widget: string, i18n: duplicate }
+          - { name: name_zh, label: 中文名(只在中文版显示), widget: string, i18n: duplicate }
+          - { name: full_name, label: 全名, widget: string, i18n: duplicate }
+          - { name: tagline, label: 页脚的一行介绍, widget: string, i18n: true }
+          - name: contact
+            label: 页脚「联系」
+            widget: object
+            i18n: duplicate
+            fields:
+              - { name: label, label: 小标题, widget: string, i18n: true }
+              - { name: title, label: 大标题, widget: string, i18n: true }
+              - name: channels
+                label: 联系渠道(按钮)
+                label_singular: 渠道
+                widget: list
+                i18n: duplicate
+                summary: "{{label}}"
+                fields:
+                  - { name: label, label: 按钮文字, widget: string, i18n: true }
+                  - { name: url, label: 网址, widget: string, i18n: duplicate }
+          - name: nav
+            label: 顶部导航
+            widget: object
+            i18n: duplicate
+            collapsed: true
+            fields:
+              - { name: about, label: 关于, widget: string, i18n: true }
+              - { name: views, label: 观点, widget: string, i18n: true }
+              - { name: journey, label: 历程, widget: string, i18n: true }
+              - { name: projects, label: 项目, widget: string, i18n: true }
+              - { name: listings, label: 房源, widget: string, i18n: true }
+              - { name: news, label: 新闻, widget: string, i18n: true }
+              - { name: gallery, label: 相册, widget: string, i18n: true }
+              - { name: contact, label: 联系, widget: string, i18n: true }
+          - name: cta
+            label: 卡片上的按钮文字
+            widget: object
+            i18n: duplicate
+            collapsed: true
+            fields:
+              - { name: read, label: 阅读, widget: string, i18n: true }
+              - { name: post, label: 看原帖, widget: string, i18n: true }
+              - { name: article, label: 阅读全文(新闻), widget: string, i18n: true }
+          - { name: skip, label: 「跳到内容」(读屏软件用), widget: string, i18n: true }

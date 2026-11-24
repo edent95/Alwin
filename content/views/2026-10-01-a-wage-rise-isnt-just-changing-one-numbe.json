@@ -1,0 +1,32 @@
+{
+  "ms": {
+    "date": "2026-10-01",
+    "cat": "economy",
+    "url": "#stance",
+    "cta": "read",
+    "tone": "wine",
+    "title": "Kenaikan gaji bukan sekadar menukar satu angka",
+    "excerpt": "Jika gaji minimum dinaikkan, beri PMKS tempoh peralihan 6–12 bulan, kaji impak dahulu dan semak KWSP 2% pekerja asing.",
+    "art": "wage"
+  },
+  "en": {
+    "date": "2026-10-01",
+    "cat": "economy",
+    "url": "#stance",
+    "cta": "read",
+    "tone": "wine",
+    "title": "A wage rise isn’t just changing one number",
+    "excerpt": "If the minimum wage rises, give MSMEs a 6–12 month transition, assess the impact first and review the 2% foreign-worker EPF.",
+    "art": "wage"
+  },
+  "zh": {
+    "date": "2026-10-01",
+    "cat": "economy",
+    "url": "#stance",
+    "cta": "read",
+    "tone": "wine",
+    "title": "加薪不能只调一个数字",
+    "excerpt": "若调高最低薪金，应给微中小企 6 至 12 个月过渡期，先做影响评估，并检讨外劳 2% 公积金。",
+    "art": "wage"
+  }
+}
