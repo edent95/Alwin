@@ -1,53 +1,62 @@
 {
-  "ms": {
-    "id": "agm-2026",
-    "order": 10,
-    "cat": "politik",
-    "date": "14.06.2026",
-    "url": "https://www.facebook.com/dapsybb.pg/posts/1314150297563678/",
-    "title": "Mesyuarat Agung DAPSY Bukit Bendera",
-    "place": "Penggal 2026–2028 · 101 ahli hadir",
-    "photos": [
-      {
-        "image": "/images/gallery/agm-2026/01.jpg"
-      },
-      {
-        "image": "/images/gallery/agm-2026/02.jpg"
-      }
-    ]
-  },
   "en": {
-    "id": "agm-2026",
-    "order": 10,
-    "cat": "politik",
-    "date": "14.06.2026",
-    "url": "https://www.facebook.com/dapsybb.pg/posts/1314150297563678/",
     "title": "DAPSY Bukit Bendera AGM",
     "place": "2026–2028 term · 101 members attended",
-    "photos": [
-      {
-        "image": "/images/gallery/agm-2026/01.jpg"
-      },
-      {
-        "image": "/images/gallery/agm-2026/02.jpg"
-      }
-    ]
-  },
-  "zh": {
-    "id": "agm-2026",
-    "order": 10,
     "cat": "politik",
     "date": "14.06.2026",
+    "order": 11,
     "url": "https://www.facebook.com/dapsybb.pg/posts/1314150297563678/",
-    "title": "升旗山社青团党员大会",
-    "place": "2026–2028 年度 · 101 名团员出席",
     "photos": [
       {
-        "image": "/images/gallery/agm-2026/01.jpg"
+        "image": "/images/gallery/agm-2026/01.jpg",
+        "caption": ""
       },
       {
-        "image": "/images/gallery/agm-2026/02.jpg"
+        "image": "/images/gallery/agm-2026/02.jpg",
+        "caption": ""
       }
-    ]
+    ],
+    "hidden": false,
+    "id": "agm-2026"
+  },
+  "zh": {
+    "title": "升旗山社青团党员大会",
+    "place": "2026–2028 年度 · 101 名团员出席",
+    "cat": "politik",
+    "date": "14.06.2026",
+    "order": 11,
+    "url": "https://www.facebook.com/dapsybb.pg/posts/1314150297563678/",
+    "photos": [
+      {
+        "image": "/images/gallery/agm-2026/01.jpg",
+        "caption": ""
+      },
+      {
+        "image": "/images/gallery/agm-2026/02.jpg",
+        "caption": ""
+      }
+    ],
+    "hidden": false,
+    "id": "agm-2026"
+  },
+  "ms": {
+    "title": "Mesyuarat Agung DAPSY Bukit Bendera",
+    "place": "Penggal 2026–2028 · 101 ahli hadir",
+    "cat": "politik",
+    "date": "14.06.2026",
+    "order": 11,
+    "url": "https://www.facebook.com/dapsybb.pg/posts/1314150297563678/",
+    "photos": [
+      {
+        "image": "/images/gallery/agm-2026/01.jpg",
+        "caption": ""
+      },
+      {
+        "image": "/images/gallery/agm-2026/02.jpg",
+        "caption": ""
+      }
+    ],
+    "hidden": false,
+    "id": "agm-2026"
   }
 }
