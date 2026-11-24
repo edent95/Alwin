@@ -20,7 +20,7 @@ const CJK = /[㐀-鿿豈-﫿　-〿＀-￯]/;
 
 /** 原样拷进 _site 的文件 / 目录 */
 const STATIC = ['styles.css', 'script.js', 'gallery.js', 'projects.js', 'listings.js', 'favicon.svg', 'favicon-32.png',
-  'apple-touch-icon.png', 'robots.txt', 'sitemap.xml', 'llms.txt', 'CNAME', 'images', 'admin'];
+  'apple-touch-icon.png', 'robots.txt', 'sitemap.xml', 'llms.txt', 'CNAME', 'images', 'admin', 'edit'];
 
 // ---------------------------------------------------------------- 内容加载与检查
 
@@ -227,6 +227,17 @@ export async function build({ root = ROOT, out = OUT, quiet = false } = {}) {
   const cats = Object.fromEntries((content.galleryPage?.cats || []).map((c) => [s(c.key), L3(c.label)]));
   fs.writeFileSync(path.join(out, 'gallery-data.js'),
     `// 由 scripts/build.mjs 从 content/gallery/*.json 生成,不要手改\nwindow.GALLERY = ${JSON.stringify({ cats, albums })};\n`);
+
+  // 简易后台 /edit 读的内容快照(仓库本来就公开)
+  const rawDir = (d) => fs.readdirSync(path.join(root, 'content', d)).filter((f) => f.endsWith('.json')).sort()
+    .map((f) => ({ file: `content/${d}/${f}`, data: JSON.parse(fs.readFileSync(path.join(root, 'content', d, f), 'utf8')) }));
+  const rawFile = (f) => ({ file: `content/${f}`, data: JSON.parse(fs.readFileSync(path.join(root, 'content', f), 'utf8')) });
+  fs.mkdirSync(path.join(out, 'edit'), { recursive: true });
+  fs.writeFileSync(path.join(out, 'edit', 'content.json'), JSON.stringify({
+    news: rawDir('news'), views: rawDir('views'), gallery: rawDir('gallery'),
+    art: Object.fromEntries(fs.readdirSync(path.join(root, 'src/art')).filter((f) => f.endsWith('.svg')).map((f) => [f.slice(0, -4), fs.readFileSync(path.join(root, 'src/art', f), 'utf8').trim()])),
+    home: rawFile('home.json'), about: rawFile('about.json'), site: rawFile('site.json'), galleryPage: rawFile('gallery-page.json'),
+  }));
 
   if (!quiet) console.log(`✓ 构建完成 → _site/(${Date.now() - t0} ms${made ? `,生成 ${made} 张缩略图` : ''})`);
   return { problems };

@@ -1,6 +1,31 @@
-# 后台(/admin)
+# 后台
 
-alwinlim.com/admin 是给 Alwin 自己改网站内容的后台,用的是 [Sveltia CMS](https://sveltiacms.app/)(开源、免费)。
+有两个后台,改的是同一批 `content/*.json`:
+
+- **alwinlim.com/edit —— 简易后台(给 Alwin 用)**:按「要做的事」分(发新闻、发观点、加相册、改我的资料),手机优先、全中文,只写一种语言,发布前自动翻译并预览三种语言。见下面「简易后台」一节。
+- **alwinlim.com/admin —— 进阶模式(Sveltia CMS,给 Eden 用)**:所有字段都能改。
+
+## 简易后台(/edit)
+
+```
+edit/(页面,原样拷进 _site/edit/)──▶ Worker alwin-edit(edit-worker/,Cloudflare 免费档)──▶ GitHub main ──▶ deploy.yml 上线
+   └─ 内容快照 _site/edit/content.json(构建时生成)          ├─ 登录:KV 存 PBKDF2 哈希,会话 60 天
+                                                          ├─ 翻译:Cloudflare Workers AI(SEA-LION,不用 key,每天 ≤100 次)
+                                                          └─ 发布:一次提交(内容 + 照片),作者 = 后台用户
+```
+
+- **开帐号 / 重设密码**:`node edit-worker/invite.mjs <用户名> "<名字>" [admin|editor]` → 打印一次性链接(7 天有效),对方打开自己设密码。帐号:`eden`(admin)、`alwin`(editor)。
+- **Worker 密钥**(`cd edit-worker && pbpaste | npx -y wrangler@4.167.0 secret put <名字>`):`GITHUB_TOKEN`(细粒度 PAT `alwin-edit`,只有 edent95/Alwin 的 Contents 读写 + Actions 只读,无过期)、`SESSION_SECRET`。
+- **部署 Worker**:`cd edit-worker && npx -y wrangler@4.167.0 deploy`(不在 CI 里;改了 `edit-worker/` 要手动部署)。
+- **示意版**:网址加 `?demo`(`api-demo.js`),读本站快照、什么都不发出去,用来给人看流程。
+- **自动处理的字段**:新闻没照片就用媒体名做封面(`mast` / `tone`);观点的插画按类别选(`ART_BY_CAT`)、颜色轮换;相册排序 = 同类最大值 + 10;中文半角标点自动换全角;照片压到长边 1600 的 JPEG,存 `images/uploads/{news,views,gallery}/`。
+- **翻译**:Workers AI 模型 `@cf/aisingapore/gemma-sea-lion-v4-27b-it`(东南亚语言模型),提示里带专名表(`GLOSSARY`)。每天最多 100 次(`TRANSLATE_PER_DAY`,KV 计数),超过就提示明天再试 / 手动改 —— 免得超出免费额度。**不要换成要用户 API key 的服务**(用户 2026-11-24 定的)。
+- **检查两道**:前端发布前、Worker 收到时都查「英文 / 马来文里有没有中文」;之后 deploy.yml 构建再查一次。
+- 写入位置只允许 `content/{news,views,gallery}/*.json`、`content/{home,about,site,gallery-page}.json`、`images/uploads/...`(Worker 的 `PATH_OK`)。
+
+## 进阶模式(/admin,Sveltia CMS)
+
+alwinlim.com/admin 用的是 [Sveltia CMS](https://sveltiacms.app/)(开源、免费)。
 内容存在仓库的 `content/*.json`,后台一保存就是一次提交;`.github/workflows/deploy.yml` 构建、检查通过后 1–2 分钟上线。
 
 ```
@@ -37,7 +62,7 @@ Alwin 在 /admin 改 → 保存 = 提交到 main → deploy.yml:npm run build(�
    - 「main: 必须过 ci(后台 App 可直接提交)」:要求 `ci` 检查;bypass = 后台 App(5905724)+ 仓库 admin(对应旧保护的 enforce_admins 关闭)。PR 仍要过 `ci` 才会被面板自动合并。
    - 内容检查不会因此跳过:deploy.yml 构建时照样检查,没过就不上线、自动开 issue。
    - 取舍:能登录后台的人等于能直接写 main。后台只有 Eden 和 Alwin;要更保险就把 App 从第二条的 bypass 拿掉、`admin/config.yml` 改成 PR 模式。
-3. **一键翻译**:Google Gemini(AI Studio 免费 API key,不用绑卡;免费档的输入可能被 Google 用来改进产品,网站内容本来就公开)。在后台 Administration → Credentials 填一次,所有人共用。
+3. **一键翻译**:没设。用户不用自己的 API key(2026-11-24 定的);Alwin 用 /edit,翻译由 Worker 的 Workers AI 做。
 4. **Pages 来源**:GitHub Actions(2026-11-24 切换,PR #24 合并前)。
 
 ## 本机预览后台
