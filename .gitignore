@@ -7,3 +7,5 @@ home.html
 
 # 构建产物(scripts/build.mjs);线上由 .github/workflows/deploy.yml 构建发布
 _site/
+
+.wrangler/

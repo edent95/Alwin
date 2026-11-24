@@ -16,7 +16,9 @@
 <body>
   <div id="app" aria-live="polite"></div>
   <div id="toast" role="status" aria-live="polite"></div>
-  <script src="api.js"></script>
-  <script src="app.js"></script>
+  <script>
+    // 网址加 ?demo = 示意版(不连线上,不会改到网站)
+    document.write(`<script src="${/[?&]demo\b/.test(location.search) ? 'api-demo.js' : 'api.js'}"><\/script><script src="app.js"><\/script>`);
+  </script>
 </body>
 </html>

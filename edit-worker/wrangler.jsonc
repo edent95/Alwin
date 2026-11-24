@@ -1,0 +1,12 @@
+// 简易后台 /edit 的服务端。部署:cd edit-worker && npx wrangler@4 deploy(见 docs/admin.md「简易后台」)
+// 密钥用 wrangler secret put 设:GITHUB_TOKEN、GEMINI_KEY、SESSION_SECRET(不要写进这里,仓库是公开的)
+{
+  "name": "alwin-edit",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": true,
+  "preview_urls": false,
+  "kv_namespaces": [{ "binding": "KV", "id": "6b12b5fcf9bb47b19f030adee6c2764a" }],
+  "vars": { "GEMINI_MODEL": "gemini-3.5-flash-lite" },
+  "observability": { "enabled": true }
+}

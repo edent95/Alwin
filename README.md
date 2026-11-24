@@ -2,7 +2,7 @@
 
 Personal site for Alwin Lim (Ketua DAPSY Bukit Bendera 2024–2026, Penang). Static site, trilingual (BM / EN / 中文), no dependencies.
 
-- `content/*.json` — all text and data, `{ ms, en, zh }`; edited by Alwin in the CMS at **/admin** (Sveltia CMS, see `docs/admin.md`)
+- `content/*.json` — all text and data, `{ ms, en, zh }`; edited by Alwin at **/edit** (simple admin: `edit/` + Cloudflare Worker `edit-worker/`) or at **/admin** (Sveltia CMS); see `docs/admin.md`
 - `src/` — page templates; `scripts/build.mjs` renders them into `_site/` and checks the content
 - `styles.css`, `script.js`, `gallery.js` — styles, language toggle, scroll reveal, gallery
 - `images/` — photos, news previews, logos; CMS uploads go to `images/uploads/`

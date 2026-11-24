@@ -1,6 +1,30 @@
-# 后台(/admin)
+# 后台
 
-alwinlim.com/admin 是给 Alwin 自己改网站内容的后台,用的是 [Sveltia CMS](https://sveltiacms.app/)(开源、免费)。
+有两个后台,改的是同一批 `content/*.json`:
+
+- **alwinlim.com/edit —— 简易后台(给 Alwin 用)**:按「要做的事」分(发新闻、发观点、加相册、改我的资料),手机优先、全中文,只写一种语言,发布前自动翻译并预览三种语言。见下面「简易后台」一节。
+- **alwinlim.com/admin —— 进阶模式(Sveltia CMS,给 Eden 用)**:所有字段都能改。
+
+## 简易后台(/edit)
+
+```
+edit/(页面,原样拷进 _site/edit/)──▶ Worker alwin-edit(edit-worker/,Cloudflare 免费档)──▶ GitHub main ──▶ deploy.yml 上线
+   └─ 内容快照 _site/edit/content.json(构建时生成)          ├─ 登录:KV 存 PBKDF2 哈希,会话 60 天
+                                                          ├─ 翻译:Gemini(GEMINI_KEY)
+                                                          └─ 发布:一次提交(内容 + 照片),作者 = 后台用户
+```
+
+- **开帐号 / 重设密码**:`node edit-worker/invite.mjs <用户名> "<名字>" [admin|editor]` → 打印一次性链接(7 天有效),对方打开自己设密码。帐号:`eden`(admin)、`alwin`(editor)。
+- **Worker 密钥**(`cd edit-worker && pbpaste | npx -y wrangler@4.167.0 secret put <名字>`):`GITHUB_TOKEN`(细粒度 PAT `alwin-edit`,只有 edent95/Alwin 的 Contents 读写 + Actions 只读,无过期)、`GEMINI_KEY`、`SESSION_SECRET`。
+- **部署 Worker**:`cd edit-worker && npx -y wrangler@4.167.0 deploy`(不在 CI 里;改了 `edit-worker/` 要手动部署)。
+- **示意版**:网址加 `?demo`(`api-demo.js`),读本站快照、什么都不发出去,用来给人看流程。
+- **自动处理的字段**:新闻没照片就用媒体名做封面(`mast` / `tone`);观点的插画按类别选(`ART_BY_CAT`)、颜色轮换;相册排序 = 同类最大值 + 10;中文半角标点自动换全角;照片压到长边 1600 的 JPEG,存 `images/uploads/{news,views,gallery}/`。
+- **检查两道**:前端发布前、Worker 收到时都查「英文 / 马来文里有没有中文」;之后 deploy.yml 构建再查一次。
+- 写入位置只允许 `content/{news,views,gallery}/*.json`、`content/{home,about,site,gallery-page}.json`、`images/uploads/...`(Worker 的 `PATH_OK`)。
+
+## 进阶模式(/admin,Sveltia CMS)
+
+alwinlim.com/admin 用的是 [Sveltia CMS](https://sveltiacms.app/)(开源、免费)。
 内容存在仓库的 `content/*.json`,后台一保存就是一次提交;`.github/workflows/deploy.yml` 构建、检查通过后 1–2 分钟上线。
 
 ```

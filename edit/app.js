@@ -178,12 +178,13 @@
     // 发布前最后检查：马来文 / 英文里不能有中文
     const bad = ['en', 'ms'].flatMap((l) => Object.entries(F.tr[l]).filter(([, v]) => CJK.test(v || '')).map(([k]) => `${LN[l]}的「${F.labelOf?.(k) || k}」`));
     if (bad.length) { sheet(`<h3>还有中文没翻译</h3><p class="muted">${esc(bad.join('、'))}里还有中文字。网站的英文 / 马来文版不能出现中文，请在下面「自己改一下」里改掉。</p>`, null, '知道了'); return; }
-    app.querySelector('[data-publish]').disabled = true;
-    app.querySelector('[data-publish]').textContent = '正在发布…';
+    const btn = app.querySelector('[data-publish]');
+    btn.disabled = true; btn.textContent = '正在发布…';
     try {
+      F.assignPaths?.();
       const out = strip(F.build(F.tr));
       const file = F.file || F.fileFor();
-      const r = await API.publish({ file, data: out, message: F.message, images: F.uploads?.() || [] });
+      const r = await API.publish({ files: [{ path: file, json: out }], images: F.uploads?.() || [], message: F.message }, (msg) => { btn.textContent = msg; });
       // 本机的内容快照跟着更新，回首页就看得到
       if (F.kind === 'section') S.c[F.sec.file].data = out;
       else {
@@ -239,13 +240,15 @@
         const base = d ? clone(d[l]) : {};
         Object.assign(base, { date: D.date, src_lang: D.src_lang, url: D.url, source: tr[l].source, title: tr[l].title });
         if (tr[l].excerpt) base.excerpt = tr[l].excerpt; else delete base.excerpt;
-        if (!D.noImage && D.image) base.image = { src: D.image, alt: tr.en.title };
+        if (!D.noImage && D.image) base.image = { src: F.upload && D.image === F.upload.url ? (F.imgPath || D.image) : D.image, alt: tr.en.title };
         else { delete base.image; base.mast ??= tr[l].source; base.tone ??= 'ink'; }
         return [l, base];
       })),
       preview: PREVIEW.news,
       message: entry ? `content: 修改新闻「${D.title}」（简易后台）` : `content: 新增新闻「${D.title}」（简易后台）`,
       liveUrl: '/#news',
+      assignPaths: () => { if (F.upload && !D.noImage && D.image === F.upload.url) F.imgPath = `/images/uploads/news/${D.date}-${slug(F.tr.en.title)}-${Date.now().toString(36)}.jpg`; },
+      uploads: () => (F.imgPath && F.upload && !D.noImage && D.image === F.upload.url ? [{ path: F.imgPath, blob: F.upload.blob }] : []),
     };
     if (!F.file) F.fileFor = () => `content/news/${D.date}-${slug(F.tr?.en?.title || D.title)}.json`;
     return F;
@@ -271,8 +274,11 @@
         app.innerHTML = `${top('发新闻报道', { back: '' })}<div class="loading"><div class="spinner"></div><p>正在读取报道…</p></div>`;
         try {
           const r = await API.readLink(D.url.trim());
-          Object.assign(D, { title: r.title || D.title, source: r.source || D.source, date: r.date || D.date, image: r.image || '', src_lang: r.lang ? [r.lang] : D.src_lang });
-          F.autofilled = true;
+          Object.assign(D, { title: r.title || D.title, source: r.source || D.source, date: r.date || D.date, image: '', src_lang: r.lang ? [r.lang] : D.src_lang });
+          if (r.image) {
+            try { const p = await API.prepareImage(await API.fetchImage(r.image)); D.image = p.url; F.upload = p; } catch { /* 拿不到照片就不放 */ }
+          }
+          F.autofilled = !!(r.title || r.source);
         } catch (e) { toast(e.message || '读不到这个链接，请手动填写'); }
         F.step = 2; render();
       });
@@ -329,13 +335,15 @@
       build: (tr) => Object.fromEntries(['ms', 'en', 'zh'].map((l) => {
         const base = d ? clone(d[l]) : { cta: 'post', tone: TONES[S.c.views.length % 3] };
         Object.assign(base, { date: D.date, cat: D.cat, url: D.url, title: tr[l].title, excerpt: tr[l].excerpt, art: base.art || ART_BY_CAT[D.cat] || 'ballot' });
-        if (D.image) base.image = { src: D.image, alt: tr.en.title }; else delete base.image;
+        if (D.image) base.image = { src: F.upload && D.image === F.upload.url ? (F.imgPath || D.image) : D.image, alt: tr.en.title }; else delete base.image;
         return [l, base];
       })),
       preview: PREVIEW.view,
       message: entry ? `content: 修改观点「${D.title}」（简易后台）` : `content: 新增观点「${D.title}」（简易后台）`,
       liveUrl: '/#views',
       fileFor: () => `content/views/${D.date}-${slug(F.tr.en.title)}.json`,
+      assignPaths: () => { if (F.upload && D.image === F.upload.url) F.imgPath = `/images/uploads/views/${D.date}-${slug(F.tr.en.title)}-${Date.now().toString(36)}.jpg`; },
+      uploads: () => (F.imgPath && F.upload && D.image === F.upload.url ? [{ path: F.imgPath, blob: F.upload.blob }] : []),
     };
     return F;
   }
@@ -387,7 +395,7 @@
         return Object.fromEntries(['ms', 'en', 'zh'].map((l) => {
           const base = d ? clone(d[l]) : { hidden: false };
           Object.assign(base, { id, title: tr[l].title, place: tr[l].place, cat: D.cat, date: dmy(D.date), order, url: D.url,
-            photos: D.photos.map((p, i) => ({ image: p.image || `/images/uploads/gallery/${id}-${String(i + 1).padStart(2, '0')}.jpg`, _url: p._url, caption: p._i != null && d ? (d[l].photos[p._i]?.caption || '') : '' })) });
+            photos: D.photos.map((p, i) => ({ image: p.image || p.path || p._url, _url: p._url, caption: p._i != null && d ? (d[l].photos[p._i]?.caption || '') : '' })) });
           return [l, base];
         }));
       },
@@ -395,6 +403,11 @@
       message: entry ? `content: 修改相册「${D.title}」（简易后台）` : `content: 新增相册「${D.title}」（简易后台）`,
       liveUrl: '/gallery.html',
       fileFor: () => `content/gallery/${slug(F.tr.en.title)}-${D.date.slice(0, 4)}.json`,
+      assignPaths: () => {
+        const id = d?.en.id || `${slug(F.tr.en.title)}-${D.date.slice(0, 4)}`; const stamp = Date.now().toString(36);
+        D.photos.forEach((p, i) => { if (p.blob && !p.path) p.path = `/images/uploads/gallery/${id}-${stamp}-${String(i + 1).padStart(2, '0')}.jpg`; });
+      },
+      uploads: () => D.photos.filter((p) => p.blob && p.path).map((p) => ({ path: p.path, blob: p.blob })),
     };
     return F;
   }
@@ -576,7 +589,7 @@
     app.querySelector('[data-all]')?.addEventListener('click', () => { S.showAll = !S.showAll; renderHome(); });
     app.querySelectorAll('[data-row]').forEach((b) => b.addEventListener('click', () => rowMenu(shown[+b.dataset.row])));
     app.querySelector('[data-menu]').addEventListener('click', () => sheet(`<h3>${esc(S.me?.name)}</h3><p class="muted">用户名：${esc(S.me?.username)}</p>
-      <a class="btn line" href="/admin/">进阶模式(Eden 用)</a><button class="btn danger" data-out>登出</button>`, (bg, close) => bg.querySelector('[data-out]').addEventListener('click', () => { API.logout(); S.me = null; close(); go('#/login'); })));
+      ${S.me?.role === 'admin' ? '<a class="btn line" href="/admin/">进阶模式（Sveltia）</a>' : ''}<button class="btn danger" data-out>登出</button>`, (bg, close) => bg.querySelector('[data-out]').addEventListener('click', () => { API.logout(); S.me = null; close(); go('#/login'); })));
   }
   function rowMenu(r) {
     const hidden = !!r.hidden;
@@ -588,7 +601,8 @@
       bg.querySelector('[data-hide]').addEventListener('click', async () => {
         close();
         const data = clone(r.e.data); for (const l of LANGS) data[l].hidden = !hidden;
-        await API.publish({ file: r.e.file, data, message: `content: ${hidden ? '放回' : '下架'}「${r.title}」（简易后台）` });
+        try { await API.publish({ files: [{ path: r.e.file, json: data }], message: `content: ${hidden ? '放回' : '下架'}「${r.title}」（简易后台）` }); }
+        catch (e) { toast(e.message); return; }
         r.e.data = data; toast(hidden ? '已放回，约 1 分钟后网站上看得到' : '已拿下来，约 1 分钟后网站上就看不到了'); renderHome();
       });
     });
@@ -616,9 +630,39 @@
     });
   }
 
+  async function renderInvite(token) {
+    app.innerHTML = '<div class="loading"><div class="spinner"></div><p>载入中…</p></div>';
+    let who;
+    try { who = await API.invite(token); } catch (e) {
+      app.innerHTML = `<div class="login"><h2 class="h">这个链接用不了</h2><p class="lead">${esc(e.message)}</p><a class="btn line block" href="#/login">去登录</a></div>`;
+      return;
+    }
+    app.innerHTML = `<div class="login">
+      <div class="mark">Alwin Lim<span>林智成</span></div>
+      <h2 class="h" style="margin-top:8px">你好，${esc(who.name)}</h2>
+      <p class="lead">先设一个你自己的密码。以后用<b>用户名 ${esc(who.username)}</b> 和这个密码登录。</p>
+      <form id="inv">
+        <input type="text" autocomplete="username" value="${esc(who.username)}" hidden readonly>
+        <div class="field"><label for="p1">新密码</label><p class="hint">至少 8 个字，建议用一句好记的话。</p><input class="input" id="p1" type="password" autocomplete="new-password" minlength="8" required></div>
+        <div class="field"><label for="p2">再输入一次</label><input class="input" id="p2" type="password" autocomplete="new-password" minlength="8" required></div>
+        <button class="btn primary block" type="submit">设好了，进去</button>
+      </form></div>`;
+    app.querySelector('#inv').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const a = app.querySelector('#p1').value; const b = app.querySelector('#p2').value;
+      if (a.length < 8) return toast('密码至少 8 个字');
+      if (a !== b) return toast('两次输入的不一样');
+      const btn = e.target.querySelector('button'); btn.disabled = true; btn.textContent = '设定中…';
+      try { S.me = await API.acceptInvite(token, a); toast('设好了！以后用这个密码登录'); location.hash = '#/'; }
+      catch (err) { toast(err.message); btn.disabled = false; btn.textContent = '设好了，进去'; }
+    });
+  }
+
   // ------------------------------------------------------------------ 路由
   async function render(nav = false) {
     const h = location.hash || '#/';
+    const inv = h.match(/^#\/invite\/([\w-]{20,})$/);
+    if (inv) return renderInvite(inv[1]);
     if (!S.me) { if (h !== '#/login') { location.hash = '#/login'; return; } return renderLogin(); }
     if (h === '#/login') { location.hash = '#/'; return; }
     if (!S.c) { app.innerHTML = '<div class="loading"><div class="spinner"></div><p>载入中…</p></div>'; S.c = await API.load(); }

@@ -1,75 +1,51 @@
-// 简易后台的接口层。原型阶段全是「示意」：读本站的内容快照，保存不会真的发出去。
-// 接上真正的服务时只换这个文件,app.js 不动。
+// 简易后台的接口层(真的):登录、翻译、读链接、上传照片、发布都走 Worker alwin-edit(源码 edit-worker/)。
+// 示意版在 api-demo.js(网址加 ?demo)。两份对外的函数一样,app.js 不用分。
 (() => {
-  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  const BASE = 'https://alwin-edit.d-tytern.workers.dev';
+  const TOKEN = 'edit-token';
+  const ME = 'edit-me';
   let snapshot = null;
-  const LANG_NAME = { zh: '中文', en: 'English', ms: 'Bahasa Melayu' };
 
-  // 在已有内容里找同一句话的现成译文(改旧内容时，示意翻译就用真的)
-  const known = new Map();
-  const walk3 = (a, b, c) => {
-    if (typeof a === 'string' && typeof b === 'string' && typeof c === 'string') {
-      known.set(a, { ms: a, en: b, zh: c }); known.set(b, { ms: a, en: b, zh: c }); known.set(c, { ms: a, en: b, zh: c });
-      return;
+  async function call(path, { method = 'GET', json, body, headers = {}, raw = false } = {}) {
+    let r;
+    try {
+      r = await fetch(BASE + path, {
+        method,
+        headers: { ...(localStorage.getItem(TOKEN) ? { authorization: `Bearer ${localStorage.getItem(TOKEN)}` } : {}), ...(json ? { 'content-type': 'application/json' } : {}), ...headers },
+        body: json ? JSON.stringify(json) : body,
+      });
+    } catch { throw new Error('连不上网络，请检查一下再试'); }
+    if (r.status === 401 && !path.startsWith('/api/login') && !path.startsWith('/api/invite')) {
+      API.logout(); location.hash = '#/login';
+      throw new Error((await r.json().catch(() => ({}))).error || '请重新登录');
     }
-    if (a && b && c && typeof a === 'object') for (const k of Object.keys(a)) walk3(a[k], b?.[k], c?.[k]);
-  };
+    if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || '出了点问题，请再试一次');
+    return raw ? r : r.json();
+  }
+  const signIn = ({ token, me }) => { localStorage.setItem(TOKEN, token); localStorage.setItem(ME, JSON.stringify(me)); return me; };
 
   window.API = {
-    demo: true,
-    LANG_NAME,
+    demo: false,
 
-    async login(username, password) {
-      await wait(500);
-      if (!username || !password) throw new Error('请填用户名和密码');
-      const me = { username, name: username === 'alwin' ? 'Alwin' : username };
-      sessionStorage.setItem('edit-me', JSON.stringify(me));
-      return me;
-    },
-    me() { try { return JSON.parse(sessionStorage.getItem('edit-me')); } catch { return null; } },
-    logout() { sessionStorage.removeItem('edit-me'); },
+    login: async (username, password) => signIn(await call('/api/login', { method: 'POST', json: { username, password } })),
+    me() { try { return localStorage.getItem(TOKEN) && JSON.parse(localStorage.getItem(ME)); } catch { return null; } },
+    logout() { localStorage.removeItem(TOKEN); localStorage.removeItem(ME); },
+    invite: (token) => call(`/api/invite/${token}`),
+    acceptInvite: async (token, password) => signIn(await call(`/api/invite/${token}`, { method: 'POST', json: { password } })),
 
-    async load() {
-      if (snapshot) return snapshot;
-      const r = await fetch('content.json', { cache: 'no-store' });
+    /** 网站上的内容快照(构建时生成);加时间戳绕过 CDN 缓存 */
+    async load(fresh = false) {
+      if (snapshot && !fresh) return snapshot;
+      const r = await fetch(`content.json?t=${Date.now()}`, { cache: 'no-store' });
       snapshot = await r.json();
-      for (const [k, group] of Object.entries(snapshot)) if (k !== 'art') for (const e of [].concat(group)) walk3(e.data.ms, e.data.en, e.data.zh);
       return snapshot;
     },
 
-    /** 贴上报道链接 → 尽量读出标题、媒体、日期、图片、语言 */
-    async readLink(url) {
-      await wait(1400);
-      let host = '';
-      try { host = new URL(url).hostname.replace(/^www\./, ''); } catch { throw new Error('这个链接打不开，请检查一下'); }
-      const media = { 'chinapress.com.my': '中国报', 'orientaldaily.com.my': '东方日报', 'sinchew.com.my': '星洲日报',
-        'kwongwah.com.my': '光华日报', 'thestar.com.my': 'The Star', 'malaymail.com': 'Malay Mail', 'bharian.com.my': 'Berita Harian',
-        'facebook.com': 'Facebook', 'buletinmutiara.com': 'Buletin Mutiara' };
-      const source = Object.entries(media).find(([d]) => host.endsWith(d))?.[1] || host;
-      const zhSite = /chinapress|oriental|sinchew|kwongwah/.test(host);
-      return {
-        title: zhSite ? '林智成：槟城青年需要更多参与地方事务的机会' : 'Alwin Lim: Penang youth need more room in local affairs',
-        source, date: new Date().toISOString().slice(0, 10), lang: zhSite ? 'zh' : /bharian|mutiara/.test(host) ? 'ms' : 'en',
-        image: '/images/news/chinapress.jpg',
-      };
-    },
+    readLink: (url) => call('/api/read-link', { method: 'POST', json: { url } }),
+    fetchImage: async (url) => (await call(`/api/image?url=${encodeURIComponent(url)}`, { raw: true })).blob(),
+    translate: (fields, from, to) => call('/api/translate', { method: 'POST', json: { fields, from, to } }),
 
-    /** 把 { 字段： 文字 } 从 from 翻成 to 里的每种语言 → { en: {...}, ms: {...} } */
-    async translate(fields, from, to) {
-      await wait(1200);
-      const out = {};
-      for (const l of to) {
-        out[l] = {};
-        for (const [k, text] of Object.entries(fields)) {
-          if (!text) { out[l][k] = ''; continue; }
-          const hit = known.get(text);
-          out[l][k] = hit ? hit[l] : (l === 'en' ? `(Sample English translation of “${k}”)` : `(Contoh terjemahan Bahasa Melayu untuk “${k}”)`);
-        }
-      }
-      return out;
-    },
-
-    /** 手机里选的照片：压缩到长边 1600、JPEG 82%,回传预览用的地址与大小 */
+    /** 照片:压缩到长边 1600、JPEG 82% */
     async prepareImage(file) {
       const bmp = await createImageBitmap(file);
       const k = Math.min(1, 1600 / Math.max(bmp.width, bmp.height));
@@ -80,16 +56,22 @@
       return { url: URL.createObjectURL(blob), blob, before: file.size, after: blob.size, w: c.width, h: c.height };
     },
 
-    /** 发布：原型里只是假装 */
-    async publish(change) {
-      await wait(900);
-      console.log('[示意] 会提交：', change);
-      return { id: String(Date.now()) };
+    /**
+     * 发布:先逐张上传照片,再把内容和照片一次提交到 main。
+     * change = { files: [{ path, json }], images: [{ path, blob }], message }
+     */
+    async publish(change, onProgress) {
+      const files = [...change.files];
+      let n = 0;
+      for (const img of change.images || []) {
+        onProgress?.(`正在上传照片 ${++n} / ${change.images.length}…`);
+        const { sha } = await call('/api/blob', { method: 'POST', body: img.blob, headers: { 'content-type': img.blob.type || 'image/jpeg' } });
+        files.push({ path: img.path.replace(/^\//, ''), sha });
+      }
+      onProgress?.('正在保存…');
+      const { commit } = await call('/api/publish', { method: 'POST', json: { files, message: change.message } });
+      return { id: commit };
     },
-    /** 发布进度:building → live */
-    async status(id) {
-      await wait(400);
-      return Date.now() - Number(id) > 6000 ? 'live' : 'building';
-    },
+    async status(id) { return (await call(`/api/status?commit=${id}`)).state; },
   };
 })();
