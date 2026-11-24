@@ -210,6 +210,8 @@ html[lang="zh"] .pull p { font-family: var(--serif-zh); font-weight: 600; line-h
 /* 观点卡插图:滚进视口(.is-on)才动,离开就停;减少动效时显示终态 */
 .view-art { margin: -26px -26px 6px; height: 150px; overflow: hidden; border-radius: 6px 6px 0 0; }
 .view-art svg { display: block; width: 100%; height: 100%; }
+.view-photo { background: var(--paper-2, #ece5d8); }
+.view-photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .view-art * { animation-play-state: paused; }
 .view-art.is-on * { animation-play-state: running; }
 .tone-paper2 { background: var(--paper-2); }

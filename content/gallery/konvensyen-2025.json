@@ -1,0 +1,68 @@
+{
+  "ms": {
+    "id": "konvensyen-2025",
+    "order": 20,
+    "cat": "politik",
+    "date": "09.11.2025",
+    "title": "Konvensyen Tahunan Negeri DAP Pulau Pinang",
+    "place": "Holiday Inn & Suites, Seberang Prai",
+    "photos": [
+      {
+        "image": "/images/gallery/konvensyen-2025/01.jpg"
+      },
+      {
+        "image": "/images/gallery/konvensyen-2025/02.jpg"
+      },
+      {
+        "image": "/images/gallery/konvensyen-2025/03.jpg"
+      },
+      {
+        "image": "/images/gallery/konvensyen-2025/04.jpg"
+      }
+    ]
+  },
+  "en": {
+    "id": "konvensyen-2025",
+    "order": 20,
+    "cat": "politik",
+    "date": "09.11.2025",
+    "title": "DAP Penang Annual State Convention",
+    "place": "Holiday Inn & Suites, Penang Prai",
+    "photos": [
+      {
+        "image": "/images/gallery/konvensyen-2025/01.jpg"
+      },
+      {
+        "image": "/images/gallery/konvensyen-2025/02.jpg"
+      },
+      {
+        "image": "/images/gallery/konvensyen-2025/03.jpg"
+      },
+      {
+        "image": "/images/gallery/konvensyen-2025/04.jpg"
+      }
+    ]
+  },
+  "zh": {
+    "id": "konvensyen-2025",
+    "order": 20,
+    "cat": "politik",
+    "date": "09.11.2025",
+    "title": "行动党槟州常年代表大会",
+    "place": "北海 Holiday Inn & Suites",
+    "photos": [
+      {
+        "image": "/images/gallery/konvensyen-2025/01.jpg"
+      },
+      {
+        "image": "/images/gallery/konvensyen-2025/02.jpg"
+      },
+      {
+        "image": "/images/gallery/konvensyen-2025/03.jpg"
+      },
+      {
+        "image": "/images/gallery/konvensyen-2025/04.jpg"
+      }
+    ]
+  }
+}

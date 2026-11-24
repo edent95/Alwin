@@ -1,0 +1,41 @@
+{
+  "ms": {
+    "id": "rumah-terbuka-2025",
+    "order": 40,
+    "cat": "politik",
+    "date": "02.02.2025",
+    "title": "Bersama YB Lim Guan Eng",
+    "place": "DAPSY Bukit Bendera",
+    "photos": [
+      {
+        "image": "/images/gallery/rumah-terbuka-2025/01.jpg"
+      }
+    ]
+  },
+  "en": {
+    "id": "rumah-terbuka-2025",
+    "order": 40,
+    "cat": "politik",
+    "date": "02.02.2025",
+    "title": "With YB Lim Guan Eng",
+    "place": "DAPSY Bukit Bendera",
+    "photos": [
+      {
+        "image": "/images/gallery/rumah-terbuka-2025/01.jpg"
+      }
+    ]
+  },
+  "zh": {
+    "id": "rumah-terbuka-2025",
+    "order": 40,
+    "cat": "politik",
+    "date": "02.02.2025",
+    "title": "与林冠英一起",
+    "place": "升旗山社青团",
+    "photos": [
+      {
+        "image": "/images/gallery/rumah-terbuka-2025/01.jpg"
+      }
+    ]
+  }
+}

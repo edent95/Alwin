@@ -1,0 +1,125 @@
+{
+  "ms": {
+    "skip": "Langkau ke kandungan",
+    "nav": {
+      "about": "Tentang",
+      "views": "Pandangan",
+      "journey": "Perjalanan",
+      "projects": "Projek",
+      "listings": "Senarai",
+      "news": "Berita",
+      "gallery": "Galeri",
+      "contact": "Hubungi"
+    },
+    "tagline": "DAPSY Bukit Bendera · Pulau Pinang",
+    "contact": {
+      "label": "Hubungi",
+      "title": "Ada isu di kawasan anda? Beritahu saya.",
+      "channels": [
+        {
+          "label": "Facebook",
+          "url": "https://www.facebook.com/alwinlimzc"
+        },
+        {
+          "label": "Instagram",
+          "url": "https://www.instagram.com/alwinlimzc/"
+        },
+        {
+          "label": "DAPSY Bukit Bendera",
+          "url": "https://www.facebook.com/dapsybb.pg"
+        }
+      ]
+    },
+    "cta": {
+      "read": "Baca",
+      "post": "Lihat hantaran",
+      "article": "Baca artikel"
+    },
+    "name": "Alwin Lim",
+    "name_rest": "Zh Chen",
+    "name_zh": "林智成",
+    "full_name": "Alwin Lim Zh Chen"
+  },
+  "en": {
+    "skip": "Skip to content",
+    "nav": {
+      "about": "About",
+      "views": "Views",
+      "journey": "Journey",
+      "projects": "Projects",
+      "listings": "Listings",
+      "news": "News",
+      "gallery": "Gallery",
+      "contact": "Contact"
+    },
+    "tagline": "DAPSY Bukit Bendera · Penang",
+    "contact": {
+      "label": "Contact",
+      "title": "An issue in your area? Tell me.",
+      "channels": [
+        {
+          "label": "Facebook",
+          "url": "https://www.facebook.com/alwinlimzc"
+        },
+        {
+          "label": "Instagram",
+          "url": "https://www.instagram.com/alwinlimzc/"
+        },
+        {
+          "label": "DAPSY Bukit Bendera",
+          "url": "https://www.facebook.com/dapsybb.pg"
+        }
+      ]
+    },
+    "cta": {
+      "read": "Read",
+      "post": "See the post",
+      "article": "Read article"
+    },
+    "name": "Alwin Lim",
+    "name_rest": "Zh Chen",
+    "name_zh": "林智成",
+    "full_name": "Alwin Lim Zh Chen"
+  },
+  "zh": {
+    "skip": "跳到内容",
+    "nav": {
+      "about": "关于",
+      "views": "观点",
+      "journey": "历程",
+      "projects": "项目",
+      "listings": "房源",
+      "news": "新闻",
+      "gallery": "相册",
+      "contact": "联系"
+    },
+    "tagline": "行动党升旗山社青团 · 槟城",
+    "contact": {
+      "label": "联系",
+      "title": "社区有问题？告诉我。",
+      "channels": [
+        {
+          "label": "Facebook",
+          "url": "https://www.facebook.com/alwinlimzc"
+        },
+        {
+          "label": "Instagram",
+          "url": "https://www.instagram.com/alwinlimzc/"
+        },
+        {
+          "label": "升旗山社青团",
+          "url": "https://www.facebook.com/dapsybb.pg"
+        }
+      ]
+    },
+    "cta": {
+      "read": "阅读",
+      "post": "看原帖",
+      "article": "阅读全文"
+    },
+    "name": "Alwin Lim",
+    "name_rest": "Zh Chen",
+    "name_zh": "林智成",
+    "full_name": "Alwin Lim Zh Chen"
+  }
+}

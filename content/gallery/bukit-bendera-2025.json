@@ -1,0 +1,68 @@
+{
+  "ms": {
+    "id": "bukit-bendera-2025",
+    "order": 70,
+    "cat": "komuniti",
+    "date": "12.11.2025",
+    "title": "Majlis komuniti di Air Itam",
+    "place": "Bukit Bendera",
+    "photos": [
+      {
+        "image": "/images/gallery/bukit-bendera-2025/01.jpg"
+      },
+      {
+        "image": "/images/gallery/bukit-bendera-2025/02.jpg"
+      },
+      {
+        "image": "/images/gallery/bukit-bendera-2025/03.jpg"
+      },
+      {
+        "image": "/images/gallery/bukit-bendera-2025/04.jpg"
+      }
+    ]
+  },
+  "en": {
+    "id": "bukit-bendera-2025",
+    "order": 70,
+    "cat": "komuniti",
+    "date": "12.11.2025",
+    "title": "Community event in Air Itam",
+    "place": "Bukit Bendera",
+    "photos": [
+      {
+        "image": "/images/gallery/bukit-bendera-2025/01.jpg"
+      },
+      {
+        "image": "/images/gallery/bukit-bendera-2025/02.jpg"
+      },
+      {
+        "image": "/images/gallery/bukit-bendera-2025/03.jpg"
+      },
+      {
+        "image": "/images/gallery/bukit-bendera-2025/04.jpg"
+      }
+    ]
+  },
+  "zh": {
+    "id": "bukit-bendera-2025",
+    "order": 70,
+    "cat": "komuniti",
+    "date": "12.11.2025",
+    "title": "亚依淡社区活动",
+    "place": "升旗山",
+    "photos": [
+      {
+        "image": "/images/gallery/bukit-bendera-2025/01.jpg"
+      },
+      {
+        "image": "/images/gallery/bukit-bendera-2025/02.jpg"
+      },
+      {
+        "image": "/images/gallery/bukit-bendera-2025/03.jpg"
+      },
+      {
+        "image": "/images/gallery/bukit-bendera-2025/04.jpg"
+      }
+    ]
+  }
+}

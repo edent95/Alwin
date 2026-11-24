@@ -1,0 +1,41 @@
+{
+  "ms": {
+    "id": "dapsy-2024",
+    "order": 50,
+    "cat": "politik",
+    "date": "30.06.2024",
+    "title": "Bersama ahli DAPSY Bukit Bendera",
+    "place": "Selepas pemilihan 2024",
+    "photos": [
+      {
+        "image": "/images/gallery/dapsy-2024/01.jpg"
+      }
+    ]
+  },
+  "en": {
+    "id": "dapsy-2024",
+    "order": 50,
+    "cat": "politik",
+    "date": "30.06.2024",
+    "title": "With DAPSY Bukit Bendera members",
+    "place": "After the 2024 election",
+    "photos": [
+      {
+        "image": "/images/gallery/dapsy-2024/01.jpg"
+      }
+    ]
+  },
+  "zh": {
+    "id": "dapsy-2024",
+    "order": 50,
+    "cat": "politik",
+    "date": "30.06.2024",
+    "title": "与升旗山社青团团员",
+    "place": "2024 年改选之后",
+    "photos": [
+      {
+        "image": "/images/gallery/dapsy-2024/01.jpg"
+      }
+    ]
+  }
+}

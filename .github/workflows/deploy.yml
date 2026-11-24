@@ -1,0 +1,75 @@
+# 上线:main 一有新提交(PR 合并、后台 /admin 发布)就构建 content/ + src/ → _site/,发布到 GitHub Pages(alwinlim.com)。
+# Pages 的来源必须设成「GitHub Actions」(仓库 Settings → Pages → Build and deployment → Source),不是「从分支部署」。
+# 构建失败(内容检查没过)就不发布,线上停在上一版。
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - name: 装 ImageMagick(给后台新传的相册照片生成缩略图)
+        run: command -v convert || (sudo apt-get update -qq && sudo apt-get install -y -qq --no-install-recommends imagemagick)
+      - name: 构建
+        run: npm run -s build 2>&1 | tee build.log; exit ${PIPESTATUS[0]}
+      - name: 三语结构检查
+        run: npm run -s check:i18n
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+  # 后台保存的内容没通过检查 → 没上线。开一个 issue(仓库主人会收到通知),写清楚是哪条内容、什么问题。
+  report:
+    needs: build
+    if: failure()
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - name: 重跑构建拿问题清单,开 issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          npm run -s build > build.log 2>&1 || true
+          {
+            echo "提交 ${GITHUB_SHA::7}(${{ github.event.head_commit.message || '手动' }})构建失败,**网站没有更新,线上还是上一版**。"
+            echo
+            echo '```'
+            tail -40 build.log
+            echo '```'
+            echo
+            echo "在后台改正后再保存一次就会重新上线。运行记录:${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          } > body.md
+          gh issue create --title "网站没上线:内容检查没过($(date -u +%F))" --body-file body.md

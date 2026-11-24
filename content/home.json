@@ -1,0 +1,794 @@
+{
+  "ms": {
+    "seo": {
+      "title": "Alwin Lim Zh Chen · DAPSY Bukit Bendera, Pulau Pinang",
+      "description": "Alwin Lim Zh Chen, Ketua DAPSY Bukit Bendera 2024–2026, Pulau Pinang. Perunding hartanah, suara PMKS dan pekerja: pandangan, projek dan berita.",
+      "og_description": "Graduan Ekonomi & Kewangan RMIT, MBA INTI, perunding hartanah, suara untuk PMKS dan pekerja Pulau Pinang.",
+      "image": "/images/alwin.jpg",
+      "job_title": "Perunding Hartanah, Zeon Properties",
+      "person_description": "Ketua DAPSY Bukit Bendera, Pulau Pinang (2024–2026); graduan Ekonomi dan Kewangan RMIT University; Sarjana Pentadbiran Perniagaan (MBA) INTI International University (2026); perunding hartanah di Zeon Properties dan ketua AL Team Penang.",
+      "same_as": [
+        {
+          "url": "https://www.facebook.com/alwinlimzc"
+        },
+        {
+          "url": "https://www.instagram.com/alwinlimzc/"
+        },
+        {
+          "url": "https://www.zeonproperties.com.my/find-agent/alwin-lim-38297"
+        }
+      ]
+    },
+    "hero": {
+      "kicker": "DAPSY Bukit Bendera · Pulau Pinang",
+      "team": {
+        "url": "https://www.facebook.com/alteampenang",
+        "logo": {
+          "src": "/images/logos/alteam.png",
+          "alt": "AL Team"
+        }
+      },
+      "role": "Ketua DAPSY Bukit Bendera 2024–2026. Graduan ekonomi dan MBA, orang hartanah, suara untuk perniagaan kecil dan pekerja Pulau Pinang.",
+      "buttons": [
+        {
+          "label": "Baca pendirian saya",
+          "href": "#stance",
+          "style": "solid"
+        },
+        {
+          "label": "Hubungi",
+          "href": "#contact",
+          "style": "line"
+        }
+      ],
+      "photo": {
+        "src": "/images/alwin-smile.jpg",
+        "alt": "Alwin Lim Zh Chen"
+      },
+      "stats": [
+        {
+          "logo": {
+            "src": "/images/logos/dapsybb.png",
+            "alt": "DAPSY Bukit Bendera"
+          },
+          "value": "2024–26",
+          "label": "Ketua DAPSY Bukit Bendera · menang pemilihan 31–21"
+        },
+        {
+          "logo": {
+            "src": "/images/logos/rmit.svg",
+            "alt": "RMIT University"
+          },
+          "value": "Melbourne",
+          "label": "Ekonomi & Kewangan, RMIT University · MBA, INTI (2026)"
+        },
+        {
+          "logo": {
+            "src": "/images/logos/zeon.png",
+            "alt": "Zeon Properties"
+          },
+          "value": "RM24.9j+",
+          "label": "Urus niaga peribadi dalam 3 bulan (2022), Zeon Properties"
+        },
+        {
+          "logo": {
+            "src": "/images/logos/alteam.png",
+            "alt": "AL Team Penang"
+          },
+          "value": "20+",
+          "label": "Perunding dalam AL Team Penang yang beliau pimpin"
+        }
+      ]
+    },
+    "stance": {
+      "label": "Pendirian · Bajet 2027",
+      "quote": "“Melindungi pekerja tidak bermaksud mengabaikan perniagaan; menyokong perniagaan tidak patut mengorbankan pekerja.”",
+      "cite": "— Alwin Lim · Oriental Daily, 1 Okt 2026",
+      "planks": [
+        {
+          "title": "Tempoh peralihan 6–12 bulan",
+          "body": "Jika gaji minimum (kini RM1,700) dinaikkan, PMKS perlu sekurang-kurangnya 6–12 bulan untuk menyesuaikan diri."
+        },
+        {
+          "title": "Kaji impak dahulu",
+          "body": "Nilai kesan mengikut sektor, saiz syarikat dan wilayah, dan berunding dengan peniaga sebelum mengumumkan dasar."
+        },
+        {
+          "title": "Gaji naik bersama produktiviti",
+          "body": "Perluas bantuan untuk pendigitalan, AI, automasi, latihan semula dan TVET supaya syarikat mampu membayar lebih."
+        },
+        {
+          "title": "Semak KWSP 2% pekerja asing",
+          "body": "Kaji potongan, pengecualian atau sokongan peralihan bagi caruman majikan 2% untuk pekerja bukan warganegara."
+        }
+      ],
+      "note": "Lebih 1.2 juta PMKS di Malaysia. DAPSY tidak menentang kenaikan gaji minimum — soalnya bagaimana syarikat mampu membayarnya."
+    },
+    "views": {
+      "label": "Pandangan",
+      "title": "Apa yang saya fikir",
+      "cats": [
+        {
+          "key": "politics",
+          "label": "Politik"
+        },
+        {
+          "key": "economy",
+          "label": "Ekonomi"
+        },
+        {
+          "key": "penang",
+          "label": "Pulau Pinang"
+        },
+        {
+          "key": "property",
+          "label": "Hartanah"
+        },
+        {
+          "key": "youth",
+          "label": "Belia"
+        }
+      ],
+      "all": "Semua"
+    },
+    "journey": {
+      "label": "Perjalanan",
+      "title": "Alwin, Always Win",
+      "photo": {
+        "src": "/images/alwin-pose.jpg",
+        "alt": "Alwin Lim Zh Chen"
+      },
+      "items": [
+        {
+          "when": "Pendidikan",
+          "logo": {
+            "src": "/images/logos/rmit.svg",
+            "alt": "RMIT University"
+          },
+          "title": "RMIT University, Melbourne",
+          "body": "Ijazah Ekonomi dan Kewangan.",
+          "sub_title": "INTI International University",
+          "sub_body": "Sarjana Pentadbiran Perniagaan (MBA), 2026.",
+          "wins": [],
+          "links": []
+        },
+        {
+          "when": "Kerjaya",
+          "title": "Pembantu Khas Ketua Menteri → hartanah",
+          "body": "Pembantu Khas Ketua Menteri Pulau Pinang (2018), kemudian beralih ke industri hartanah. Kini beliau mengetuai AL Team Penang, pasukan lebih 20 perunding hartanah di bawah Zeon Properties.",
+          "wins": [
+            {
+              "text": "Anugerah Top Subsales Zeon 2022 (jualan & sewaan)"
+            },
+            {
+              "text": "Star of the Year 2024 (AL Team)"
+            },
+            {
+              "text": "Lebih RM24.9 juta nilai urus niaga peribadi dalam tiga bulan (Sep–Nov 2022)"
+            },
+            {
+              "text": "Projek eksklusif City of Dreams: lebih 10 unit dijual sendiri (2021); Maritime Signature: lebih 70% terjual (2023)"
+            }
+          ],
+          "links": [
+            {
+              "label": "Perunding Hartanah · Zeon Properties, Pulau Pinang (REN 38297)",
+              "url": "https://www.zeonproperties.com.my/find-agent/alwin-lim-38297"
+            },
+            {
+              "label": "Ketua pasukan · AL Team Penang",
+              "url": "https://www.facebook.com/alteampenang"
+            }
+          ]
+        },
+        {
+          "when": "2022",
+          "title": "Sidang Muda · N14 Machang Bubuk",
+          "body": "Juga Timbalan Pengerusi DAP Cawangan Air Putih dan Ahli MPKK Taman Lumba Kuda.",
+          "wins": [
+            {
+              "text": "Ucapan: atasi kesesakan trafik sekarang — lebih ramai pegawai trafik waktu puncak dan aplikasi aduan “People’s Police Everywhere”"
+            },
+            {
+              "text": "Percepatkan Pelan Induk Pengangkutan Pulau Pinang (PTMP) dan tebus guna tanah untuk pekerjaan bernilai tinggi"
+            },
+            {
+              "text": "Kawal selia homestay, bukan larang: hanya hartanah komersial, dengan kelulusan JMB / MC"
+            }
+          ],
+          "links": [
+            {
+              "label": "Profil Sidang Muda 2022",
+              "url": "https://sidangmuda.org.my/2022/06/04/alwin-lim-zh-chen/"
+            },
+            {
+              "label": "Teks ucapan (BM)",
+              "url": "https://sidangmuda.org.my/2022/06/04/teks-ucapan-persidangan-sidang-muda-2022-n14-manchang-bubuk/"
+            }
+          ]
+        },
+        {
+          "when": "2024",
+          "title": "Ketua DAPSY Bukit Bendera, 2024–2026",
+          "body": "Pasukannya menang 31–21. Ketua pasukan lawan dilantik sebagai naib ketua — atas semangat kepimpinan bersama.",
+          "wins": [
+            {
+              "text": "Larian Amal Bukit Bendera (Dis 2024): kerjasama pertama DAPSY Bukit Bendera dengan PEWA dan Air Putih, hampir 500 peserta"
+            }
+          ],
+          "links": [
+            {
+              "label": "Larian amal · Instagram",
+              "url": "https://www.instagram.com/dapsybb.pg/reel/DD9QEMLSeGL/"
+            }
+          ]
+        },
+        {
+          "when": "2025",
+          "title": "Sukan DAPSY Pulau Pinang 2025",
+          "body": "Di bawah kepimpinannya, pasukan DAPSY Bukit Bendera bertanding dalam siri sukan DAPSY Pulau Pinang.",
+          "wins": [
+            {
+              "text": "Panjat dinding: tiga teratas · Futsal: tempat ketiga"
+            },
+            {
+              "text": "Pickleball: beliau menjemput Hairstory International menaja gelanggang — Ketua DAPSY Pulau Pinang berterima kasih secara terbuka"
+            }
+          ],
+          "links": []
+        }
+      ]
+    },
+    "projects": {
+      "label": "Projek baharu",
+      "title": "Projek yang kami jual",
+      "count": "projek baharu di Pulau Pinang bersama Zeon Properties",
+      "all": "Semua projek di Zeon Properties"
+    },
+    "listings": {
+      "label": "Senarai hartanah",
+      "title": "Hartanah yang saya uruskan",
+      "count": "hartanah di Pulau Pinang, kini di pasaran",
+      "chips": {
+        "all": "Semua",
+        "sale": "Dijual",
+        "rent": "Disewa",
+        "commercial": "Komersial"
+      },
+      "more": "Lihat semua",
+      "all": "Senarai penuh di Zeon Properties"
+    },
+    "news": {
+      "label": "Dalam berita",
+      "title": "Berita terkini"
+    }
+  },
+  "en": {
+    "seo": {
+      "title": "Alwin Lim Zh Chen · DAPSY Bukit Bendera, Penang",
+      "description": "Alwin Lim Zh Chen, Ketua DAPSY Bukit Bendera 2024–2026, Pulau Pinang. Perunding hartanah, suara PMKS dan pekerja: pandangan, projek dan berita.",
+      "og_description": "Graduan Ekonomi & Kewangan RMIT, MBA INTI, perunding hartanah, suara untuk PMKS dan pekerja Pulau Pinang.",
+      "image": "/images/alwin.jpg",
+      "job_title": "Perunding Hartanah, Zeon Properties",
+      "person_description": "Ketua DAPSY Bukit Bendera, Pulau Pinang (2024–2026); graduan Ekonomi dan Kewangan RMIT University; Sarjana Pentadbiran Perniagaan (MBA) INTI International University (2026); perunding hartanah di Zeon Properties dan ketua AL Team Penang.",
+      "same_as": [
+        {
+          "url": "https://www.facebook.com/alwinlimzc"
+        },
+        {
+          "url": "https://www.instagram.com/alwinlimzc/"
+        },
+        {
+          "url": "https://www.zeonproperties.com.my/find-agent/alwin-lim-38297"
+        }
+      ]
+    },
+    "hero": {
+      "kicker": "DAPSY Bukit Bendera · Penang",
+      "team": {
+        "url": "https://www.facebook.com/alteampenang",
+        "logo": {
+          "src": "/images/logos/alteam.png",
+          "alt": "AL Team"
+        }
+      },
+      "role": "Chief of DAPSY Bukit Bendera, 2024–2026. Economics graduate and MBA, property professional, a voice for Penang's small businesses and workers.",
+      "buttons": [
+        {
+          "label": "Read my stance",
+          "href": "#stance",
+          "style": "solid"
+        },
+        {
+          "label": "Get in touch",
+          "href": "#contact",
+          "style": "line"
+        }
+      ],
+      "photo": {
+        "src": "/images/alwin-smile.jpg",
+        "alt": "Alwin Lim Zh Chen"
+      },
+      "stats": [
+        {
+          "logo": {
+            "src": "/images/logos/dapsybb.png",
+            "alt": "DAPSY Bukit Bendera"
+          },
+          "value": "2024–26",
+          "label": "Chief, DAPSY Bukit Bendera · won the election 31–21"
+        },
+        {
+          "logo": {
+            "src": "/images/logos/rmit.svg",
+            "alt": "RMIT University"
+          },
+          "value": "Melbourne",
+          "label": "Economics & Finance, RMIT University · MBA, INTI (2026)"
+        },
+        {
+          "logo": {
+            "src": "/images/logos/zeon.png",
+            "alt": "Zeon Properties"
+          },
+          "value": "RM24.9m+",
+          "label": "Personal deals in 3 months (2022), Zeon Properties"
+        },
+        {
+          "logo": {
+            "src": "/images/logos/alteam.png",
+            "alt": "AL Team Penang"
+          },
+          "value": "20+",
+          "label": "Negotiators in the AL Team Penang he leads"
+        }
+      ]
+    },
+    "stance": {
+      "label": "Stance · Budget 2027",
+      "quote": "“Protecting workers does not mean ignoring businesses; supporting businesses should not mean sacrificing workers.”",
+      "cite": "— Alwin Lim · Oriental Daily, 1 Oct 2026",
+      "planks": [
+        {
+          "title": "A 6–12 month transition",
+          "body": "If the minimum wage (now RM1,700) rises, micro, small and medium firms need at least 6–12 months to adjust."
+        },
+        {
+          "title": "Assess the impact first",
+          "body": "Assess the effect by sector, firm size and region, and consult businesses before announcing policy."
+        },
+        {
+          "title": "Wages rise with productivity",
+          "body": "Expand help for digitalisation, AI, automation, retraining and TVET so firms can afford to pay more."
+        },
+        {
+          "title": "Review the 2% foreign-worker EPF",
+          "body": "Study deductions, exemptions or transition support for the employer's 2% EPF share for non-citizen workers."
+        }
+      ],
+      "note": "Malaysia has over 1.2 million MSMEs. DAPSY does not oppose a higher minimum wage — the question is how firms can sustain it."
+    },
+    "views": {
+      "label": "Views",
+      "title": "What I think",
+      "cats": [
+        {
+          "key": "politics",
+          "label": "Politics"
+        },
+        {
+          "key": "economy",
+          "label": "Economy"
+        },
+        {
+          "key": "penang",
+          "label": "Penang"
+        },
+        {
+          "key": "property",
+          "label": "Property"
+        },
+        {
+          "key": "youth",
+          "label": "Youth"
+        }
+      ],
+      "all": "All"
+    },
+    "journey": {
+      "label": "Journey",
+      "title": "Alwin, Always Win",
+      "photo": {
+        "src": "/images/alwin-pose.jpg",
+        "alt": "Alwin Lim Zh Chen"
+      },
+      "items": [
+        {
+          "when": "Education",
+          "logo": {
+            "src": "/images/logos/rmit.svg",
+            "alt": "RMIT University"
+          },
+          "title": "RMIT University, Melbourne",
+          "body": "Degree in Economics and Finance.",
+          "sub_title": "INTI International University",
+          "sub_body": "Master of Business Administration (MBA), 2026.",
+          "wins": [],
+          "links": []
+        },
+        {
+          "when": "Career",
+          "title": "Special Assistant to the Chief Minister → property",
+          "body": "Special Assistant to the Chief Minister of Penang (2018), then moved into property. He now leads AL Team Penang, a team of 20+ real estate negotiators at Zeon Properties.",
+          "wins": [
+            {
+              "text": "Zeon Top Subsales award 2022 (sales & rental)"
+            },
+            {
+              "text": "Star of the Year 2024 (AL Team)"
+            },
+            {
+              "text": "RM24.9 million+ in personal deals in three months (Sep–Nov 2022)"
+            },
+            {
+              "text": "Exclusive project City of Dreams: 10+ units sold single-handedly (2021); Maritime Signature: 70%+ sold (2023)"
+            }
+          ],
+          "links": [
+            {
+              "label": "Real Estate Negotiator · Zeon Properties, Penang (REN 38297)",
+              "url": "https://www.zeonproperties.com.my/find-agent/alwin-lim-38297"
+            },
+            {
+              "label": "Team leader · AL Team Penang",
+              "url": "https://www.facebook.com/alteampenang"
+            }
+          ]
+        },
+        {
+          "when": "2022",
+          "title": "Sidang Muda · N14 Machang Bubuk",
+          "body": "Also Deputy Chairman of the DAP Air Putih branch and a member of MPKK Taman Lumba Kuda.",
+          "wins": [
+            {
+              "text": "Speech: tackle today’s traffic jams — more traffic officers at peak hours and a “People’s Police Everywhere” reporting app"
+            },
+            {
+              "text": "Speed up the Penang Transport Master Plan (PTMP) and land reclamation for high-value jobs"
+            },
+            {
+              "text": "Regulate short-term rentals rather than ban them: commercial property only, approved by the JMB / MC"
+            }
+          ],
+          "links": [
+            {
+              "label": "Sidang Muda 2022 profile",
+              "url": "https://sidangmuda.org.my/2022/06/04/alwin-lim-zh-chen/"
+            },
+            {
+              "label": "Speech text (in Malay)",
+              "url": "https://sidangmuda.org.my/2022/06/04/teks-ucapan-persidangan-sidang-muda-2022-n14-manchang-bubuk/"
+            }
+          ]
+        },
+        {
+          "when": "2024",
+          "title": "Chief, DAPSY Bukit Bendera, 2024–2026",
+          "body": "His team won 31–21, then appointed a member of the rival team as deputy chief in the spirit of shared leadership.",
+          "wins": [
+            {
+              "text": "Penang Hill Charity Fun Run (Dec 2024): DAPSY Bukit Bendera’s first event with PEWA and Air Putih, nearly 500 runners"
+            }
+          ],
+          "links": [
+            {
+              "label": "Charity run · Instagram",
+              "url": "https://www.instagram.com/dapsybb.pg/reel/DD9QEMLSeGL/"
+            }
+          ]
+        },
+        {
+          "when": "2025",
+          "title": "DAPSY Penang Olympic Games 2025",
+          "body": "Under his leadership, the DAPSY Bukit Bendera team competed in the DAPSY Penang games series.",
+          "wins": [
+            {
+              "text": "Rock climbing: top three · Futsal: second runner-up"
+            },
+            {
+              "text": "Pickleball: he brought in Hairstory International to sponsor the venue — publicly thanked by the DAPSY Penang chief"
+            }
+          ],
+          "links": []
+        }
+      ]
+    },
+    "projects": {
+      "label": "New projects",
+      "title": "Projects we sell",
+      "count": "new projects in Penang with Zeon Properties",
+      "all": "All projects on Zeon Properties"
+    },
+    "listings": {
+      "label": "Property listings",
+      "title": "Properties I handle",
+      "count": "Penang properties on the market now",
+      "chips": {
+        "all": "All",
+        "sale": "For sale",
+        "rent": "For rent",
+        "commercial": "Commercial"
+      },
+      "more": "Show all",
+      "all": "Full list on Zeon Properties"
+    },
+    "news": {
+      "label": "In the news",
+      "title": "Latest news"
+    }
+  },
+  "zh": {
+    "seo": {
+      "title": "林智成 Alwin Lim Zh Chen · 民主行动党升旗山社青团",
+      "description": "Alwin Lim Zh Chen, Ketua DAPSY Bukit Bendera 2024–2026, Pulau Pinang. Perunding hartanah, suara PMKS dan pekerja: pandangan, projek dan berita.",
+      "og_description": "Graduan Ekonomi & Kewangan RMIT, MBA INTI, perunding hartanah, suara untuk PMKS dan pekerja Pulau Pinang.",
+      "image": "/images/alwin.jpg",
+      "job_title": "Perunding Hartanah, Zeon Properties",
+      "person_description": "Ketua DAPSY Bukit Bendera, Pulau Pinang (2024–2026); graduan Ekonomi dan Kewangan RMIT University; Sarjana Pentadbiran Perniagaan (MBA) INTI International University (2026); perunding hartanah di Zeon Properties dan ketua AL Team Penang.",
+      "same_as": [
+        {
+          "url": "https://www.facebook.com/alwinlimzc"
+        },
+        {
+          "url": "https://www.instagram.com/alwinlimzc/"
+        },
+        {
+          "url": "https://www.zeonproperties.com.my/find-agent/alwin-lim-38297"
+        }
+      ]
+    },
+    "hero": {
+      "kicker": "行动党升旗山社青团 · 槟城",
+      "team": {
+        "url": "https://www.facebook.com/alteampenang",
+        "logo": {
+          "src": "/images/logos/alteam.png",
+          "alt": "AL Team"
+        }
+      },
+      "role": "民主行动党升旗山社青团团长（2024–2026）。经济系毕业、工商管理硕士、从事房地产，为槟城的中小企业与员工发声。",
+      "buttons": [
+        {
+          "label": "看我的立场",
+          "href": "#stance",
+          "style": "solid"
+        },
+        {
+          "label": "联系我",
+          "href": "#contact",
+          "style": "line"
+        }
+      ],
+      "photo": {
+        "src": "/images/alwin-smile.jpg",
+        "alt": "Alwin Lim Zh Chen"
+      },
+      "stats": [
+        {
+          "logo": {
+            "src": "/images/logos/dapsybb.png",
+            "alt": "DAPSY Bukit Bendera"
+          },
+          "value": "2024–26",
+          "label": "升旗山社青团团长 · 31 比 21 胜选"
+        },
+        {
+          "logo": {
+            "src": "/images/logos/rmit.svg",
+            "alt": "RMIT University"
+          },
+          "value": "Melbourne",
+          "label": "RMIT 大学 · 经济与金融 · INTI 工商管理硕士（2026）"
+        },
+        {
+          "logo": {
+            "src": "/images/logos/zeon.png",
+            "alt": "Zeon Properties"
+          },
+          "value": "RM2,490万+",
+          "label": "2022 年三个月个人成交额，Zeon Properties"
+        },
+        {
+          "logo": {
+            "src": "/images/logos/alteam.png",
+            "alt": "AL Team Penang"
+          },
+          "value": "20+",
+          "label": "他带领的 AL Team Penang 经纪人数"
+        }
+      ]
+    },
+    "stance": {
+      "label": "立场 · 2027 年财政预算",
+      "quote": "“保护员工，并不等于忽略企业；支持企业，也不应该牺牲员工。”",
+      "cite": "— 林智成 · 东方日报，2026年10月1日",
+      "planks": [
+        {
+          "title": "6 至 12 个月过渡期",
+          "body": "若再调高最低薪金（现为 RM1,700），微型及中小型企业至少需要 6 至 12 个月调整。"
+        },
+        {
+          "title": "先做影响评估",
+          "body": "按行业、企业规模与地区评估冲击，宣布前与受影响商家充分磋商。"
+        },
+        {
+          "title": "加薪与生产力同步",
+          "body": "加强数码化、AI、自动化、员工再培训与 TVET 援助，让企业付得起更高薪水。"
+        },
+        {
+          "title": "检讨外劳 2% 公积金",
+          "body": "研究为雇主承担的外劳 2% 公积金提供抵扣、豁免或过渡支援。"
+        }
+      ],
+      "note": "全马逾 120 万家微中小企。社青团不反对调高最低薪金 —— 关键是企业怎样长期付得起。"
+    },
+    "views": {
+      "label": "观点",
+      "title": "我怎么看",
+      "cats": [
+        {
+          "key": "politics",
+          "label": "政治"
+        },
+        {
+          "key": "economy",
+          "label": "经济"
+        },
+        {
+          "key": "penang",
+          "label": "槟城"
+        },
+        {
+          "key": "property",
+          "label": "房地产"
+        },
+        {
+          "key": "youth",
+          "label": "青年"
+        }
+      ],
+      "all": "全部"
+    },
+    "journey": {
+      "label": "历程",
+      "title": "Alwin, Always Win",
+      "photo": {
+        "src": "/images/alwin-pose.jpg",
+        "alt": "Alwin Lim Zh Chen"
+      },
+      "items": [
+        {
+          "when": "学历",
+          "logo": {
+            "src": "/images/logos/rmit.svg",
+            "alt": "RMIT University"
+          },
+          "title": "RMIT University, Melbourne",
+          "body": "经济与金融系毕业。",
+          "sub_title": "INTI International University",
+          "sub_body": "工商管理硕士（MBA），2026 年。",
+          "wins": [],
+          "links": []
+        },
+        {
+          "when": "职业",
+          "title": "首席部长特别助理 → 房地产",
+          "body": "2018 年任槟城首席部长特别助理，其后转入房地产业。现在带领 AL Team Penang，旗下有 20 多名房地产经纪，隶属 Zeon Properties。",
+          "wins": [
+            {
+              "text": "2022 年 Zeon 年度二手买卖与租赁业绩冠军（Top Subsales）"
+            },
+            {
+              "text": "2024 年度之星（Star of the Year，AL Team）"
+            },
+            {
+              "text": "2022 年 9 至 11 月，个人成交总值逾 2,490 万令吉"
+            },
+            {
+              "text": "独家项目 City of Dreams 独自卖出 10 个单位以上（2021）；Maritime Signature 卖出逾 70%（2023）"
+            }
+          ],
+          "links": [
+            {
+              "label": "房地产经纪 · Zeon Properties 槟城（REN 38297）",
+              "url": "https://www.zeonproperties.com.my/find-agent/alwin-lim-38297"
+            },
+            {
+              "label": "团队领队 · AL Team Penang",
+              "url": "https://www.facebook.com/alteampenang"
+            }
+          ]
+        },
+        {
+          "when": "2022",
+          "title": "Sidang Muda 青年议会 · N14 Machang Bubuk",
+          "body": "同时任行动党 Air Putih 支部副主席、Taman Lumba Kuda 社区管委会（MPKK）成员。",
+          "wins": [
+            {
+              "text": "演讲：先解决眼前的塞车 —— 尖峰时段增派交警，推出“People’s Police Everywhere”举报 App"
+            },
+            {
+              "text": "加快槟城交通大蓝图（PTMP）与填海，创造高价值工作"
+            },
+            {
+              "text": "短租应规管而非禁止：只限商业产业，并须管理机构（JMB / MC）批准"
+            }
+          ],
+          "links": [
+            {
+              "label": "Sidang Muda 2022 个人简介",
+              "url": "https://sidangmuda.org.my/2022/06/04/alwin-lim-zh-chen/"
+            },
+            {
+              "label": "演讲全文（马来文）",
+              "url": "https://sidangmuda.org.my/2022/06/04/teks-ucapan-persidangan-sidang-muda-2022-n14-manchang-bubuk/"
+            }
+          ]
+        },
+        {
+          "when": "2024",
+          "title": "当选升旗山社青团团长（2024–2026）",
+          "body": "林队以 31 比 21 胜出，并委任对手阵营的法兹拉为副团长，体现“共同领导”。",
+          "wins": [
+            {
+              "text": "升旗山慈善欢乐跑（2024 年 12 月）：升旗山社青团首次与 PEWA 及阿逸布爹携手举办，近 500 人参加"
+            }
+          ],
+          "links": [
+            {
+              "label": "慈善欢乐跑 · Instagram",
+              "url": "https://www.instagram.com/dapsybb.pg/reel/DD9QEMLSeGL/"
+            }
+          ]
+        },
+        {
+          "when": "2025",
+          "title": "2025 槟州社青团奥运会",
+          "body": "在他带领下，升旗山社青团参加槟州社青团奥运会系列赛。",
+          "wins": [
+            {
+              "text": "攀岩：前三名 · 五人足球：季军"
+            },
+            {
+              "text": "Pickleball 赛：他邀请 Hairstory International 赞助场地，获槟州社青团团长公开致谢"
+            }
+          ],
+          "links": []
+        }
+      ]
+    },
+    "projects": {
+      "label": "新盘项目",
+      "title": "我们在卖的项目",
+      "count": "个槟城新盘，经 Zeon Properties 代理",
+      "all": "在 Zeon Properties 看全部项目"
+    },
+    "listings": {
+      "label": "房源",
+      "title": "我经手的房产",
+      "count": "个槟城房产，目前在售 / 在租",
+      "chips": {
+        "all": "全部",
+        "sale": "出售",
+        "rent": "出租",
+        "commercial": "商业"
+      },
+      "more": "显示全部",
+      "all": "在 Zeon Properties 看完整列表"
+    },
+    "news": {
+      "label": "新闻报道",
+      "title": "最新新闻"
+    }
+  }
+}

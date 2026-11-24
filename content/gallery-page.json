@@ -1,0 +1,89 @@
+{
+  "ms": {
+    "seo": {
+      "title": "Galeri · Alwin Lim Zh Chen",
+      "description": "Galeri Alwin Lim Zh Chen: aktiviti DAPSY Bukit Bendera, komuniti, perayaan dan AL Team Penang."
+    },
+    "label": "Galeri",
+    "title": "Detik bersama komuniti",
+    "lead": "Aktiviti DAPSY Bukit Bendera, program komuniti, ucapan perayaan dan kerja bersama AL Team Penang — disusun mengikut acara.",
+    "all": "Semua",
+    "cats": [
+      {
+        "key": "politik",
+        "label": "Politik"
+      },
+      {
+        "key": "komuniti",
+        "label": "Komuniti"
+      },
+      {
+        "key": "perayaan",
+        "label": "Perayaan"
+      },
+      {
+        "key": "hartanah",
+        "label": "Hartanah"
+      }
+    ],
+    "note": "Foto daripada Facebook Alwin Lim, DAPSY Bukit Bendera dan ALTeam Penang."
+  },
+  "en": {
+    "seo": {
+      "title": "Galeri · Alwin Lim Zh Chen",
+      "description": "Galeri Alwin Lim Zh Chen: aktiviti DAPSY Bukit Bendera, komuniti, perayaan dan AL Team Penang."
+    },
+    "label": "Gallery",
+    "title": "Moments with the community",
+    "lead": "DAPSY Bukit Bendera activities, community programmes, festive greetings and work with AL Team Penang — grouped by event.",
+    "all": "All",
+    "cats": [
+      {
+        "key": "politik",
+        "label": "Politics"
+      },
+      {
+        "key": "komuniti",
+        "label": "Community"
+      },
+      {
+        "key": "perayaan",
+        "label": "Festive"
+      },
+      {
+        "key": "hartanah",
+        "label": "Property"
+      }
+    ],
+    "note": "Photos from the Facebook pages of Alwin Lim, DAPSY Bukit Bendera and ALTeam Penang."
+  },
+  "zh": {
+    "seo": {
+      "title": "Galeri · Alwin Lim Zh Chen",
+      "description": "Galeri Alwin Lim Zh Chen: aktiviti DAPSY Bukit Bendera, komuniti, perayaan dan AL Team Penang."
+    },
+    "label": "相册",
+    "title": "与社区同在的时刻",
+    "lead": "升旗山社青团活动、社区活动、节日祝福，以及与 AL Team Penang 的工作，按活动分类。",
+    "all": "全部",
+    "cats": [
+      {
+        "key": "politik",
+        "label": "政治"
+      },
+      {
+        "key": "komuniti",
+        "label": "社区"
+      },
+      {
+        "key": "perayaan",
+        "label": "节庆"
+      },
+      {
+        "key": "hartanah",
+        "label": "房地产"
+      }
+    ],
+    "note": "照片来自 Alwin Lim、升旗山社青团和 ALTeam Penang 的 Facebook。"
+  }
+}

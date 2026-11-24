@@ -1,0 +1,76 @@
+# 后台(/admin)
+
+alwinlim.com/admin 是给 Alwin 自己改网站内容的后台,用的是 [Sveltia CMS](https://sveltiacms.app/)(开源、免费)。
+内容存在仓库的 `content/*.json`,后台一保存就是一次提交;`.github/workflows/deploy.yml` 构建、检查通过后 1–2 分钟上线。
+
+```
+Alwin 在 /admin 改 → 保存 = 提交到 main → deploy.yml:npm run build(内容检查)→ 发布 _site/ 到 Pages
+                                                    └─ 检查没过:不上线,线上停在上一版,自动开 issue 通知
+```
+
+## 能改什么
+
+| 后台里 | 网站上 | 文件 |
+|---|---|---|
+| 新闻报道 | 首页「Berita」卡片 | `content/news/*.json`(一篇一个) |
+| 观点 | 首页「Pandangan」卡片 | `content/views/*.json` |
+| 相册 | 相册页的每个活动、照片 | `content/gallery/*.json` |
+| 页面文字 → 首页 | 首屏介绍、数字卡、立场、历程、各栏标题、搜索引擎描述 | `content/home.json` |
+| 页面文字 → 关于页 | 简介、基本资料、五个章节 | `content/about.json` |
+| 页面文字 → 相册页 | 相册页标题、分类按钮 | `content/gallery-page.json` |
+| 页面文字 → 全站 | 名字、导航、页脚联系方式 | `content/site.json` |
+
+不在后台:新盘 / 房源(`projects.js`、`listings.js`,由 `scripts/zeon-projects.py` 从 Zeon 抓)、版式和颜色(`styles.css`)、观点卡的插画(`src/art/*.svg`,后台里只能从现有七张里选)。
+
+## 第一次设置(Eden 做一次)
+
+1. **登录服务(Sveltia CMS Additions)**:Alwin 用账号密码登录,不用 GitHub 帐号。免费,跑在 Cloudflare Workers 免费档。
+   1. 打开 <https://sveltiacms.app/en/docs/additions/setup>,点 **Deploy to Cloudflare**(要 Cloudflare 帐号)。
+      `ADMIN_SECRET` 用 `openssl rand -base64 32` 生成,存进密码管理器。
+   2. Cloudflare 后台 → Workers & Pages → 这个 Worker → Domains,打开 **Production** 网址。
+   3. 把 Worker 网址填进 `admin/config.yml` 的 `backend.base_url`(开 PR 改)。
+   4. 打开 alwinlim.com/admin → **使用管理员密钥** → 建第一个管理员(自己)→ 让它建 GitHub App,只装在 `edent95/Alwin`。
+   5. 后台工具栏 **Administration** → 加 Alwin 的帐号(角色 editor);要在本机试就把 `localhost`、`127.0.0.1` 加进 allowed domains。
+2. **让后台的保存能直接进 main**:main 有分支保护(必须过 `ci` 检查才能合并),后台的 GitHub App 直接提交会被拒。
+   在仓库 Settings → Rules 加一个 ruleset(要求 `ci` 检查、禁止强推 / 删除),把 Additions 的 GitHub App 放进 **bypass list**,再关掉旧的分支保护。
+   内容检查不会因此跳过:deploy.yml 构建时照样检查,没过就不上线。
+3. **一键翻译**:Alwin 写中文或英文,另外两种语言按翻译按钮生成。推荐 Google Gemini(AI Studio 免费 API key,不用绑卡;免费档的输入可能被 Google 用来改进产品,网站内容本来就公开,问题不大)。
+   在后台 Administration → Credentials 填一次,所有人共用。
+4. **Pages 来源改成 GitHub Actions**:Settings → Pages → Build and deployment → Source 选 **GitHub Actions**(这一步在合并引入构建的那个 PR 时做,见下面)。
+
+## 本机预览后台
+
+```bash
+node /Users/MacBookPro/Developer/Project/personal-dashboard/scripts/wt.mjs preview <worktree 目录>
+```
+
+打开 `<预览链接>/admin/` → **使用本地仓库** → 选 worktree 的根目录(Chrome / Edge)。
+改了保存会直接写进本机的 `content/`,`npm run dev` 自动重建,刷新预览页就看到。本地模式不会提交,也不会上线。
+
+## 给 Alwin 的使用说明
+
+**登录**:alwinlim.com/admin,用 Eden 给的账号密码。手机也能用(右上角菜单 → 用手机登录,扫二维码)。
+
+**改字**:左边选栏目 → 点一条 → 左栏英文、右栏中文(右栏上方可以切到马来文)。
+用中文或英文写好一栏后,点另一栏右上角的 **文A** 翻译按钮,另外两种语言就填好了。**翻译出来的请过目再保存**,网站是以你的名义说话。
+
+**保存 = 上线**:按右上角 **保存**,1–2 分钟后网站更新。刷新 alwinlim.com 看效果。
+如果保存后网站一直没变,多半是内容检查没过(例如马来文 / 英文栏里留了中文),Eden 会收到通知。
+
+**加新闻 / 观点**:进「新闻报道」或「观点」→ 右上角 **新建**。必填的有星号。
+- 「报道原文语言」照实选:读者切到那种语言时,那篇会排在前面。
+- 新闻有照片最好;照片里有中文字的话,请先裁掉(马来文 / 英文版的读者也会看到)。
+
+**加相册**:进「相册」→ **新建** → 填活动名称、地点、分类、日期 → 照片栏 **添加 照片** 上传。
+照片会自动压缩;「排序」数字小的排在前面(同一分类里)。
+
+**暂时下架**:每篇新闻 / 观点 / 相册最下面都有「暂时不在网站上显示」,打开再保存就下架,内容还留着。
+
+**改错了**:每次保存都有记录,Eden 可以退回任何一个版本。
+
+## 给开发者
+
+- 内容格式、字段说明:`admin/config.yml`(字段名改了,`src/pages/*.mjs` 要跟着改)。
+- 模板:`src/layout.mjs`(三页共用的 head / 导航 / 页脚)+ `src/pages/{index,about,gallery}.mjs`。
+- 构建 + 内容检查:`scripts/build.mjs`(零依赖)。检查项:缺翻译、马来文 / 英文里有中文、中文里有半角 `,;:!?`、各语言条数不一样、图片找不到、观点分类不对。
+- `npm run check` = 构建 + 三语结构检查(`_site/*.html`)+ 日志体检,和 PR 上的 `ci` 同一套。

@@ -1,12 +1,14 @@
 {
   "name": "alwin-site",
   "private": true,
-  "description": "Static personal site for Alwin Lim 林智成. No build step, no dependencies; scripts are only for the change log.",
+  "description": "Static personal site for Alwin Lim 林智成. Content lives in content/*.json (edited in the /admin CMS); scripts/build.mjs renders src/ templates into _site/. No dependencies.",
   "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/build.mjs --watch",
     "log:append": "node scripts/append-log.mjs",
     "log:check": "node scripts/append-log.mjs --check",
     "log:home": "node scripts/build-home.mjs",
     "check:i18n": "node scripts/check-i18n.mjs",
-    "check": "npm run -s check:i18n && npm run -s log:check"
+    "check": "npm run -s build && npm run -s check:i18n && npm run -s log:check"
   }
 }

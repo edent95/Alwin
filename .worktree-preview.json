@@ -1,7 +1,8 @@
 {
-  "_comment": "wt.mjs preview 读这份:纯静态站,用 python 内置 http.server 起预览。",
+  "_comment": "wt.mjs preview 读这份:先构建一次,再一边监视 content/ src/ 自动重建、一边用 python http.server 伺服 _site/。端口现取空闲的。",
   "url": "http://127.0.0.1:{port}/",
   "procs": [
-    { "cwd": ".", "argv": ["python3", "-m", "http.server", "{port}", "--bind", "127.0.0.1"] }
+    { "cwd": ".", "argv": ["node", "scripts/build.mjs", "--watch"] },
+    { "cwd": ".", "argv": ["sh", "-c", "mkdir -p _site && exec python3 -m http.server {port} --bind 127.0.0.1 --directory _site"] }
   ]
 }
