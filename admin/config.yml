@@ -13,9 +13,9 @@ backend:
   repo: edent95/Alwin
   branch: main
   # Alwin 用账号密码登录(不用 GitHub 帐号):Sveltia CMS Additions,部署在 Cloudflare Workers 免费档。
-  # 部署后把 Worker 网址填进 base_url。见 docs/admin.md「第一次设置」。
+  # Worker 名 alwin-cms(Eden 的 Cloudflare 帐号);ADMIN_SECRET 在 Eden 的 macOS 钥匙串「alwin-cms ADMIN_SECRET」。见 docs/admin.md。
   auth_type: additions
-  base_url: https://alwin-cms.REPLACE-ME.workers.dev
+  base_url: https://alwin-cms.d-tytern.workers.dev
   commit_messages:
     create: "content: 新增 {{collection}}「{{slug}}」(后台)"
     update: "content: 修改 {{collection}}「{{slug}}」(后台)"

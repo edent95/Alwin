@@ -25,12 +25,11 @@ Alwin 在 /admin 改 → 保存 = 提交到 main → deploy.yml:npm run build(�
 ## 第一次设置(Eden 做一次)
 
 1. **登录服务(Sveltia CMS Additions)**:Alwin 用账号密码登录,不用 GitHub 帐号。免费,跑在 Cloudflare Workers 免费档。
-   1. 打开 <https://sveltiacms.app/en/docs/additions/setup>,点 **Deploy to Cloudflare**(要 Cloudflare 帐号)。
-      `ADMIN_SECRET` 用 `openssl rand -base64 32` 生成,存进密码管理器。
-   2. Cloudflare 后台 → Workers & Pages → 这个 Worker → Domains,打开 **Production** 网址。
-   3. 把 Worker 网址填进 `admin/config.yml` 的 `backend.base_url`(开 PR 改)。
-   4. 打开 alwinlim.com/admin → **使用管理员密钥** → 建第一个管理员(自己)→ 让它建 GitHub App,只装在 `edent95/Alwin`。
-   5. 后台工具栏 **Administration** → 加 Alwin 的帐号(角色 editor);要在本机试就把 `localhost`、`127.0.0.1` 加进 allowed domains。
+   - 已部署(2026-11-24):Worker `alwin-cms`,网址 <https://alwin-cms.d-tytern.workers.dev>(Eden 的 Cloudflare 帐号),已填进 `admin/config.yml` 的 `backend.base_url`。
+   - `ADMIN_SECRET` 存在 Eden 的 macOS 钥匙串,名字「alwin-cms ADMIN_SECRET」:`security find-generic-password -s "alwin-cms ADMIN_SECRET" -w`。
+   - 升级:用 <https://github.com/sveltia/sveltia-cms-additions> 的 `templates/cloudflare`,`wrangler.jsonc` 的 `name` 改成 `alwin-cms`,在**仓库外**的目录 `pnpm install --ignore-workspace && pnpm exec wrangler deploy`(在 monorepo 里装会解析不到 `@sveltia/cms-additions/cloudflare`)。
+   - 第一次打开 alwinlim.com/admin → **使用管理员密钥** → 建第一个管理员(Eden)→ 建 GitHub App,只装在 `edent95/Alwin`。
+   - 后台工具栏 **Administration** → 加 Alwin 的帐号(角色 editor);要在本机试就把 `localhost`、`127.0.0.1` 加进 allowed domains。
 2. **让后台的保存能直接进 main**:main 有分支保护(必须过 `ci` 检查才能合并),后台的 GitHub App 直接提交会被拒。
    在仓库 Settings → Rules 加一个 ruleset(要求 `ci` 检查、禁止强推 / 删除),把 Additions 的 GitHub App 放进 **bypass list**,再关掉旧的分支保护。
    内容检查不会因此跳过:deploy.yml 构建时照样检查,没过就不上线。
