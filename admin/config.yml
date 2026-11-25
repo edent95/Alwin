@@ -122,7 +122,7 @@ collections:
       default: { field: date, direction: descending }
     fields:
       - { name: title, label: 标题 Title, widget: string, i18n: true }
-      - { name: excerpt, label: 内容摘要 Summary, hint: 两三句话, widget: text, i18n: true }
+      - { name: excerpt, label: 内容摘要 Summary, hint: 两三句话;用 *星号* 包住的字会变粗体(和 WhatsApp 一样), widget: text, i18n: true }
       - { name: date, label: 日期 Date, widget: datetime, type: date, format: YYYY-MM-DD, i18n: duplicate }
       - name: cat
         label: 分类 Category
@@ -379,7 +379,8 @@ collections:
               - { name: label, label: 小标题, widget: string, i18n: true }
               - { name: title, label: 大标题, widget: string, i18n: true }
               - { name: count, label: 数字后面的说明, widget: string, i18n: true }
-              - { name: all, label: 底部链接文字, widget: string, i18n: true }
+              - { name: all, label: 底部链接文字(连到 WhatsApp), widget: string, i18n: true }
+              - { name: whatsapp, label: WhatsApp 号码(卡片点开就是这个,写 60 开头、不加 + 和空格), widget: string, i18n: duplicate }
           - name: listings
             label: 「房源」栏的文字(房源本身从 Zeon 自动更新)
             widget: object

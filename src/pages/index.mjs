@@ -1,5 +1,5 @@
 // 首页。内容:content/site.json、content/home.json、content/views/*.json、content/news/*.json
-import { T, v, esc, link, join, dmy, ARROW } from '../h.mjs';
+import { T, v, esc, link, join, dmy, rich, ARROW } from '../h.mjs';
 import { head, masthead, footer } from '../layout.mjs';
 
 const HIBISCUS = '<svg class="hibiscus" viewBox="-12 -12 24 24" aria-hidden="true" focusable="false"><g fill="currentColor"><ellipse cx="0" cy="-6" rx="4.8" ry="6.4" transform="rotate(0)"/><ellipse cx="0" cy="-6" rx="4.8" ry="6.4" transform="rotate(72)"/><ellipse cx="0" cy="-6" rx="4.8" ry="6.4" transform="rotate(144)"/><ellipse cx="0" cy="-6" rx="4.8" ry="6.4" transform="rotate(216)"/><ellipse cx="0" cy="-6" rx="4.8" ry="6.4" transform="rotate(288)"/></g><circle r="2.2" class="hib-eye"/><path d="M0 0 L3.5 -8.5" class="hib-st"/><circle cx="3.5" cy="-8.5" r="1.3" class="hib-tip"/></svg>';
@@ -112,8 +112,8 @@ ${join(items, (it) => {
           <a ${link(it.url)}>
             ${cover}
             <p class="view-meta"><span class="view-cat"${T(catLabel[v(it.cat)] ?? v(it.cat))}</span>${when(it)}</p>
-            <h3${T(it.title)}</h3>
-            <p${T(it.excerpt)}</p>
+            <h3${T(rich(it.title))}</h3>
+            <p${T(rich(it.excerpt))}</p>
             <span class="story-cta"><span${T(site.cta[v(it.cta)] ?? site.cta.read)}</span> ${ARROW}</span>
           </a>
         </article>`;
@@ -147,7 +147,7 @@ ${join(j.items, (it) => {
     </div>
   </section>`;
 
-const projects = (p) => `  <!-- PROJECTS(新盘):卡片由 projects.js(scripts/zeon-projects.py 从 Zeon 项目页生成，只留槟城)渲染进 #project-grid -->
+const projects = (p) => `  <!-- PROJECTS(新盘):卡片由 projects.js(scripts/zeon-projects.py 从 Zeon 项目页生成，只留槟城)渲染进 #project-grid;卡片点开是 Alwin 的 WhatsApp(Alwin 2026-11-25 要的),不是 Zeon 网站 -->
   <section class="projects" id="projects">
     <div class="wrap">
       <div class="section-head projects-head">
@@ -157,9 +157,9 @@ const projects = (p) => `  <!-- PROJECTS(新盘):卡片由 projects.js(scripts/z
         </div>
         <p class="projects-count"><strong id="project-total"></strong> <span${T(p.count)}</span></p>
       </div>
-      <div class="project-grid" id="project-grid"></div>
+      <div class="project-grid" id="project-grid" data-wa="${esc(v(p.whatsapp))}"></div>
       <div class="projects-foot">
-        <a class="job-link-inline" href="https://www.zeonproperties.com.my/project" target="_blank" rel="noopener"><span${T(p.all)}</span> ${ARROW}</a>
+        <a class="job-link-inline" href="https://wa.me/${esc(v(p.whatsapp))}" target="_blank" rel="noopener"><span${T(p.all)}</span> ${ARROW}</a>
       </div>
     </div>
   </section>`;

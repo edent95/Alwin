@@ -104,6 +104,8 @@
 
   // ------------------------------------------------------------------ 三语预览卡
   const art = (name) => S.c.art?.[name] || '';
+  // 和网站 src/h.mjs 的 rich 一样:*粗体* → <strong>,换行 → <br>(先转义)
+  const rich = (s) => esc(s).replace(/\*([^*\n]+?)\*/g, '<strong>$1</strong>').replace(/\r?\n/g, '<br>');
   const dmy = (iso, monthOnly) => { const [y, m, d] = iso.split('-'); return monthOnly || !d ? `${m}.${y}` : `${d}.${m}.${y}`; };
   const PREVIEW = {
     news: (o, l) => `<div class="pv-label">${l === 'zh' ? '新闻' : 'Berita / News'}</div><article class="pv-card" lang="${l}">
@@ -111,7 +113,7 @@
       <div class="meta">${esc(o.source)} · ${dmy(o.date, o.month_only)}</div><h3>${esc(o.title)}</h3>${o.excerpt ? `<p>${esc(o.excerpt)}</p>` : ''}</article>`,
     view: (o, l) => `<div class="pv-label">${l === 'zh' ? '观点' : 'Pandangan / Views'}</div><article class="pv-card" lang="${l}">
       ${o.image ? `<img src="${esc(o.image.src || o.image)}" alt="">` : `<div class="art">${art(o.art)}</div>`}
-      <div class="meta">${esc(catLabel('view', o.cat, l))} · ${dmy(o.date)}</div><h3>${esc(o.title)}</h3><p>${esc(o.excerpt)}</p></article>`,
+      <div class="meta">${esc(catLabel('view', o.cat, l))} · ${dmy(o.date)}</div><h3>${rich(o.title)}</h3><p>${rich(o.excerpt)}</p></article>`,
     album: (o, l) => `<div class="pv-label">${l === 'zh' ? '相册' : 'Galeri / Gallery'}</div><article class="pv-card" lang="${l}">
       ${o.photos?.[0] ? `<img src="${esc(o.photos[0]._url || o.photos[0].image)}" alt="">` : ''}
       <div class="meta">${esc(catLabel('album', o.cat, l))} · ${esc(o.date)} · ${o.photos.length} ${l === 'zh' ? '张照片' : l === 'ms' ? 'foto' : 'photos'}</div><h3>${esc(o.title)}</h3><p>${esc(o.place)}</p></article>`,
@@ -354,7 +356,7 @@
         <h2 class="h">${F.entry ? '改一改' : '你想说什么？'}</h2><p class="lead">一个题目，加两三句话就够了。</p>
         ${wlSwitch()}
         ${field({ k: 'title', label: '题目', type: 'textarea', rows: 2, max: 80, ph: S.wl === 'zh' ? '例：短租要规管，不是禁止' : 'e.g. Regulate short-term rentals, don’t ban them' }, D.title)}
-        ${field({ k: 'excerpt', label: '你的看法', type: 'textarea', rows: 4, max: 220, hint: '两三句话，讲清楚你的立场。' }, D.excerpt)}
+        ${field({ k: 'excerpt', label: '你的看法', type: 'textarea', rows: 6, max: 1000, hint: '讲清楚你的立场。要粗体就和 WhatsApp 一样，用星号包住：*这样*。' }, D.excerpt)}
         ${field({ k: 'cat', label: '属于哪一类', type: 'chips', options: catOptions('view') }, D.cat)}
         ${field({ k: 'url', label: '原文链接', type: 'url', optional: true, hint: '如果是 Facebook / Instagram 帖子或文章，贴上链接，读者可以点进去看全文。' }, D.url)}
         ${field({ k: 'date', label: '日期', type: 'date' }, D.date)}
