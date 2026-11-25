@@ -8,7 +8,7 @@ const SKYLINE = fs.readFileSync(new URL('./partials/skyline.html', import.meta.u
  * @param {object} o
  * @param {string} o.title   <title> 文字(马来文;三语时传 { ms, en, zh })
  * @param {string} o.description
- * @param {string} o.path    '' | 'about.html' | 'gallery.html'(canonical 用)
+ * @param {string} o.path    '' | 'about.html' | 'gallery.html' | 'views/<名>.html'(canonical 用)
  * @param {string} [o.extra] 额外放进 <head> 的(og、JSON-LD)
  */
 export const head = ({ title, description, path, extra = '' }) => `<!doctype html>
@@ -27,20 +27,20 @@ export const head = ({ title, description, path, extra = '' }) => `<!doctype htm
   <title${T(title)}</title>
   <meta name="description" content="${esc(v(description))}">
 ${extra}  <meta name="theme-color" content="#f4efe6">
-  <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="/styles.css">
   <link rel="canonical" href="https://alwinlim.com/${path}">
 </head>`;
 
-/** 页首:page = 'index' | 'about' | 'gallery'。首页里的锚点不带 index.html */
+/** 页首:page = 'index' | 'about' | 'gallery' | 'views'(观点文章页)。路径一律从根 / 开始:文章页在 /views/ 子目录里 */
 export const masthead = (site, page) => {
   const n = site.nav;
-  const home = page === 'index' ? '' : 'index.html';
+  const home = page === 'index' ? '' : '/';
   const item = (href, label, key, extra = '') => {
     const active = page === key ? ' class="is-active" aria-current="page"' : '';
     return `      <a href="${href}"${active}${extra}${T(label)}</a>`;
@@ -49,19 +49,19 @@ export const masthead = (site, page) => {
 
 <header class="masthead">
   <div class="wrap masthead-inner">
-    <a href="${page === 'index' ? '#top' : 'index.html'}" class="brand" aria-label="${esc(v(site.name))}">
+    <a href="${page === 'index' ? '#top' : '/'}" class="brand" aria-label="${esc(v(site.name))}">
       <span class="brand-en">${v(site.name)}</span>
       <span class="brand-zh">${v(site.name_zh)}</span>
     </a>
     <nav class="nav" id="nav" aria-label="Utama">
 ${[
-    item('about.html', n.about, 'about'),
-    item(`${home}#views`, n.views),
+    item('/about.html', n.about, 'about'),
+    item(`${home}#views`, n.views, 'views'),
     item(`${home}#journey`, n.journey),
     item(`${home}#projects`, n.projects),
     item(`${home}#listings`, n.listings),
     item(`${home}#news`, n.news),
-    item('gallery.html', n.gallery, 'gallery'),
+    item('/gallery.html', n.gallery, 'gallery'),
     item('#contact', n.contact, null, ' class="nav-cta"'),
   ].join('\n')}
     </nav>
@@ -97,7 +97,7 @@ ${join(site.contact.channels, (c) => `        <a class="ch" href="${esc(v(c.url)
   </div>
 </footer>
 
-${scripts.map((s) => `<script src="${s}"></script>`).join('\n')}
+${scripts.map((s) => `<script src="/${s.replace(/^\//, '')}"></script>`).join('\n')}
 </body>
 </html>
 `;

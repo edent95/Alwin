@@ -66,7 +66,10 @@
         for (const [k, text] of Object.entries(fields)) {
           if (!text) { out[l][k] = ''; continue; }
           const hit = known.get(text);
-          out[l][k] = hit ? hit[l] : (l === 'en' ? `(Sample English translation of “${k}”)` : `(Contoh terjemahan Bahasa Melayu untuk “${k}”)`);
+          // 示意:长文保留格式(粗体、标题、列表、链接、图片),只把中文换成示意字
+          const fake = l === 'en' ? 'sample text' : 'teks contoh';
+          out[l][k] = hit ? hit[l] : text.length > 80 ? text.replace(/[\u3400-\u9fff\uf900-\ufaff\u3000-\u303f\uff00-\uffef]+/g, ` ${fake} `).replace(/ {2,}/g, ' ')
+            : (l === 'en' ? `(Sample English translation of “${k}”)` : `(Contoh terjemahan Bahasa Melayu untuk “${k}”)`);
         }
       }
       return out;

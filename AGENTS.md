@@ -55,7 +55,8 @@ npm run build        # 只构建一次
 - 中文全文用全角标点(,。:;)。
 - 照片用 `mix-blend-mode: multiply` 融进纸色背景，放照片的容器必须有纸色底，不然会透出下层。
 - 新闻卡片带 `data-src-lang`(报道的原文语言，可多个、空格分隔);新加卡片不写它，就永远排在后面(PR #4 起)。
-- 三页的 `<head>`(含 GA)、页首导航、天际线、页脚都在 `src/layout.mjs`,只有一份。
+- 各页(含观点文章页)的 `<head>`(含 GA)、页首导航、天际线、页脚都在 `src/layout.mjs`,只有一份。
+- **观点 = 文章页**:每篇 `content/views/<名>.json` 构建成 `_site/views/<名>.html`(`src/pages/view.mjs`),首页卡片点进去就是它;正文 `body` 是 Markdown 子集(`src/md.mjs`:粗体、`##` 标题、列表、链接、图片、`<span class="tc-…">` 颜色),网站构建和简易后台共用这一份(构建时生成 `_site/edit/md.js`)。改格式要两边一起验。文章页在子目录里,`src/layout.mjs` 的路径一律从 `/` 开始,新加的链接 / 资源也要写 `/` 开头。
 - 相册数据在 `content/gallery/*.json`,构建时写成 `_site/gallery-data.js`(`window.GALLERY`),`gallery.js` 读它;载入顺序 gallery-data.js → gallery.js → script.js。缩略图:有 `<名>-t.jpg` 就用，没有就构建时生成(本机 sips、CI 上 ImageMagick)。
 - 后台上传的图片在 `images/uploads/`(自动转 webp、长边 ≤1600)。内容里的本地图片路径以 `/images/` 开头。
 

@@ -571,3 +571,43 @@ html[lang="zh"] .about-quote p { font-family: var(--serif-zh); }
 @media (max-width: 560px) {
   .project-addr, .project-dev { display: none; }
 }
+
+/* ---------- 观点文章页 /views/<名>.html(src/pages/view.mjs)---------- */
+.post { padding: 120px 0 90px; }
+.post-wrap { max-width: 760px; }
+.post-back { display: inline-flex; gap: 6px; align-items: center; font-size: 14px; font-weight: 600; color: var(--wine); }
+.post-back:hover { text-decoration: underline; }
+.post .view-meta { margin-top: 28px; justify-content: flex-start; gap: 16px; }
+.post-title { margin-top: 12px; font-size: clamp(30px, 4.6vw, 46px); line-height: 1.18; font-weight: 700; }
+html:not([lang="zh"]) .post-title { font-family: var(--serif); font-weight: 600; }
+.post-cover { margin: 28px 0 8px; height: auto; aspect-ratio: 16 / 7; overflow: hidden; border-radius: 10px; }
+.post-cover svg, .post-cover img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.post-cover.view-photo img { mix-blend-mode: multiply; }
+.post-body { margin-top: 28px; }
+.post-body p, .post-body li { max-width: none; font-size: 18px; line-height: 1.8; color: var(--ink-2); }
+.post-body h2 { margin-top: 40px; font-size: 28px; line-height: 1.25; }
+.post-body h3 { margin-top: 30px; font-size: 21px; line-height: 1.3; }
+html:not([lang="zh"]) .post-body h2, html:not([lang="zh"]) .post-body h3 { font-family: var(--serif); font-weight: 600; }
+.post-body strong { color: var(--ink); font-weight: 700; }
+.post-body a { color: var(--wine); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.post-body ul, .post-body ol { padding-left: 1.4em; display: grid; gap: 6px; }
+.post-body ul li::marker { color: var(--wine); }
+.post-body figure { margin: 30px 0; background: var(--paper); }
+.post-body figure img { display: block; width: 100%; height: auto; border-radius: 8px; mix-blend-mode: multiply; }
+.post-body figcaption { margin-top: 8px; font-size: 14px; color: var(--ink-3); }
+.post-source { margin-top: 32px; }
+.post-foot { margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--rule); }
+@media (max-width: 640px) {
+  .post { padding: 96px 0 64px; }
+  .post-body p, .post-body li { font-size: 17px; }
+  .post-body h2 { font-size: 24px; }
+}
+
+/* 正文的字体颜色(编辑器只给这几种,src/md.mjs COLORS)*/
+.tc-wine { color: var(--wine); }
+.tc-blue { color: #1d4e89; }
+.tc-green { color: #2e6b3a; }
+.tc-grey { color: var(--ink-3); }
+
+/* 卡片摘要最多 4 行,全文在文章页 */
+.view-teaser { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }

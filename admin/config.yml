@@ -122,7 +122,8 @@ collections:
       default: { field: date, direction: descending }
     fields:
       - { name: title, label: 标题 Title, widget: string, i18n: true }
-      - { name: excerpt, label: 内容摘要 Summary, hint: 两三句话;用 *星号* 包住的字会变粗体(和 WhatsApp 一样), widget: text, i18n: true }
+      - { name: body, label: 正文 Body, hint: 点进去的文章页显示的全文(可以加粗、标题、列表、链接、图片;字体颜色请用简易后台 /edit 加), widget: markdown, required: false, i18n: true }
+      - { name: excerpt, label: 卡片摘要(选填)Summary, hint: 不填就从正文开头自动截;旧观点只有这一栏, widget: text, required: false, i18n: true }
       - { name: date, label: 日期 Date, widget: datetime, type: date, format: YYYY-MM-DD, i18n: duplicate }
       - name: cat
         label: 分类 Category

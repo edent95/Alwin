@@ -1,6 +1,7 @@
 // 首页。内容:content/site.json、content/home.json、content/views/*.json、content/news/*.json
 import { T, v, esc, link, join, dmy, rich, ARROW } from '../h.mjs';
 import { head, masthead, footer } from '../layout.mjs';
+import { viewHref, teaserOf } from './view.mjs';
 
 const HIBISCUS = '<svg class="hibiscus" viewBox="-12 -12 24 24" aria-hidden="true" focusable="false"><g fill="currentColor"><ellipse cx="0" cy="-6" rx="4.8" ry="6.4" transform="rotate(0)"/><ellipse cx="0" cy="-6" rx="4.8" ry="6.4" transform="rotate(72)"/><ellipse cx="0" cy="-6" rx="4.8" ry="6.4" transform="rotate(144)"/><ellipse cx="0" cy="-6" rx="4.8" ry="6.4" transform="rotate(216)"/><ellipse cx="0" cy="-6" rx="4.8" ry="6.4" transform="rotate(288)"/></g><circle r="2.2" class="hib-eye"/><path d="M0 0 L3.5 -8.5" class="hib-st"/><circle cx="3.5" cy="-8.5" r="1.3" class="hib-tip"/></svg>';
 
@@ -92,7 +93,7 @@ ${join(s.planks, (p, i) => `        <article class="plank reveal">
 
 const views = (sec, items, site, art) => {
   const catLabel = Object.fromEntries(sec.cats.map((c) => [v(c.key), c.label]));
-  return `  <!-- VIEWS:Alwin 自己的时事评论 / 发言,一张卡一篇。内容在 content/views/,在后台「观点」里加 -->
+  return `  <!-- VIEWS:Alwin 自己的时事评论 / 发言,一张卡一篇,点开是文章页 /views/<名>.html(src/pages/view.mjs)。内容在 content/views/ -->
   <section class="views" id="views">
     <div class="wrap">
       <div class="section-head">
@@ -109,12 +110,12 @@ ${join(items, (it) => {
       ? `<div class="view-art view-photo"><img src="${esc(v(it.image.src))}" alt="${esc(v(it.image.alt) || '')}" loading="lazy"></div>`
       : `<div class="view-art tone-${esc(v(it.tone) || 'wine')}" aria-hidden="true">${art(v(it.art))}</div>`;
     return `        <article class="view reveal" data-cat="${esc(v(it.cat))}">
-          <a ${link(it.url)}>
+          <a href="${esc(viewHref(it))}">
             ${cover}
             <p class="view-meta"><span class="view-cat"${T(catLabel[v(it.cat)] ?? v(it.cat))}</span>${when(it)}</p>
             <h3${T(rich(it.title))}</h3>
-            <p${T(rich(it.excerpt))}</p>
-            <span class="story-cta"><span${T(site.cta[v(it.cta)] ?? site.cta.read)}</span> ${ARROW}</span>
+            <p class="view-teaser"${T(teaserOf(it))}</p>
+            <span class="story-cta"><span${T(site.cta.read)}</span> ${ARROW}</span>
           </a>
         </article>`;
   })}

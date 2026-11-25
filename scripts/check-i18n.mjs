@@ -84,12 +84,12 @@ export function checkHtml(html, file = '') {
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const SITE = path.join(ROOT, '_site')
   if (!fs.existsSync(SITE)) { console.error('✗ 没有 _site/:先跑 npm run build'); process.exit(1) }
-  const files = fs.readdirSync(SITE).filter((f) => f.endsWith('.html')).sort()
+  const files = [...fs.readdirSync(SITE), ...(fs.existsSync(path.join(SITE, 'views')) ? fs.readdirSync(path.join(SITE, 'views')).map((f) => `views/${f}`) : [])].filter((f) => f.endsWith('.html')).sort()
   const problems = files.flatMap((f) => checkHtml(fs.readFileSync(path.join(SITE, f), 'utf8'), f))
   if (problems.length) {
     console.error(problems.join('\n'))
     console.error(`\n✗ ${problems.length} 处三语问题(${files.join('、')})`)
     process.exit(1)
   }
-  console.log(`✓ 三语检查通过:${files.join('、')}`)
+  console.log(`✓ 三语检查通过:${files.length} 页(${files.filter((f) => !f.includes('/')).join('、')} + ${files.filter((f) => f.includes('/')).length} 篇观点)`)
 }
