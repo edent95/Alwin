@@ -13,7 +13,7 @@ links:
   repo: https://github.com/edent95/Alwin
 milestones:
   - { name: "朋友本人审阅马来文/英文翻译(立场、引语、新闻标题)", done: false }
-  - { name: "决定是否放 WhatsApp(Zeon 页面上的 +60 13-488 5988 是房地产用号码)", done: false }
+  - { name: "决定是否放 WhatsApp(Zeon 页面上的 +60 13-488 5988 是房地产用号码)", done: true }
   - { name: "确认韩江(Han Chiang)Kickboxing 2018 那格是否保留 logo", done: false }
   - { name: "用活动照片替换纯色 type-cover 新闻封面", done: false }
   - { name: "自定义域名 alwinlim.com", done: true }

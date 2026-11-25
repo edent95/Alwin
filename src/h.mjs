@@ -39,4 +39,8 @@ export const dmy = (d) => {
   return s;
 };
 
+/** 作者写的轻量格式(和 WhatsApp 一样):*粗体* → <strong>,换行 → <br>。用在观点等作者自己写的长文字上 */
+const richOne = (s) => String(s ?? '').replace(/\*([^*\n]+?)\*/g, '<strong>$1</strong>').replace(/\r?\n/g, '<br>');
+export const rich = (x) => (isL(x) ? Object.fromEntries(LANGS.map((l) => [l, richOne(x[l])])) : richOne(x));
+
 export const join = (arr, f) => (arr || []).map(f).join('\n');

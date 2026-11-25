@@ -139,6 +139,7 @@ Rules:
 - English and Malay output must contain NO Chinese characters at all.
 - Chinese output uses full-width punctuation (，。：；！？「」).
 - Keep line breaks (\\n) and blank lines exactly.
+- Keep *asterisks* exactly where they are: text between *…* is bold. Translate the words inside, keep the asterisks around them.
 ${GLOSSARY}
 Return JSON: { ${to.map((l) => `"${l}": { same keys }`).join(', ')} }.
 Input:
