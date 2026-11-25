@@ -66,11 +66,13 @@
     const label = `<label for="${id}">${esc(f.label)}${f.optional ? ' <span class="opt">（可不填）</span>' : ''}</label>${f.hint ? `<p class="hint">${esc(f.hint)}</p>` : ''}`;
     if (f.type === 'chips') return `<div class="field"><div class="label">${esc(f.label)}</div>${f.hint ? `<p class="hint">${esc(f.hint)}</p>` : ''}
       <div class="chips" role="group">${f.options.map((o) => `<button type="button" class="chip" data-chip="${esc(f.k)}" data-v="${esc(o.v)}" aria-pressed="${f.multi ? (val || []).includes(o.v) : val === o.v}">${esc(o.t)}</button>`).join('')}</div></div>`;
+    if (f.type === 'rich') return `<div class="field"><div class="label">${esc(f.label)}</div>${f.hint ? `<p class="hint">${esc(f.hint)}</p>` : ''}${richEditor(f.k, val)}</div>`;
     if (f.type === 'textarea') return `<div class="field">${label}<textarea class="input" id="${id}" data-k="${esc(f.k)}" rows="${f.rows || 4}" ${f.max ? `maxlength="${f.max}"` : ''} placeholder="${esc(f.ph || '')}">${esc(val)}</textarea>${f.max ? `<div class="count">${(val || '').length} / ${f.max}</div>` : ''}</div>`;
     return `<div class="field">${label}<input class="input" id="${id}" data-k="${esc(f.k)}" type="${f.type || 'text'}" value="${esc(val)}" placeholder="${esc(f.ph || '')}" ${f.type === 'url' ? 'inputmode="url" autocapitalize="off"' : ''}></div>`;
   };
   // 绑定输入：写回 obj[k],不重画(免得键盘收起)
   function bindInputs(obj, onChange) {
+    app.querySelectorAll('.rte').forEach((el) => bindRich(el, obj, onChange));
     app.querySelectorAll('[data-k]').forEach((el) => el.addEventListener('input', () => {
       obj[el.dataset.k] = el.value;
       const cnt = el.parentElement.querySelector('.count'); if (cnt) cnt.textContent = `${el.value.length} / ${el.maxLength}`;
@@ -93,6 +95,105 @@
       render();
     }));
   }
+  // ------------------------------------------------------------------ 正文编辑器(所见即所得)
+  // 存的是 Markdown(src/md.mjs,构建时生成 md.js → window.MD):编辑器里看到的就是网站上的样子,存的时候再转回去。
+  const RTE_IMGS = new Map(); // blob 网址 → { blob }:插进正文、还没上传的照片
+  const COLOR_HEX = { wine: '#7c1d2b', blue: '#1d4e89', green: '#2e6b3a', grey: '#6b6156' };
+  const richEditor = (k, md) => `<div class="rte" data-rte="${esc(k)}">
+      <div class="rte-bar" role="toolbar" aria-label="格式">
+        <button type="button" data-cmd="bold" aria-label="粗体"><b>B</b></button>
+        <button type="button" data-cmd="h2" aria-label="大标题">标题</button>
+        <button type="button" data-cmd="h3" aria-label="小标题">小标题</button>
+        <button type="button" data-cmd="ul" aria-label="列表"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1" fill="currentColor"/><circle cx="4.5" cy="12" r="1" fill="currentColor"/><circle cx="4.5" cy="18" r="1" fill="currentColor"/></svg></button>
+        <button type="button" data-cmd="ol" aria-label="编号列表">1.</button>
+        <button type="button" data-cmd="color" aria-label="字体颜色"><span class="rte-a">A</span></button>
+        <button type="button" data-cmd="link" aria-label="链接"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/></svg></button>
+        <label class="rte-btn" aria-label="插入图片"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="m21 16-5-5-8 8"/></svg><input type="file" accept="image/*" hidden data-rte-img></label>
+      </div>
+      <div class="rte-colors" hidden>${Object.entries(MD.COLORS).map(([c, t]) => `<button type="button" data-color="${c}" style="--c:${COLOR_HEX[c]}">${esc(t)}</button>`).join('')}<button type="button" data-color="">默认</button></div>
+      <div class="rte-area" contenteditable="true" role="textbox" aria-multiline="true" spellcheck="true">${MD.mdToHtml(md || '') || '<p><br></p>'}</div>
+    </div>`;
+  function bindRich(box, obj, onChange) {
+    const area = box.querySelector('.rte-area');
+    const k = box.dataset.rte;
+    let saved = null;
+    const keep = () => { if (!area.isConnected) return document.removeEventListener('selectionchange', keep); const sel = getSelection(); if (sel.rangeCount && area.contains(sel.anchorNode)) saved = sel.getRangeAt(0).cloneRange(); };
+    const restore = () => { area.focus(); if (saved) { const sel = getSelection(); sel.removeAllRanges(); sel.addRange(saved); } };
+    const sync = () => { obj[k] = MD.htmlToMd(area); onChange?.(); };
+    // 颜色:execCommand 生成 <font color>,换成网站认得的 <span class="tc-…">
+    const tidy = () => {
+      area.querySelectorAll('font[color]').forEach((f) => {
+        const hex = f.getAttribute('color').toLowerCase();
+        const c = Object.keys(COLOR_HEX).find((x) => COLOR_HEX[x] === hex);
+        if (c) { const sp = document.createElement('span'); sp.className = `tc-${c}`; sp.append(...f.childNodes); f.replaceWith(sp); } else f.replaceWith(...f.childNodes);
+      });
+      area.querySelectorAll('span[style]').forEach((sp) => { if (!sp.className) sp.replaceWith(...sp.childNodes); });
+    };
+    const block = () => { let n = getSelection().anchorNode; while (n && n !== area) { if (n.nodeType === 1 && /^(H2|H3|P|DIV|LI)$/.test(n.tagName)) return n; n = n.parentNode; } return null; };
+    const cmd = (c, v) => { restore(); document.execCommand('styleWithCSS', false, false); document.execCommand(c, false, v); tidy(); keep(); sync(); };
+    document.addEventListener('selectionchange', keep);
+    area.addEventListener('input', () => { tidy(); sync(); });
+    area.addEventListener('blur', sync);
+    // 贴上来的文字:按纯文字贴(WhatsApp 的 *粗体* 直接变粗体),不带别的网站的格式
+    area.addEventListener('paste', (e) => {
+      const t = e.clipboardData?.getData('text/plain'); if (t == null) return;
+      e.preventDefault();
+      document.execCommand('insertHTML', false, MD.mdToHtml(t));
+      tidy(); sync();
+    });
+    box.querySelectorAll('.rte-bar button, .rte-colors button').forEach((b) => b.addEventListener('pointerdown', (e) => e.preventDefault()));
+    box.querySelector('.rte-bar').addEventListener('click', (e) => {
+      const b = e.target.closest('button[data-cmd]'); if (!b) return;
+      const c = b.dataset.cmd;
+      if (c === 'bold') cmd('bold');
+      else if (c === 'h2' || c === 'h3') { restore(); cmd('formatBlock', block()?.tagName === c.toUpperCase() ? '<p>' : `<${c}>`); }
+      else if (c === 'ul') cmd('insertUnorderedList');
+      else if (c === 'ol') cmd('insertOrderedList');
+      else if (c === 'color') { const p = box.querySelector('.rte-colors'); p.hidden = !p.hidden; }
+      else if (c === 'link') {
+        keep(); const range = saved; const text = range ? range.toString() : '';
+        sheet(`<h3>加链接</h3><div class="field"><label for="rte-url">网址</label><input class="input" id="rte-url" type="url" inputmode="url" autocapitalize="off" placeholder="https://"></div>
+          ${text ? '' : '<div class="field"><label for="rte-txt">显示的文字</label><input class="input" id="rte-txt" placeholder="例：原文"></div>'}
+          <button class="btn primary" data-ok>加上</button>`, (bg, close) => {
+          bg.querySelector('#rte-url').focus();
+          bg.querySelector('[data-ok]').addEventListener('click', () => {
+            let url = bg.querySelector('#rte-url').value.trim(); if (!url) return close();
+            if (!/^(https?:|mailto:|tel:|\/)/i.test(url)) url = `https://${url}`;
+            saved = range;
+            if (text) cmd('createLink', url);
+            else { const t = bg.querySelector('#rte-txt').value.trim() || url; cmd('insertHTML', `<a href="${esc(url)}">${esc(t)}</a>&nbsp;`); }
+            close();
+          });
+        });
+      }
+    });
+    box.querySelector('.rte-colors').addEventListener('click', (e) => {
+      const b = e.target.closest('button[data-color]'); if (!b) return;
+      box.querySelector('.rte-colors').hidden = true;
+      cmd('foreColor', b.dataset.color ? COLOR_HEX[b.dataset.color] : '#000001');
+      area.querySelectorAll('font[color="#000001"]').forEach((f) => f.replaceWith(...f.childNodes));
+      sync();
+    });
+    box.querySelector('[data-rte-img]').addEventListener('change', async (e) => {
+      const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+      const p = await API.prepareImage(f);
+      RTE_IMGS.set(p.url, { blob: p.blob });
+      cmd('insertHTML', `<figure><img src="${p.url}" alt=""></figure><p><br></p>`);
+    });
+  }
+  /** 发布前:正文里还是 blob: 网址的照片,分配仓库路径并换掉;返回要上传的照片 */
+  function assignBodyImages(tr, k, prefix) {
+    const ups = []; let i = 0;
+    const stamp = Date.now().toString(36);
+    for (const [url, img] of RTE_IMGS) {
+      if (!LANGS.some((l) => (tr[l][k] || '').includes(url))) continue;
+      img.path ??= `${prefix}-${stamp}-${String(++i).padStart(2, '0')}.jpg`;
+      for (const l of LANGS) tr[l][k] = (tr[l][k] || '').split(url).join(img.path);
+      ups.push({ path: img.path, blob: img.blob });
+    }
+    return ups;
+  }
+
   function sheet(html, bind, closeText = '取消') {
     const bg = document.createElement('div'); bg.className = 'sheet-bg';
     bg.innerHTML = `<div class="sheet" role="dialog" aria-modal="true"><div class="grip"></div>${html}<button class="btn line" data-close>${closeText}</button></div>`;
@@ -113,7 +214,8 @@
       <div class="meta">${esc(o.source)} · ${dmy(o.date, o.month_only)}</div><h3>${esc(o.title)}</h3>${o.excerpt ? `<p>${esc(o.excerpt)}</p>` : ''}</article>`,
     view: (o, l) => `<div class="pv-label">${l === 'zh' ? '观点' : 'Pandangan / Views'}</div><article class="pv-card" lang="${l}">
       ${o.image ? `<img src="${esc(o.image.src || o.image)}" alt="">` : `<div class="art">${art(o.art)}</div>`}
-      <div class="meta">${esc(catLabel('view', o.cat, l))} · ${dmy(o.date)}</div><h3>${rich(o.title)}</h3><p>${rich(o.excerpt)}</p></article>`,
+      <div class="meta">${esc(catLabel('view', o.cat, l))} · ${dmy(o.date)}</div><h3>${rich(o.title)}</h3><p>${esc(MD.mdToText(o.body || o.excerpt || '', l === 'zh' ? 90 : 170))}</p></article>
+      <div class="pv-label">${l === 'zh' ? '点进去的文章页' : 'Halaman penuh / Full post'}</div><article class="pv-post" lang="${l}"><h1>${rich(o.title)}</h1>${MD.mdToHtml(o.body || o.excerpt || '')}</article>`,
     album: (o, l) => `<div class="pv-label">${l === 'zh' ? '相册' : 'Galeri / Gallery'}</div><article class="pv-card" lang="${l}">
       ${o.photos?.[0] ? `<img src="${esc(o.photos[0]._url || o.photos[0].image)}" alt="">` : ''}
       <div class="meta">${esc(catLabel('album', o.cat, l))} · ${esc(o.date)} · ${o.photos.length} ${l === 'zh' ? '张照片' : l === 'ms' ? 'foto' : 'photos'}</div><h3>${esc(o.title)}</h3><p>${esc(o.place)}</p></article>`,
@@ -158,11 +260,13 @@
       <div class="pv">${F.preview ? F.preview(out[l], l) : textPreview(F, l)}</div>
       ${isMachine ? `<div class="mt-badge">${I.magic} 这是自动翻译的，请过目</div>
         <details class="tr-edit"><summary>翻译不对？自己改一下</summary>
-          ${keys.filter((k) => F.machine.has(k)).map((k) => field({ k, label: F.labelOf?.(k) || k, type: (F.tr[l][k] || '').length > 60 ? 'textarea' : 'text' }, F.tr[l][k])).join('')}
+          ${keys.filter((k) => F.machine.has(k)).map((k) => field({ k, label: F.labelOf?.(k) || k, type: F.rich?.includes(k) ? 'rich' : (F.tr[l][k] || '').length > 60 ? 'textarea' : 'text' }, F.tr[l][k])).join('')}
         </details>` : ''}
       ${bar(`<button class="btn line" data-back>改内容</button><button class="btn primary" data-publish>发布到网站</button>`)}`;
     app.querySelectorAll('[data-pv]').forEach((b) => b.addEventListener('click', () => { F.pvLang = b.dataset.pv; previewScreen(F, n, of); }));
     bindInputs(F.tr[l], () => {});
+    // 改了翻译的正文:预览跟着更新(不重画编辑器,免得光标跳走)
+    app.querySelectorAll('.tr-edit .rte-area').forEach((a) => a.addEventListener('input', () => { const pv = app.querySelector('.pv-post'); if (pv) pv.innerHTML = `<h1>${rich(F.tr[l].title)}</h1>${MD.mdToHtml(F.tr[l].body || '')}`; }));
     app.querySelector('[data-back]').addEventListener('click', () => { F.step--; render(); });
     app.querySelector('[data-publish]').addEventListener('click', () => publish(F));
     window.scrollTo(0, 0);
@@ -327,16 +431,20 @@
   const TONES = ['wine', 'ink', 'paper2'];
   function viewFlow(entry) {
     const d = entry?.data;
-    const D = d ? { title: d[S.wl].title, excerpt: d[S.wl].excerpt, cat: d[S.wl].cat, url: d[S.wl].url || '', date: d[S.wl].date, image: d[S.wl].image?.src || d[S.wl].image || '' }
-      : { title: '', excerpt: '', cat: '', url: '', date: today(), image: '' };
+    // 正文 body(Markdown);旧观点只有 excerpt,就把它当正文
+    const bodyTri = d ? Object.fromEntries(LANGS.map((l) => [l, d[l].body || d[l].excerpt || ''])) : null;
+    const D = d ? { title: d[S.wl].title, body: bodyTri[S.wl], cat: d[S.wl].cat, url: d[S.wl].url || '', date: d[S.wl].date, image: d[S.wl].image?.src || d[S.wl].image || '' }
+      : { title: '', body: '', cat: '', url: '', date: today(), image: '' };
     const F = {
       kind: 'view', D, entry, step: 1, of: 3, file: entry?.file,
-      orig: d ? { title: tri(d, 'title'), excerpt: tri(d, 'excerpt') } : null,
-      labelOf: (k) => ({ title: '题目', excerpt: '内容' })[k],
-      texts: () => ({ title: D.title.trim(), excerpt: D.excerpt.trim() }),
+      orig: d ? { title: tri(d, 'title'), body: bodyTri } : null,
+      labelOf: (k) => ({ title: '题目', body: '内容' })[k],
+      rich: ['body'],
+      texts: () => ({ title: D.title.trim(), body: D.body.trim() }),
       build: (tr) => Object.fromEntries(['ms', 'en', 'zh'].map((l) => {
-        const base = d ? clone(d[l]) : { cta: 'post', tone: TONES[S.c.views.length % 3] };
-        Object.assign(base, { date: D.date, cat: D.cat, url: D.url, title: tr[l].title, excerpt: tr[l].excerpt, art: base.art || ART_BY_CAT[D.cat] || 'ballot' });
+        const base = d ? clone(d[l]) : { cta: 'read', tone: TONES[S.c.views.length % 3] };
+        Object.assign(base, { date: D.date, cat: D.cat, url: D.url, title: tr[l].title, body: tr[l].body, art: base.art || ART_BY_CAT[D.cat] || 'ballot' });
+        delete base.excerpt; // 卡片摘要从正文自动截
         if (D.image) base.image = { src: F.upload && D.image === F.upload.url ? (F.imgPath || D.image) : D.image, alt: tr.en.title }; else delete base.image;
         return [l, base];
       })),
@@ -344,8 +452,13 @@
       message: entry ? `content: 修改观点「${D.title}」（简易后台）` : `content: 新增观点「${D.title}」（简易后台）`,
       liveUrl: '/#views',
       fileFor: () => `content/views/${D.date}-${slug(F.tr.en.title)}.json`,
-      assignPaths: () => { if (F.upload && D.image === F.upload.url) F.imgPath = `/images/uploads/views/${D.date}-${slug(F.tr.en.title)}-${Date.now().toString(36)}.jpg`; },
-      uploads: () => (F.imgPath && F.upload && D.image === F.upload.url ? [{ path: F.imgPath, blob: F.upload.blob }] : []),
+      assignPaths: () => {
+        const base = `/images/uploads/views/${D.date}-${slug(F.tr.en.title)}`;
+        if (F.upload && D.image === F.upload.url) F.imgPath = `${base}-${Date.now().toString(36)}.jpg`;
+        F.bodyUps = assignBodyImages(F.tr, 'body', base);
+        F.liveUrl = `/views/${(F.file || F.fileFor()).split('/').pop().replace(/\.json$/, '')}.html`;
+      },
+      uploads: () => [...(F.imgPath && F.upload && D.image === F.upload.url ? [{ path: F.imgPath, blob: F.upload.blob }] : []), ...(F.bodyUps || [])],
     };
     return F;
   }
@@ -353,10 +466,10 @@
     const D = F.D;
     if (F.step === 1) {
       app.innerHTML = `${top(F.entry ? '修改观点' : '发观点')}${steps(1, 3)}
-        <h2 class="h">${F.entry ? '改一改' : '你想说什么？'}</h2><p class="lead">一个题目，加两三句话就够了。</p>
+        <h2 class="h">${F.entry ? '改一改' : '你想说什么？'}</h2><p class="lead">网站上会变成一篇文章：首页显示开头几行，点进去看全文。</p>
         ${wlSwitch()}
         ${field({ k: 'title', label: '题目', type: 'textarea', rows: 2, max: 80, ph: S.wl === 'zh' ? '例：短租要规管，不是禁止' : 'e.g. Regulate short-term rentals, don’t ban them' }, D.title)}
-        ${field({ k: 'excerpt', label: '你的看法', type: 'textarea', rows: 6, max: 1000, hint: '讲清楚你的立场。要粗体就和 WhatsApp 一样，用星号包住：*这样*。' }, D.excerpt)}
+        ${field({ k: 'body', label: '内容', type: 'rich', hint: '想写多长都可以。选中文字后点上面的按钮：粗体、标题、列表、颜色、链接；点图片按钮在文中插照片。' }, D.body)}
         ${field({ k: 'cat', label: '属于哪一类', type: 'chips', options: catOptions('view') }, D.cat)}
         ${field({ k: 'url', label: '原文链接', type: 'url', optional: true, hint: '如果是 Facebook / Instagram 帖子或文章，贴上链接，读者可以点进去看全文。' }, D.url)}
         ${field({ k: 'date', label: '日期', type: 'date' }, D.date)}
@@ -369,7 +482,7 @@
       app.querySelector('[data-file]').addEventListener('change', async (e) => { const f = e.target.files[0]; if (!f) return; const p = await API.prepareImage(f); D.image = p.url; F.upload = p; render(); });
       app.querySelector('[data-noimg]')?.addEventListener('click', () => { D.image = ''; render(); });
       app.querySelector('[data-next]').addEventListener('click', () => {
-        const miss = [!D.title.trim() && '题目', !D.excerpt.trim() && '你的看法', !D.cat && '类别'].filter(Boolean);
+        const miss = [!D.title.trim() && '题目', !D.body.trim() && '内容', !D.cat && '类别'].filter(Boolean);
         if (miss.length) return toast(`还差：${miss.join('、')}`);
         F.step = 2; toPreview(F);
       });

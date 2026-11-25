@@ -1,5 +1,5 @@
 // 简易后台 /edit 的服务端(Cloudflare Worker「alwin-edit」)
-// 登录(账号密码,KV 存 PBKDF2 哈希)、翻译(Gemini)、读报道链接、上传照片、发布(一次提交写进 GitHub main)、查上线进度。
+// 登录(账号密码,KV 存 PBKDF2 哈希)、翻译(Workers AI,长文按段分块)、读报道链接、上传照片、发布(一次提交写进 GitHub main)、查上线进度。
 // 密钥都在 Worker secrets:GITHUB_TOKEN(细粒度 PAT,只有 edent95/Alwin 的 Contents 读写 + Actions 读)、SESSION_SECRET。
 // 翻译用 Cloudflare Workers AI(binding AI,不用 key);每天最多 TRANSLATE_PER_DAY 次,免得超出免费额度。
 
@@ -124,45 +124,95 @@ const GLOSSARY = `Fixed names (use exactly):
 - 首长 = Chief Minister (EN) / Ketua Menteri (MS); 州议员 = State Assemblyman (EN) / ADUN (MS)
 - 中小企业 = SMEs (EN) / PKS (MS); 最低薪金 = minimum wage (EN) / gaji minimum (MS)
 - 东方日报 = Oriental Daily; 中国报 = China Press; 星洲日报 = Sin Chew Daily; 光华日报 = Kwong Wah Yit Poh`;
+const RULES = `- Keep the meaning, tone and length; this is public political communication in his name. Do not add or soften claims.
+- Natural, plain wording a Malaysian reader would use. Keep numbers, dates, RM amounts, URLs, names of people and organisations.
+- English and Malay output must contain NO Chinese characters at all.
+- Chinese output uses full-width punctuation (，。：；！？「」).
+- Keep line breaks (\\n) and blank lines exactly.
+- The text is Markdown. Keep every formatting marker exactly where it is and translate only the words: **bold** and *bold*, "## " / "### " headings, "- " and "1. " list items, [link text](url) (translate the link text, never the url), ![caption](url) images, and <span class="tc-…">…</span> colour tags.`;
+const LONG = 1200; // 超过这么长的字段(观点正文)按段落分块,每块单独翻译
+const SHORT_FIELDS_MAX = 2500;
+const IMG_ONLY = /^!\[[^\]]*\]\([^)\s]+\)$/;
+
+/** 按空行切段,拼成 ≤ LONG 字的块;只有图片的段落不翻译,原样留着 */
+function chunks(text) {
+  const out = [];
+  for (const para of String(text).split(/\n{2,}/)) {
+    const t = para.trim(); if (!t) continue;
+    if (IMG_ONLY.test(t)) { out.push({ keep: t }); continue; }
+    const last = out[out.length - 1];
+    if (last && !last.keep && last.text.length + t.length + 2 <= LONG) last.text += `\n\n${t}`;
+    else out.push({ text: t });
+  }
+  return out;
+}
+
+async function ai(env, system, prompt, maxTokens) {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const r = await env.AI.run(env.AI_MODEL || AI_MODEL, { messages: [{ role: 'system', content: system }, { role: 'user', content: prompt }], max_tokens: maxTokens, temperature: 0.2 });
+      const resp = r?.response ?? r?.choices?.[0]?.message?.content ?? '';
+      return typeof resp === 'string' ? resp : JSON.stringify(resp);
+    } catch (e) { console.log('ai error', e.message); if (attempt) throw new HttpError(502, '翻译服务出错了，请再试一次'); }
+  }
+  return '';
+}
+
 async function translate(env, { fields, from, to }) {
   if (!fields || typeof fields !== 'object' || !LANG[from] || !Array.isArray(to) || !to.every((l) => LANG[l])) throw new HttpError(400, '翻译参数不对');
   const keys = Object.keys(fields).filter((k) => String(fields[k] || '').trim());
   const out = Object.fromEntries(to.map((l) => [l, Object.fromEntries(Object.keys(fields).map((k) => [k, '']))]));
   if (!keys.length) return out;
-  if (JSON.stringify(fields).length > 20000) throw new HttpError(400, '一次要翻译的字太多了');
-  const src = Object.fromEntries(keys.map((k) => [k, String(fields[k])]));
-  const prompt = `You translate short texts for the personal website of Alwin Lim, a young Malaysian politician (DAPSY Bukit Bendera, Penang) and property agent.
+  if (JSON.stringify(fields).length > 60000) throw new HttpError(400, '一次要翻译的字太多了（超过约 6 万字），请分成几篇');
+  const shortKeys = keys.filter((k) => String(fields[k]).length <= LONG);
+  const longKeys = keys.filter((k) => String(fields[k]).length > LONG);
+  const parts = Object.fromEntries(longKeys.map((k) => [k, chunks(fields[k])]));
+  const jobs = (shortKeys.length ? 1 : 0) + longKeys.reduce((n, k) => n + parts[k].filter((c) => !c.keep).length * to.length, 0);
+
+  // 每天的次数按「调用模型几次」算:长文一块一种语言算一次
+  const day = `ai:${new Date().toISOString().slice(0, 10)}`;
+  const used = +(await env.KV.get(day)) || 0;
+  if (used + jobs > TRANSLATE_PER_DAY) throw new HttpError(429, `今天的自动翻译次数快用完了（这篇要 ${jobs} 次，还剩 ${Math.max(0, TRANSLATE_PER_DAY - used)} 次），明天再试；或者先在「自己改一下」里手动填`);
+  await env.KV.put(day, String(used + jobs), { expirationTtl: 3 * 86400 });
+
+  const tasks = [];
+  if (shortKeys.length) tasks.push(async () => {
+    const src = Object.fromEntries(shortKeys.map((k) => [k, String(fields[k])]));
+    const prompt = `You translate short texts for the personal website of Alwin Lim, a young Malaysian politician (DAPSY Bukit Bendera, Penang) and property agent.
 Translate every value of the JSON object below from ${LANG[from]} into: ${to.map((l) => `${l} = ${LANG[l]}`).join('; ')}.
 Rules:
-- Keep the meaning, tone and length; this is public political communication in his name. Do not add or soften claims.
-- Natural, plain wording a Malaysian reader would use. Keep numbers, dates, RM amounts, URLs, names of people and organisations.
-- English and Malay output must contain NO Chinese characters at all.
-- Chinese output uses full-width punctuation (，。：；！？「」).
-- Keep line breaks (\\n) and blank lines exactly.
-- Keep *asterisks* exactly where they are: text between *…* is bold. Translate the words inside, keep the asterisks around them.
+${RULES}
 ${GLOSSARY}
 Return JSON: { ${to.map((l) => `"${l}": { same keys }`).join(', ')} }.
 Input:
 ${JSON.stringify(src, null, 1)}`;
-  const day = `ai:${new Date().toISOString().slice(0, 10)}`;
-  const used = +(await env.KV.get(day)) || 0;
-  if (used >= TRANSLATE_PER_DAY) throw new HttpError(429, '今天的自动翻译次数用完了，明天再试；或者先在「自己改一下」里手动填');
-  await env.KV.put(day, String(used + 1), { expirationTtl: 3 * 86400 });
-  let got;
-  for (let attempt = 0; attempt < 2 && !got; attempt++) {
-    let text = '';
-    try {
-      const r = await env.AI.run(env.AI_MODEL || AI_MODEL, {
-        messages: [{ role: 'system', content: 'You are a careful professional translator. Reply with JSON only, no explanations, no code fences.' }, { role: 'user', content: prompt }],
-        max_tokens: 2500, temperature: 0.2,
-      });
-      const resp = r?.response ?? r?.choices?.[0]?.message?.content ?? '';
-      text = typeof resp === 'string' ? resp : JSON.stringify(resp);
-    } catch (e) { console.log('ai error', e.message); if (attempt) throw new HttpError(502, '翻译服务出错了，请再试一次'); continue; }
-    try { const m = text.match(/\{[\s\S]*\}/); got = JSON.parse(m ? m[0] : text); } catch { console.log('ai unparsable', text.slice(0, 300)); }
+    let got;
+    for (let attempt = 0; attempt < 2 && !got; attempt++) {
+      const text = await ai(env, 'You are a careful professional translator. Reply with JSON only, no explanations, no code fences.', prompt, SHORT_FIELDS_MAX);
+      try { const m = text.match(/\{[\s\S]*\}/); got = JSON.parse(m ? m[0] : text); } catch { console.log('ai unparsable', text.slice(0, 300)); }
+    }
+    if (!got) throw new HttpError(502, '翻译结果读不懂，请再试一次');
+    for (const l of to) for (const k of shortKeys) out[l][k] = String(got?.[l]?.[k] ?? '').trim();
+  });
+  for (const k of longKeys) for (const l of to) {
+    const res = parts[k].map((c) => c.keep || '');
+    out[l][k] = res; // 先占位,做完再 join
+    parts[k].forEach((c, i) => { if (!c.keep) tasks.push(async () => {
+      const prompt = `Translate this part of an article on the personal website of Alwin Lim, a young Malaysian politician (DAPSY Bukit Bendera, Penang), from ${LANG[from]} into ${LANG[l]}.
+Rules:
+${RULES}
+${GLOSSARY}
+Reply with the translation only: no notes, no quotes, no code fences.
+Text:
+${c.text}`;
+      res[i] = (await ai(env, 'You are a careful professional translator. Reply with the translated text only.', prompt, 2500)).replace(/^```\w*\n?|\n?```$/g, '').trim();
+      if (!res[i]) throw new HttpError(502, '翻译结果是空的，请再试一次');
+    }); });
   }
-  if (!got) throw new HttpError(502, '翻译结果读不懂，请再试一次');
-  for (const l of to) for (const k of keys) out[l][k] = String(got?.[l]?.[k] ?? '').trim();
+  // 同时最多跑 4 个
+  const queue = [...tasks];
+  await Promise.all(Array.from({ length: Math.min(4, queue.length) }, async () => { while (queue.length) await queue.shift()(); }));
+  for (const k of longKeys) for (const l of to) out[l][k] = out[l][k].join('\n\n');
   return out;
 }
 

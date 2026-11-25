@@ -12,6 +12,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { mdImages } from '../src/md.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = path.join(ROOT, '_site');
@@ -105,6 +106,10 @@ export function loadContent(root = ROOT) {
   for (const a of content.albums) if (!a.photos?.length) problems.push(`content/gallery/${a._file}:相册里没有照片`);
   const viewCats = new Set((content.home?.views?.cats || []).map((c) => s(c.key)));
   for (const x of content.views) if (!viewCats.has(s(x.cat))) problems.push(`content/${x._file}:分类「${s(x.cat)}」不在观点分类里`);
+  // 观点正文里插的图片要在仓库里
+  for (const x of content.views) for (const l of LANGS) for (const src of mdImages(x.body?.[l])) {
+    if (!/^https?:/.test(src) && !fs.existsSync(path.join(root, src.replace(/^\//, '')))) problems.push(`content/${x._file}:正文里的图片 ${src} 找不到`);
+  }
   return { content, problems };
 }
 
@@ -205,6 +210,19 @@ export async function build({ root = ROOT, out = OUT, quiet = false } = {}) {
   fs.writeFileSync(path.join(out, 'index.html'), renderIndex({ ...content, art }));
   fs.writeFileSync(path.join(out, 'about.html'), renderAbout(content));
   fs.writeFileSync(path.join(out, 'gallery.html'), renderGallery(content));
+
+  // 观点文章页 /views/<名>.html + sitemap
+  const renderView = await imp('src/pages/view.mjs');
+  const { viewSlug } = await import(pathToFileURL(path.join(root, 'src/pages/view.mjs')).href + bust);
+  fs.mkdirSync(path.join(out, 'views'), { recursive: true });
+  for (const it of content.views) fs.writeFileSync(path.join(out, 'views', `${viewSlug(it)}.html`), renderView({ ...content, it, art }));
+  const sm = fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8').replace('</urlset>',
+    content.views.map((it) => `  <url><loc>https://alwinlim.com/views/${viewSlug(it)}.html</loc><lastmod>${(it.date?.ms || '').slice(0, 10)}</lastmod></url>\n`).join('') + '</urlset>');
+  fs.writeFileSync(path.join(out, 'sitemap.xml'), sm);
+  // 简易后台用同一份正文格式转换(src/md.mjs → window.MD)
+  const mdSrc = fs.readFileSync(path.join(root, 'src/md.mjs'), 'utf8');
+  const mdNames = [...mdSrc.matchAll(/^export (?:const|function) (\w+)/gm)].map((m) => m[1]);
+  fs.writeFileSync(path.join(out, 'edit', 'md.js'), `// 由 scripts/build.mjs 从 src/md.mjs 生成,不要手改\n(() => {\n${mdSrc.replace(/^export /gm, '')}\nwindow.MD = { ${mdNames.join(', ')} };\n})();\n`);
 
   // 相册数据 + 缩略图
   const s = (x) => (x && typeof x === 'object' && 'ms' in x ? x.ms : x) ?? '';
