@@ -21,7 +21,7 @@ const CJK = /[㐀-鿿豈-﫿　-〿＀-￯]/;
 
 /** 原样拷进 _site 的文件 / 目录 */
 const STATIC = ['styles.css', 'script.js', 'gallery.js', 'projects.js', 'listings.js', 'favicon.svg', 'favicon-32.png',
-  'apple-touch-icon.png', 'robots.txt', 'sitemap.xml', 'llms.txt', 'CNAME', 'images', 'admin', 'edit'];
+  'apple-touch-icon.png', 'robots.txt', 'llms.txt', 'CNAME', 'images', 'admin', 'edit'];
 
 // ---------------------------------------------------------------- 内容加载与检查
 
@@ -215,18 +215,38 @@ export async function build({ root = ROOT, out = OUT, quiet = false } = {}) {
   const renderIndex = await imp('src/pages/index.mjs');
   const renderAbout = await imp('src/pages/about.mjs');
   const renderGallery = await imp('src/pages/gallery.mjs');
-  fs.writeFileSync(path.join(out, 'index.html'), renderIndex({ ...content, art }));
-  fs.writeFileSync(path.join(out, 'about.html'), renderAbout(content));
-  fs.writeFileSync(path.join(out, 'gallery.html'), renderGallery(content));
-
-  // 观点文章页 /views/<网址名>(文件 views/<网址名>.html)+ sitemap
+  // 观点文章页 /views/<网址名>(文件 views/<网址名>.html)
   const renderView = await imp('src/pages/view.mjs');
   const { viewSlug } = await import(pathToFileURL(path.join(root, 'src/pages/view.mjs')).href + bust);
-  fs.mkdirSync(path.join(out, 'views'), { recursive: true });
-  for (const it of content.views) fs.writeFileSync(path.join(out, 'views', `${viewSlug(it)}.html`), renderView({ ...content, it, art }));
-  const sm = fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8').replace('</urlset>',
-    content.views.map((it) => `  <url><loc>https://alwinlim.com/views/${viewSlug(it)}</loc><lastmod>${(it.date?.ms || '').slice(0, 10)}</lastmod></url>\n`).join('') + '</urlset>');
-  fs.writeFileSync(path.join(out, 'sitemap.xml'), sm);
+  // 每页按语言各写一份:英文在根目录(主语言),马来文 /ms/,中文 /zh/。h.mjs 不带 bust 导入,和模板用的是同一份模块
+  const H = await import(pathToFileURL(path.join(root, 'src/h.mjs')).href);
+  const pages = [
+    ['', 'index.html', () => renderIndex({ ...content, art })],
+    ['about', 'about.html', () => renderAbout(content)],
+    ['gallery', 'gallery.html', () => renderGallery(content)],
+    ...content.views.map((it) => [`views/${viewSlug(it)}`, `views/${viewSlug(it)}.html`, () => renderView({ ...content, it, art }), (it.date?.ms || '').slice(0, 10)]),
+  ];
+  const SITE_LANGS = ['en', 'ms', 'zh'];
+  for (const l of SITE_LANGS) {
+    H.setLang(l);
+    const dir = path.join(out, H.PREFIX[l].replace(/^\//, ''));
+    for (const [, file, render] of pages) {
+      fs.mkdirSync(path.dirname(path.join(dir, file)), { recursive: true });
+      fs.writeFileSync(path.join(dir, file), render());
+    }
+  }
+  H.setLang('en');
+  // sitemap:每页三种语言各一条,互相标 hreflang
+  const loc = (p, l) => `https://alwinlim.com${H.P(`/${p}`, l)}`;
+  fs.writeFileSync(path.join(out, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${pages.flatMap(([p, , , lastmod]) => SITE_LANGS.map((l) => `  <url>
+    <loc>${loc(p, l)}</loc>${lastmod ? `\n    <lastmod>${lastmod}</lastmod>` : ''}
+${SITE_LANGS.map((a) => `    <xhtml:link rel="alternate" hreflang="${a}" href="${loc(p, a)}"/>`).join('\n')}
+    <xhtml:link rel="alternate" hreflang="x-default" href="${loc(p, 'en')}"/>
+  </url>`)).join('\n')}
+</urlset>
+`);
   // 旧网址 → 新网址的跳转页(redirects.json)
   const redirects = JSON.parse(fs.readFileSync(path.join(root, 'redirects.json'), 'utf8'));
   for (const [from, to] of Object.entries(redirects)) {
@@ -235,7 +255,7 @@ export async function build({ root = ROOT, out = OUT, quiet = false } = {}) {
     if (fs.existsSync(file)) throw new Error(`redirects.json:旧网址 /${from} 和现有页面撞了`);
     fs.mkdirSync(path.dirname(file), { recursive: true });
     const abs = `https://alwinlim.com${to}`;
-    fs.writeFileSync(file, `<!doctype html>\n<html lang="ms">\n<head>\n  <meta charset="utf-8">\n  <title>Alwin Lim</title>\n  <meta name="robots" content="noindex">\n  <link rel="canonical" href="${abs}">\n  <meta http-equiv="refresh" content="0; url=${to}">\n  <script>location.replace(${JSON.stringify(to)} + location.search + location.hash)</script>\n</head>\n<body><p><a href="${to}">${abs}</a></p></body>\n</html>\n`);
+    fs.writeFileSync(file, `<!doctype html>\n<html lang="en">\n<head>\n  <meta charset="utf-8">\n  <title>Alwin Lim</title>\n  <meta name="robots" content="noindex">\n  <link rel="canonical" href="${abs}">\n  <meta http-equiv="refresh" content="0; url=${to}">\n  <script>location.replace(${JSON.stringify(to)} + location.search + location.hash)</script>\n</head>\n<body><p><a href="${to}">${abs}</a></p></body>\n</html>\n`);
   }
   // 简易后台用同一份正文格式转换(src/md.mjs → window.MD)
   const mdSrc = fs.readFileSync(path.join(root, 'src/md.mjs'), 'utf8');

@@ -69,8 +69,8 @@ html:not([lang="zh"]) .name-zh { display: none; }
 .nav-cta { background: var(--ink); color: var(--paper) !important; padding: 9px 18px !important; border-radius: 999px; transition: background .2s; }
 .nav-cta:hover { background: var(--wine); }
 .lang { display: flex; border: 1px solid var(--rule); border-radius: 999px; padding: 3px; font-size: 13px; }
-.lang button { white-space: nowrap; min-width: 40px; height: 32px; padding: 0 10px; border-radius: 999px; color: var(--ink-3); font-weight: 600; transition: background .2s, color .2s; }
-.lang button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.lang a { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; white-space: nowrap; min-width: 40px; height: 32px; padding: 0 10px; border-radius: 999px; color: var(--ink-3); font-weight: 600; transition: background .2s, color .2s; }
+.lang a[aria-current="true"] { background: var(--ink); color: var(--paper); }
 .menu { display: none; width: 44px; height: 44px; place-items: center; border-radius: 8px; }
 
 /* ---------- Hero ---------- */
@@ -485,7 +485,7 @@ html[lang="zh"] .about-quote p { font-family: var(--serif-zh); }
   .nav a { padding: 14px 0; font-size: 17px; border-bottom: 1px solid var(--rule); }
   .nav a::after { display: none; }
   .nav-cta { margin-top: 16px; text-align: center; border-bottom: 0 !important; }
-  .lang button { min-width: 36px; height: 32px; padding: 0 8px; }
+  .lang a { min-width: 36px; height: 32px; padding: 0 8px; }
 
   .hero { padding-top: 16px; }
   .hero-grid { grid-template-columns: 1fr; gap: 0; }
@@ -554,7 +554,7 @@ html[lang="zh"] .about-quote p { font-family: var(--serif-zh); }
   .brand-en { font-size: 20px; }
   .masthead-inner { gap: 8px; }
   .lang { font-size: 12px; }
-  .lang button { min-width: 34px; padding: 0 7px; }
+  .lang a { min-width: 34px; padding: 0 7px; }
 }
 
 /* ---------- Hero:DAPSY 胶囊旁的 AL Team 胶囊(Alwin 2026-11-23 要的) ---------- */

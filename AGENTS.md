@@ -10,7 +10,7 @@ Alwin 自己在 **alwinlim.com/admin**(Sveltia CMS)改内容，说明见 `docs/a
 ```
 content/*.json(全部文字与资料，{ ms, en, zh } 三段;后台 /admin 改的就是它们)
 src/layout.mjs + src/pages/*.mjs(模板)──scripts/build.mjs──▶ _site/index.html、about.html、gallery.html、gallery-data.js
-   └─ 页面里每个可翻译元素带 data-ms / data-en / data-zh;script.js setLang(lang) 把对应 data-* 写进 innerHTML
+   └─ 每页按语言各构建一份:英文在根目录 /…(主语言、x-default),马来文 /ms/…,中文 /zh/…;互相标 hreflang,语言按钮是普通链接
 styles.css(纸色 + 酒红设计 token、版式、槟城元素)、script.js、gallery.js、images/ 原样拷进 _site/
 main 有新提交 → .github/workflows/deploy.yml 构建 + 检查 → GitHub Pages → https://alwinlim.com/(约 1–2 分钟)
 ```
@@ -47,7 +47,9 @@ npm run build        # 只构建一次
 
 ## 3. 硬约束 —— 违反不会报错，只会静默出错
 
-- **模板里可翻译的元素一律用 `src/h.mjs` 的 `T()`**:`<h2${T(x)}</h2>` 会写出三个 `data-*` 并把马来文当默认文字(三种语言相同时只写文字)。`script.js` 加载时只有语言不是 `ms` 才调用 `setLang`,默认文字不是马来文，马来文版就会显示错的语言。
+- **三种语言是三份页面**(2026-11-26 起，用户定英文为主):`scripts/build.mjs` 对 en / ms / zh 各 `setLang` 一次再渲染，英文写进 `_site/`,马来文 `_site/ms/`,中文 `_site/zh/`。模板里的 `v()` / `T()` 取**当前构建的语言**,不要写死 `.ms`。
+- **模板里可翻译的元素一律用 `src/h.mjs` 的 `T()`**:`<h2${T(x)}</h2>` 写出当前语言的文字 + 三个 `data-*`(JS 渲染的卡片靠 data-* 切成页面语言)。
+- **站内页面链接一律过 `P()`**(`src/h.mjs`):`P('/about')` 在马来文页是 `/ms/about`。`link()` 已自动处理;直接写 `href="/about"` 会让马来文 / 中文读者跳回英文版。锚点 `#x`、`/images/`、`/styles.css` 这类资源不用。
 - **简易后台 `edit/app.js` 的各流程(`newsFlow` / `viewFlow` / `albumFlow` / `SECTIONS`)直接拼出 content JSON**:内容加字段、改字段名,这里也要跟着改,不然 Alwin 发的内容少字段或被构建检查拦下。改了 `edit-worker/` 要手动 `wrangler deploy`,CI 不部署它。
 - **后台字段 ↔ 模板是一对**:改 `admin/config.yml` 的字段名 / 加字段，要同步改 `src/pages/*.mjs`;反过来模板读了新字段，后台没有就改不了。列表字段一律 `i18n: duplicate` + 子字段 `i18n: true`(三种语言条数自动同步)。
 - **内容检查在 `scripts/build.mjs`**(缺翻译、BM / EN 里有中文、中文半角标点、图片找不到…),构建失败 = CI 红 = 不上线。`seo` 下的字段不查中文(搜索描述里故意放了中文名)。
@@ -56,7 +58,7 @@ npm run build        # 只构建一次
 - 照片用 `mix-blend-mode: multiply` 融进纸色背景，放照片的容器必须有纸色底，不然会透出下层。
 - 新闻卡片带 `data-src-lang`(报道的原文语言，可多个、空格分隔);新加卡片不写它，就永远排在后面(PR #4 起)。
 - 各页(含观点文章页)的 `<head>`(含 GA)、页首导航、天际线、页脚都在 `src/layout.mjs`,只有一份。
-- **全站网址不带 `.html`**(`/about`、`/gallery`、`/views/<网址名>`):文件仍是 `.html`,GitHub Pages 会自动找;canonical、sitemap、站内链接一律写不带 `.html` 的。本机预览用 `scripts/serve.mjs`(python http.server 不认无后缀网址)。
+- **全站网址不带 `.html`**(`/about`、`/gallery`、`/views/<网址名>`):文件仍是 `.html`,GitHub Pages 会自动找;canonical、sitemap、站内链接一律写不带 `.html` 的。`sitemap.xml` 由构建生成(三语各一条、带 hreflang),根目录已没有这个文件。本机预览用 `scripts/serve.mjs`(python http.server 不认无后缀网址)。
 - **观点网址 = 文件名去掉日期**:`content/views/2026-11-25-penang-perak-water-supply-agreement-rm24-6-billion.json` → `/views/penang-perak-water-supply-agreement-rm24-6-billion`。改文件名就是改网址,**旧网址要加进根目录 `redirects.json`**(构建出跳转页),旧行别删。网址名只能小写字母、数字、`-`,构建会查重复。
 - **观点 = 文章页**:每篇 `content/views/<日期>-<网址名>.json` 构建成 `_site/views/<网址名>.html`(`src/pages/view.mjs`),首页卡片点进去就是它;正文 `body` 是 Markdown 子集(`src/md.mjs`:粗体、`##` 标题、列表、链接、图片、`<span class="tc-…">` 颜色),网站构建和简易后台共用这一份(构建时生成 `_site/edit/md.js`)。改格式要两边一起验。文章页在子目录里,`src/layout.mjs` 的路径一律从 `/` 开始,新加的链接 / 资源也要写 `/` 开头。
 - 相册数据在 `content/gallery/*.json`,构建时写成 `_site/gallery-data.js`(`window.GALLERY`),`gallery.js` 读它;载入顺序 gallery-data.js → gallery.js → script.js。缩略图:有 `<名>-t.jpg` 就用，没有就构建时生成(本机 sips、CI 上 ImageMagick)。
@@ -67,13 +69,13 @@ npm run build        # 只构建一次
 ```bash
 npm run check        # 构建 + 内容检查 + 三语结构 + 日志体检(和 PR 上的 ci 同一套)
 # 桌面 + 手机两档整页截图，三种语言各看一次
-node ~/.claude/skills/ui-review/scripts/shoot.mjs "<预览链接>?lang=ms" --full --wait 1500 --out <scratchpad>/ms
-node ~/.claude/skills/ui-review/scripts/shoot.mjs "<预览链接>?lang=zh" --full --wait 1500 --out <scratchpad>/zh
+node ~/.claude/skills/ui-review/scripts/shoot.mjs "<预览链接>ms/" --full --wait 1500 --out <scratchpad>/ms
+node ~/.claude/skills/ui-review/scripts/shoot.mjs "<预览链接>zh/" --full --wait 1500 --out <scratchpad>/zh
 # 上线后
 curl -s -o /dev/null -w "%{http_code}\n" https://alwinlim.com/
 ```
 
-`?lang=` 参数会覆盖 localStorage 里存的语言，截图时用它切语言。
+截图直接用语言网址(`/ms/…`、`/zh/…`);旧的 `?lang=xx` 链接会被 script.js 跳到对应语言网址。读者上次选过的语言存在 localStorage,从站外进来时会跳过去(站内点链接不跳)。
 
 ## 5. 改完必须补日志
 

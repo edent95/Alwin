@@ -62,22 +62,21 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
   }).join('');
 })();
 
-// ---------- Language: BM / EN / 中文 ----------
+// ---------- Language: EN / BM / 中文 ----------
+// 每种语言是一份独立的页面:英文在根目录 /…,马来文 /ms/…,中文 /zh/…(scripts/build.mjs 构建、搜索引擎各自收录)。
+// 语言按钮是指向另一语言网址的普通链接;这里只做三件事:
+//   1. 用页面自己的语言跑一次 setLang —— JS 渲染的卡片(项目、房源)带 data-ms / data-en / data-zh,要切成这页的语言;
+//   2. 旧链接 ?lang=xx 跳到对应语言的网址;
+//   3. 读者上次选过别的语言、又是从站外进来的(搜索、分享链接),跳到那个语言(搜索引擎不存 localStorage,不受影响)。
 const LANGS = ['ms', 'en', 'zh'];
-const htmlLang = { ms: 'ms', en: 'en', zh: 'zh' };
+const pageLang = LANGS.includes(document.documentElement.lang) ? document.documentElement.lang : 'en';
 
 function setLang(lang) {
-  if (!LANGS.includes(lang)) lang = 'ms';
-  document.documentElement.lang = htmlLang[lang];
-  document.title = lang === 'zh' ? '林智成 · Alwin Lim Zh Chen' : 'Alwin Lim Zh Chen';
   document.querySelectorAll('[data-ms]').forEach((el) => {
     const v = el.dataset[lang];
     if (v != null) el.innerHTML = v;
   });
-  document.querySelectorAll('.lang button').forEach((b) =>
-    b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
   orderNews(lang);
-  try { localStorage.setItem('lang', lang); } catch {}
 }
 
 // News: stories in the reader's language first, then the rest; newest first within each group.
@@ -91,14 +90,24 @@ function orderNews(lang) {
   items.sort((a, b) => match(a) - match(b) || a.dataset.i - b.dataset.i);
   items.forEach((el, i) => { el.classList.toggle('is-feature', i === 0 && !!el.querySelector('.cover img')); list.appendChild(el); });
 }
-document.querySelectorAll('.lang button').forEach((b) =>
-  b.addEventListener('click', () => setLang(b.dataset.lang)));
 
-let initial = null;
-try { initial = localStorage.getItem('lang'); } catch {}
-const urlLang = new URLSearchParams(location.search).get('lang');
-if (urlLang) initial = urlLang;
-if (initial && initial !== 'ms') setLang(initial); else orderNews('ms');
+const langLink = (l) => document.querySelector(`.lang a[data-lang="${l}"]`);
+document.querySelectorAll('.lang a[data-lang]').forEach((a) => a.addEventListener('click', (e) => {
+  try { localStorage.setItem('lang', a.dataset.lang); } catch {}
+  if (location.hash) { e.preventDefault(); location.href = a.getAttribute('href') + location.hash; }
+}));
+
+(() => {
+  const go = (l) => { const a = langLink(l); if (a && l !== pageLang) { location.replace(a.getAttribute('href') + location.hash); return true; } return false; };
+  const urlLang = new URLSearchParams(location.search).get('lang');
+  if (urlLang && LANGS.includes(urlLang)) { try { localStorage.setItem('lang', urlLang); } catch {} if (go(urlLang)) return; }
+  let saved = null;
+  try { saved = localStorage.getItem('lang'); } catch {}
+  let internal = false;
+  try { internal = !!document.referrer && new URL(document.referrer).origin === location.origin; } catch {}
+  if (!urlLang && saved && LANGS.includes(saved) && !internal && go(saved)) return;
+  setLang(pageLang);
+})();
 
 // ---------- Mobile menu ----------
 const nav = document.getElementById('nav');

@@ -3,7 +3,7 @@
 // 每张照片:[宽, 高, 三语说明或 null, 原图路径, 缩略图路径]。gallery-data.js 必须在本文件之前载入。
 const { cats: CATS, albums: ALBUMS } = window.GALLERY;
 
-const curLang = () => (['ms', 'en', 'zh'].includes(document.documentElement.lang) ? document.documentElement.lang : 'ms');
+const curLang = () => (['ms', 'en', 'zh'].includes(document.documentElement.lang) ? document.documentElement.lang : 'en');
 const q = (x) => String(x).replace(/&/g, "&amp;").replace(/"/g, "&quot;");
 const attrs = (o) => `data-ms="${q(o.ms)}" data-en="${q(o.en)}" data-zh="${q(o.zh)}"`;
 const path = (a, i, thumb) => a.photos[i][thumb ? 4 : 3];
