@@ -6,7 +6,7 @@ import { head, masthead, footer } from '../layout.mjs';
 const LIGHTBOX = fs.readFileSync(new URL('../partials/lightbox.html', import.meta.url), 'utf8').trimEnd();
 
 export default function renderGallery({ site, galleryPage: g }) {
-  return `${head({ title: g.seo.title, description: g.seo.description, path: 'gallery.html' })}
+  return `${head({ title: g.seo.title, description: g.seo.description, path: 'gallery' })}
 <body>
 ${masthead(site, 'gallery')}
 

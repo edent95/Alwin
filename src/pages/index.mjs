@@ -93,7 +93,7 @@ ${join(s.planks, (p, i) => `        <article class="plank reveal">
 
 const views = (sec, items, site, art) => {
   const catLabel = Object.fromEntries(sec.cats.map((c) => [v(c.key), c.label]));
-  return `  <!-- VIEWS:Alwin 自己的时事评论 / 发言,一张卡一篇,点开是文章页 /views/<名>.html(src/pages/view.mjs)。内容在 content/views/ -->
+  return `  <!-- VIEWS:Alwin 自己的时事评论 / 发言,一张卡一篇,点开是文章页 /views/<网址名>(src/pages/view.mjs)。内容在 content/views/ -->
   <section class="views" id="views">
     <div class="wrap">
       <div class="section-head">

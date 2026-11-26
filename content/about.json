@@ -161,7 +161,7 @@
         "links": [
           {
             "label": "Baca pendirian penuh",
-            "url": "index.html#stance"
+            "url": "/#stance"
           }
         ]
       }
@@ -329,7 +329,7 @@
         "links": [
           {
             "label": "Read the full stance",
-            "url": "index.html#stance"
+            "url": "/#stance"
           }
         ]
       }
@@ -497,7 +497,7 @@
         "links": [
           {
             "label": "看完整立场",
-            "url": "index.html#stance"
+            "url": "/#stance"
           }
         ]
       }

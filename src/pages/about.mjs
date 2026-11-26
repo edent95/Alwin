@@ -23,7 +23,7 @@ ${body.map((b) => `          ${b}`).join('\n')}
   </section>`;
   });
 
-  return `${head({ title: a.seo.title, description: a.seo.description, path: 'about.html' })}
+  return `${head({ title: a.seo.title, description: a.seo.description, path: 'about' })}
 <body>
 ${masthead(site, 'about')}
 

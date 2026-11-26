@@ -1,0 +1,11 @@
+{
+  "_comment": "旧网址 → 新网址。构建时在旧路径写一页跳转(canonical + noindex + 立即跳),GitHub Pages 不能发 301,这是最接近的做法。改了观点文件名(= 网址)就在这里加一行,别删旧行:外面的分享链接还在。",
+  "views/2022-06-04-fix-todays-traffic-jams-not-tomorrows": "/views/penang-traffic-jams-fix-today",
+  "views/2022-06-04-short-term-rentals-regulate-dont-ban": "/views/short-term-rentals-regulate-dont-ban",
+  "views/2025-06-10-let-talented-young-people-step-up-to-the": "/views/dapsy-bukit-bendera-young-talent-front-line",
+  "views/2025-08-19-akmal-wants-to-play-hero-then-he-must-fa": "/views/akmal-saleh-jalur-gemilang-police-report",
+  "views/2025-11-21-yb-syerleena-insulted-on-tiktok-a-delete": "/views/syerleena-tiktok-insult-investigation",
+  "views/2026-08-16-stay-in-government-but-speed-up-reform": "/views/dap-stay-in-government-speed-up-reform",
+  "views/2026-10-01-a-wage-rise-isnt-just-changing-one-numbe": "/views/minimum-wage-rise-smes-transition",
+  "views/2026-11-25-rm24-6-billion-water-supply-agreement-in": "/views/penang-perak-water-supply-agreement-rm24-6-billion"
+}

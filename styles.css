@@ -578,6 +578,9 @@ html[lang="zh"] .about-quote p { font-family: var(--serif-zh); }
 .post-back { display: inline-flex; gap: 6px; align-items: center; font-size: 14px; font-weight: 600; color: var(--wine); }
 .post-back:hover { text-decoration: underline; }
 .post .view-meta { margin-top: 28px; justify-content: flex-start; gap: 16px; }
+.post-author { color: var(--ink-2); font-weight: 500; text-decoration: none; }
+.post-author::before { content: "·"; margin-right: 16px; color: var(--ink-3); }
+.post-author:hover { color: var(--wine); }
 .post-title { margin-top: 12px; font-size: clamp(30px, 4.6vw, 46px); line-height: 1.18; font-weight: 700; }
 html:not([lang="zh"]) .post-title { font-family: var(--serif); font-weight: 600; }
 .post-cover { margin: 28px 0 8px; height: auto; aspect-ratio: 16 / 7; overflow: hidden; border-radius: 10px; }
