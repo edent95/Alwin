@@ -4,7 +4,15 @@
   const app = document.getElementById('app');
   const LANGS = ['zh', 'en', 'ms'];
   const LN = { zh: '中文', en: 'English', ms: 'Bahasa' };
-  const CJK = /[㐀-鿿豈-﫿]/;
+  const CJK = /[㐀-鿿豈-﫿　-〿＀-￯]/; // 和 scripts/build.mjs 的检查一致:全角标点也算中文
+  // 马来文 / 英文里的全角标点(从中文原文带过来的 ：，（）等)换成半角,不然构建检查会当成中文拦下
+  const HALF = { '。': '. ', '、': ', ', '「': '“', '」': '”', '『': '“', '』': '”', '【': '[', '】': ']', '《': '“', '》': '”', '　': ' ' };
+  const halfPunct = (s) => String(s)
+    .replace(/[\uFF01-\uFF5E]/g, (c) => { const a = String.fromCharCode(c.charCodeAt(0) - 0xFEE0); return /[,:;!?]/.test(a) ? a + ' ' : /[(]/.test(a) ? ' (' : a; })
+    .replace(/[。、「」『』【】《》　]/g, (c) => HALF[c])
+    .replace(/ {2,}/g, ' ').replace(/ +(\n|$)/g, '$1').replace(/\( +/g, '(').replace(/(^|\n) +/g, '$1');
+  const halfDeep = (x) => (typeof x === 'string' ? halfPunct(x) : Array.isArray(x) ? x.map(halfDeep)
+    : x && typeof x === 'object' ? Object.fromEntries(Object.entries(x).map(([k, v]) => [k, halfDeep(v)])) : x);
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
   const clone = (x) => JSON.parse(JSON.stringify(x));
   const today = () => new Date().toISOString().slice(0, 10);
@@ -281,6 +289,7 @@
   const strip = (x) => (Array.isArray(x) ? x.map(strip) : x && typeof x === 'object'
     ? Object.fromEntries(Object.entries(x).filter(([k]) => !k.startsWith('_')).map(([k, v]) => [k, strip(v)])) : x);
   async function publish(F) {
+    for (const l of ['en', 'ms']) F.tr[l] = halfDeep(F.tr[l]);
     // 发布前最后检查：马来文 / 英文里不能有中文
     const bad = ['en', 'ms'].flatMap((l) => Object.entries(F.tr[l]).filter(([, v]) => CJK.test(v || '')).map(([k]) => `${LN[l]}的「${F.labelOf?.(k) || k}」`));
     if (bad.length) { sheet(`<h3>还有中文没翻译</h3><p class="muted">${esc(bad.join('、'))}里还有中文字。网站的英文 / 马来文版不能出现中文，请在下面「自己改一下」里改掉。</p>`, null, '知道了'); return; }
@@ -351,7 +360,7 @@
         return [l, base];
       })),
       preview: PREVIEW.news,
-      message: entry ? `content: 修改新闻「${D.title}」（简易后台）` : `content: 新增新闻「${D.title}」（简易后台）`,
+      get message() { return entry ? `content: 修改新闻「${D.title}」（简易后台）` : `content: 新增新闻「${D.title}」（简易后台）`; },
       liveUrl: '/#news',
       assignPaths: () => { if (F.upload && !D.noImage && D.image === F.upload.url) F.imgPath = `/images/uploads/news/${D.date}-${slug(F.tr.en.title)}-${Date.now().toString(36)}.jpg`; },
       uploads: () => (F.imgPath && F.upload && !D.noImage && D.image === F.upload.url ? [{ path: F.imgPath, blob: F.upload.blob }] : []),
@@ -449,7 +458,7 @@
         return [l, base];
       })),
       preview: PREVIEW.view,
-      message: entry ? `content: 修改观点「${D.title}」（简易后台）` : `content: 新增观点「${D.title}」（简易后台）`,
+      get message() { return entry ? `content: 修改观点「${D.title}」（简易后台）` : `content: 新增观点「${D.title}」（简易后台）`; },
       liveUrl: '/#views',
       fileFor: () => `content/views/${D.date}-${slug(F.tr.en.title)}.json`,
       assignPaths: () => {
@@ -515,7 +524,7 @@
         }));
       },
       preview: PREVIEW.album,
-      message: entry ? `content: 修改相册「${D.title}」（简易后台）` : `content: 新增相册「${D.title}」（简易后台）`,
+      get message() { return entry ? `content: 修改相册「${D.title}」（简易后台）` : `content: 新增相册「${D.title}」（简易后台）`; },
       liveUrl: '/gallery.html',
       fileFor: () => `content/gallery/${slug(F.tr.en.title)}-${D.date.slice(0, 4)}.json`,
       assignPaths: () => {
