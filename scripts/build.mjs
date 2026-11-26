@@ -105,6 +105,14 @@ export function loadContent(root = ROOT) {
   }
   for (const a of content.albums) if (!a.photos?.length) problems.push(`content/gallery/${a._file}:相册里没有照片`);
   const viewCats = new Set((content.home?.views?.cats || []).map((c) => s(c.key)));
+  // 网址名 = 文件名去掉日期:两篇撞名会互相覆盖
+  const seenSlug = new Map();
+  for (const x of content.views) {
+    const sl = x._file.replace(/^.*\//, '').replace(/\.json$/, '').replace(/^\d{4}-\d{2}-\d{2}-/, '');
+    if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(sl)) problems.push(`content/${x._file}:网址名「${sl}」只能用小写字母、数字和 -`);
+    if (seenSlug.has(sl)) problems.push(`content/${x._file}:网址 /views/${sl} 和 ${seenSlug.get(sl)} 重复`);
+    seenSlug.set(sl, x._file);
+  }
   for (const x of content.views) if (!viewCats.has(s(x.cat))) problems.push(`content/${x._file}:分类「${s(x.cat)}」不在观点分类里`);
   // 观点正文里插的图片要在仓库里
   for (const x of content.views) for (const l of LANGS) for (const src of mdImages(x.body?.[l])) {
@@ -211,14 +219,24 @@ export async function build({ root = ROOT, out = OUT, quiet = false } = {}) {
   fs.writeFileSync(path.join(out, 'about.html'), renderAbout(content));
   fs.writeFileSync(path.join(out, 'gallery.html'), renderGallery(content));
 
-  // 观点文章页 /views/<名>.html + sitemap
+  // 观点文章页 /views/<网址名>(文件 views/<网址名>.html)+ sitemap
   const renderView = await imp('src/pages/view.mjs');
   const { viewSlug } = await import(pathToFileURL(path.join(root, 'src/pages/view.mjs')).href + bust);
   fs.mkdirSync(path.join(out, 'views'), { recursive: true });
   for (const it of content.views) fs.writeFileSync(path.join(out, 'views', `${viewSlug(it)}.html`), renderView({ ...content, it, art }));
   const sm = fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8').replace('</urlset>',
-    content.views.map((it) => `  <url><loc>https://alwinlim.com/views/${viewSlug(it)}.html</loc><lastmod>${(it.date?.ms || '').slice(0, 10)}</lastmod></url>\n`).join('') + '</urlset>');
+    content.views.map((it) => `  <url><loc>https://alwinlim.com/views/${viewSlug(it)}</loc><lastmod>${(it.date?.ms || '').slice(0, 10)}</lastmod></url>\n`).join('') + '</urlset>');
   fs.writeFileSync(path.join(out, 'sitemap.xml'), sm);
+  // 旧网址 → 新网址的跳转页(redirects.json)
+  const redirects = JSON.parse(fs.readFileSync(path.join(root, 'redirects.json'), 'utf8'));
+  for (const [from, to] of Object.entries(redirects)) {
+    if (from.startsWith('_')) continue;
+    const file = path.join(out, `${from}.html`);
+    if (fs.existsSync(file)) throw new Error(`redirects.json:旧网址 /${from} 和现有页面撞了`);
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    const abs = `https://alwinlim.com${to}`;
+    fs.writeFileSync(file, `<!doctype html>\n<html lang="ms">\n<head>\n  <meta charset="utf-8">\n  <title>Alwin Lim</title>\n  <meta name="robots" content="noindex">\n  <link rel="canonical" href="${abs}">\n  <meta http-equiv="refresh" content="0; url=${to}">\n  <script>location.replace(${JSON.stringify(to)} + location.search + location.hash)</script>\n</head>\n<body><p><a href="${to}">${abs}</a></p></body>\n</html>\n`);
+  }
   // 简易后台用同一份正文格式转换(src/md.mjs → window.MD)
   const mdSrc = fs.readFileSync(path.join(root, 'src/md.mjs'), 'utf8');
   const mdNames = [...mdSrc.matchAll(/^export (?:const|function) (\w+)/gm)].map((m) => m[1]);

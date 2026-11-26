@@ -5,5 +5,5 @@
 ## Halaman utama
 
 - [Alwin Lim Zh Chen · DAPSY Bukit Bendera, Pulau Pinang](https://alwinlim.com/): Halaman utama — pendirian Bajet 2027, pandangan, perjalanan, projek hartanah dan berita terkini.
-- [Tentang](https://alwinlim.com/about.html): Latar belakang, pendidikan, kerjaya dan perjalanan politik.
-- [Galeri](https://alwinlim.com/gallery.html): Aktiviti DAPSY Bukit Bendera, komuniti, perayaan dan AL Team Penang.
+- [Tentang](https://alwinlim.com/about): Latar belakang, pendidikan, kerjaya dan perjalanan politik.
+- [Galeri](https://alwinlim.com/gallery): Aktiviti DAPSY Bukit Bendera, komuniti, perayaan dan AL Team Penang.

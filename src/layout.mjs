@@ -8,7 +8,7 @@ const SKYLINE = fs.readFileSync(new URL('./partials/skyline.html', import.meta.u
  * @param {object} o
  * @param {string} o.title   <title> 文字(马来文;三语时传 { ms, en, zh })
  * @param {string} o.description
- * @param {string} o.path    '' | 'about.html' | 'gallery.html' | 'views/<名>.html'(canonical 用)
+ * @param {string} o.path    '' | 'about' | 'gallery' | 'views/<网址名>'(canonical 用;全站网址不带 .html,GitHub Pages 会自动找 .html 文件)
  * @param {string} [o.extra] 额外放进 <head> 的(og、JSON-LD)
  */
 export const head = ({ title, description, path, extra = '' }) => `<!doctype html>
@@ -55,13 +55,13 @@ export const masthead = (site, page) => {
     </a>
     <nav class="nav" id="nav" aria-label="Utama">
 ${[
-    item('/about.html', n.about, 'about'),
+    item('/about', n.about, 'about'),
     item(`${home}#views`, n.views, 'views'),
     item(`${home}#journey`, n.journey),
     item(`${home}#projects`, n.projects),
     item(`${home}#listings`, n.listings),
     item(`${home}#news`, n.news),
-    item('/gallery.html', n.gallery, 'gallery'),
+    item('/gallery', n.gallery, 'gallery'),
     item('#contact', n.contact, null, ' class="nav-cta"'),
   ].join('\n')}
     </nav>

@@ -20,6 +20,16 @@
   const set = (o, p, v) => { const ks = p.split('.'); const last = ks.pop(); let a = o; for (const k of ks) a = a[k] ??= {}; a[last] = v; };
   const fmtDate = (iso) => { if (!iso) return ''; const [y, m, d] = iso.split('-'); return d ? `${y} 年 ${+m} 月 ${+d} 日` : `${y} 年 ${+m} 月`; };
   const slug = (s) => String(s).toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'item';
+  // 观点的网址名(文件名去掉日期就是网址 /views/<网址名>):按整词截到 60 字以内,去掉开头结尾的虚词,不会截出半个词
+  const STOP = new Set(['a', 'an', 'the', 'and', 'or', 'of', 'to', 'in', 'on', 'for', 'is', 'are', 'be', 'must', 'then', 'but', 'with', 'by', 'at', 'it', 'its', 'not']);
+  const wordSlug = (s, max = 60) => {
+    const w = String(s).toLowerCase().normalize('NFKD').replace(/[\u2019']/g, '').replace(/[^a-z0-9]+/g, ' ').trim().split(' ').filter(Boolean);
+    const out = [];
+    for (const x of w) { if ([...out, x].join('-').length > max) break; out.push(x); }
+    while (out.length > 1 && STOP.has(out[out.length - 1])) out.pop();
+    while (out.length > 1 && STOP.has(out[0])) out.shift();
+    return out.join('-') || 'item';
+  };
   // 中文里跟在汉字后面的半角标点换成全角(网站的检查会拦半角)
   const zhPunct = (s) => String(s).replace(/([\u3400-\u9fff\uf900-\ufaff\u300d\u300f\uff09\u201d])\s*([,;:!?])/g, (_, a, p) => a + { ',': '\uff0c', ';': '\uff1b', ':': '\uff1a', '!': '\uff01', '?': '\uff1f' }[p]);
 
@@ -460,12 +470,12 @@
       preview: PREVIEW.view,
       get message() { return entry ? `content: 修改观点「${D.title}」（简易后台）` : `content: 新增观点「${D.title}」（简易后台）`; },
       liveUrl: '/#views',
-      fileFor: () => `content/views/${D.date}-${slug(F.tr.en.title)}.json`,
+      fileFor: () => `content/views/${D.date}-${wordSlug(F.tr.en.title)}.json`,
       assignPaths: () => {
         const base = `/images/uploads/views/${D.date}-${slug(F.tr.en.title)}`;
         if (F.upload && D.image === F.upload.url) F.imgPath = `${base}-${Date.now().toString(36)}.jpg`;
         F.bodyUps = assignBodyImages(F.tr, 'body', base);
-        F.liveUrl = `/views/${(F.file || F.fileFor()).split('/').pop().replace(/\.json$/, '')}.html`;
+        F.liveUrl = `/views/${(F.file || F.fileFor()).split('/').pop().replace(/\.json$/, '').replace(/^\d{4}-\d{2}-\d{2}-/, '')}`;
       },
       uploads: () => [...(F.imgPath && F.upload && D.image === F.upload.url ? [{ path: F.imgPath, blob: F.upload.blob }] : []), ...(F.bodyUps || [])],
     };
@@ -525,7 +535,7 @@
       },
       preview: PREVIEW.album,
       get message() { return entry ? `content: 修改相册「${D.title}」（简易后台）` : `content: 新增相册「${D.title}」（简易后台）`; },
-      liveUrl: '/gallery.html',
+      liveUrl: '/gallery',
       fileFor: () => `content/gallery/${slug(F.tr.en.title)}-${D.date.slice(0, 4)}.json`,
       assignPaths: () => {
         const id = d?.en.id || `${slug(F.tr.en.title)}-${D.date.slice(0, 4)}`; const stamp = Date.now().toString(36);
@@ -648,7 +658,7 @@
         return [l, base];
       })),
       message: `content: 修改「${sec.title}」（简易后台）`,
-      liveUrl: sec.file === 'about' ? '/about.html' : '/',
+      liveUrl: sec.file === 'about' ? '/about' : '/',
     };
     items.forEach((it) => { it._key = it._i; });
     // 原文 key 用原来的序号；新加的项给一个新号

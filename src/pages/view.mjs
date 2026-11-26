@@ -1,11 +1,12 @@
-// 观点文章页:每篇 content/views/<名>.json 一页,写到 _site/views/<名>.html。
+// 观点文章页:每篇 content/views/<日期>-<网址名>.json 一页,写到 _site/views/<网址名>.html,对外网址是 /views/<网址名>(不带 .html)。
+// 网址名 = 文件名去掉开头的日期:改文件名就是改网址,旧网址要加进 redirects.json。
 // 正文是 body(Markdown 子集,见 src/md.mjs);旧观点没有 body,就用 excerpt 当正文。
 import { T, v, esc, link, dmy, rich, ARROW, LANGS } from '../h.mjs';
 import { head, masthead, footer } from '../layout.mjs';
 import { mdToHtml, mdToText } from '../md.mjs';
 
-export const viewSlug = (it) => it._file.replace(/^.*\//, '').replace(/\.json$/, '');
-export const viewHref = (it) => `/views/${viewSlug(it)}.html`;
+export const viewSlug = (it) => it._file.replace(/^.*\//, '').replace(/\.json$/, '').replace(/^\d{4}-\d{2}-\d{2}-/, '');
+export const viewHref = (it) => `/views/${viewSlug(it)}`;
 const plain = (s) => String(s ?? '').replace(/<[^>]+>|[*#]/g, '').toLowerCase().replace(/[^\p{L}\p{N}.]+/gu, ' ').trim();
 const words = (s) => {
   const t = plain(s);
@@ -58,7 +59,7 @@ export default function renderView({ site, home, it, art }) {
   const docTitle = map3(title, (t) => `${shortTitle(t)} · ${v(site.name)}`);
   const imgSrc = v(it.image?.src);
   const ogImg = `https://alwinlim.com/${String(imgSrc || v(home.seo.image)).replace(/^\//, '')}`;
-  const url = `https://alwinlim.com/views/${slug}.html`;
+  const url = `https://alwinlim.com/views/${slug}`;
   const date = v(it.date);
   // 结构化数据:观点文章(作者 = 首页 JSON-LD 的同一个 Person,@id 对得上)+ 面包屑
   const ld = {
@@ -70,7 +71,7 @@ export default function renderView({ site, home, it, art }) {
         description: desc.ms, inLanguage: 'ms', image: [ogImg],
         datePublished: date, dateModified: v(it.updated) || date,
         articleSection: cat ? v(cat.label) : v(it.cat),
-        author: { '@type': 'Person', '@id': 'https://alwinlim.com/#person', name: v(site.full_name), url: 'https://alwinlim.com/about.html' },
+        author: { '@type': 'Person', '@id': 'https://alwinlim.com/#person', name: v(site.full_name), url: 'https://alwinlim.com/about' },
         publisher: { '@type': 'Person', '@id': 'https://alwinlim.com/#person', name: v(site.full_name) },
         isPartOf: { '@id': 'https://alwinlim.com/#website' },
         wordCount: mdToText(body.ms, 1e6).split(/\s+/).filter(Boolean).length,
@@ -89,13 +90,13 @@ export default function renderView({ site, home, it, art }) {
   <meta property="og:site_name" content="${esc(v(site.full_name))}">
   <meta property="og:title" content="${esc(title.ms)}">
   <meta property="og:description" content="${esc(desc.ms)}">
-  <meta property="og:url" content="https://alwinlim.com/views/${esc(slug)}.html">
+  <meta property="og:url" content="${esc(url)}">
   <meta property="og:image" content="${esc(ogImg)}">
   <meta property="og:locale" content="ms_MY">
   <meta property="og:locale:alternate" content="en_MY">
   <meta property="og:locale:alternate" content="zh_CN">
   <meta property="article:published_time" content="${esc(date)}">
-  <meta property="article:author" content="https://alwinlim.com/about.html">
+  <meta property="article:author" content="https://alwinlim.com/about">
   <meta name="author" content="${esc(v(site.full_name))}">
   <meta name="twitter:card" content="${imgSrc ? 'summary_large_image' : 'summary'}">
   <meta name="twitter:title" content="${esc(title.ms)}">
@@ -110,7 +111,7 @@ ${JSON.stringify(ld, null, 2).replace(/<\//g, '<\\/').replace(/^/gm, '  ')}
     : `<div class="post-cover view-art tone-${esc(v(it.tone) || 'wine')}" aria-hidden="true">${art(v(it.art))}</div>`;
   const back = `<a class="post-back" href="/#views"><span aria-hidden="true">←</span> <span${T(sec.title)}</span></a>`;
 
-  return `${head({ title: docTitle, description: desc, path: `views/${slug}.html`, extra })}
+  return `${head({ title: docTitle, description: desc, path: `views/${slug}`, extra })}
 <body>
 ${masthead(site, 'views')}
 
@@ -118,7 +119,7 @@ ${masthead(site, 'views')}
   <article class="post">
     <div class="wrap post-wrap">
       ${back}
-      <p class="view-meta"><span class="view-cat"${T(cat ? cat.label : v(it.cat))}</span><time datetime="${esc(date)}">${dmy(it.date)}</time><a class="post-author" href="/about.html" rel="author">${v(site.full_name)}</a></p>
+      <p class="view-meta"><span class="view-cat"${T(cat ? cat.label : v(it.cat))}</span><time datetime="${esc(date)}">${dmy(it.date)}</time><a class="post-author" href="/about" rel="author">${v(site.full_name)}</a></p>
       <h1 class="post-title"${T(rich(it.title))}</h1>
       ${cover}
       <div class="post-body prose"${T(html)}</div>

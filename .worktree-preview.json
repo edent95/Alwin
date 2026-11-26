@@ -1,8 +1,22 @@
 {
-  "_comment": "wt.mjs preview 读这份:先构建一次,再一边监视 content/ src/ 自动重建、一边用 python http.server 伺服 _site/。端口现取空闲的。",
+  "_comment": "wt.mjs preview 读这份:先构建一次,再一边监视 content/ src/ 自动重建、一边用 scripts/serve.mjs 伺服 _site/(和 GitHub Pages 一样认不带 .html 的网址)。端口现取空闲的。",
   "url": "http://127.0.0.1:{port}/",
   "procs": [
-    { "cwd": ".", "argv": ["node", "scripts/build.mjs", "--watch"] },
-    { "cwd": ".", "argv": ["sh", "-c", "mkdir -p _site && exec python3 -m http.server {port} --bind 127.0.0.1 --directory _site"] }
+    {
+      "cwd": ".",
+      "argv": [
+        "node",
+        "scripts/build.mjs",
+        "--watch"
+      ]
+    },
+    {
+      "cwd": ".",
+      "argv": [
+        "sh",
+        "-c",
+        "mkdir -p _site && exec node scripts/serve.mjs {port}"
+      ]
+    }
   ]
 }

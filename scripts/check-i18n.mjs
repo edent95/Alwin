@@ -85,6 +85,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   const SITE = path.join(ROOT, '_site')
   if (!fs.existsSync(SITE)) { console.error('✗ 没有 _site/:先跑 npm run build'); process.exit(1) }
   const files = [...fs.readdirSync(SITE), ...(fs.existsSync(path.join(SITE, 'views')) ? fs.readdirSync(path.join(SITE, 'views')).map((f) => `views/${f}`) : [])].filter((f) => f.endsWith('.html')).sort()
+    .filter((f) => !fs.readFileSync(path.join(SITE, f), "utf8").includes("<meta name=\"robots\" content=\"noindex\">")) // redirects.json 生成的跳转页
   const problems = files.flatMap((f) => checkHtml(fs.readFileSync(path.join(SITE, f), 'utf8'), f))
   if (problems.length) {
     console.error(problems.join('\n'))
