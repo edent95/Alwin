@@ -196,3 +196,22 @@ if ('IntersectionObserver' in window) {
   const ao = new IntersectionObserver((entries) => entries.forEach((e) => e.target.classList.toggle('is-on', e.isIntersecting)), { threshold: 0.2 });
   arts.forEach((el) => ao.observe(el));
 } else arts.forEach((el) => el.classList.add('is-on'));
+
+// ---------- 联系点击 → GA4 事件 contact(在 GA4 里标成关键事件,面板「GA4 关键事件」检查就看它)----------
+// 算联系的:页脚联系区的渠道(Facebook / Instagram / DAPSY)、所有 WhatsApp 链接(卡片、「在 WhatsApp 问我」)、mailto / tel。
+// 一个委托监听接住所有页面(卡片是 JS 渲染的,委托才接得到);gtag 没加载(被拦截)就什么都不做。
+document.addEventListener('click', (ev) => {
+  const a = ev.target instanceof Element ? ev.target.closest('a[href]') : null;
+  if (!a || typeof window.gtag !== 'function') return;
+  const href = a.getAttribute('href') || '';
+  const inChannels = !!a.closest('.channels');
+  const method = /wa\.me|whatsapp/i.test(href) ? 'whatsapp'
+    : /^mailto:/i.test(href) ? 'email'
+    : /^tel:/i.test(href) ? 'phone'
+    : inChannels && /facebook\.com/i.test(href) ? 'facebook'
+    : inChannels && /instagram\.com/i.test(href) ? 'instagram'
+    : inChannels ? 'other' : null;
+  if (!method) return;
+  const sec = a.closest('section[id], footer[id], [id]');
+  window.gtag('event', 'contact', { method, link_url: href.split('?')[0], placement: sec ? sec.id : '', transport_type: 'beacon' });
+});
