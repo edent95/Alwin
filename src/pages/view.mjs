@@ -52,7 +52,7 @@ ${masthead(site, 'views')}
       <h1 class="post-title"${T(rich(it.title))}</h1>
       ${cover}
       <div class="post-body prose"${T(html)}</div>
-${v(it.url) ? `      <p class="job-link post-source"><a ${link(it.url)}><span${T(site.cta.post)}</span> ${ARROW}</a></p>\n` : ''}      <p class="post-foot">${back}</p>
+${v(it.url) ? `      <p class="job-link post-source"><a ${link(v(it.url).startsWith('#') ? '/' + v(it.url) : it.url)}><span${T(site.cta.post)}</span> ${ARROW}</a></p>\n` : ''}      <p class="post-foot">${back}</p>
     </div>
   </article>
 </main>
