@@ -1,6 +1,6 @@
 // 首页。内容:content/site.json、content/home.json、content/views/*.json、content/news/*.json
-import { T, v, esc, link, join, dmy, rich, ARROW } from '../h.mjs';
-import { head, masthead, footer } from '../layout.mjs';
+import { T, v, esc, link, join, dmy, rich, ARROW, lang } from '../h.mjs';
+import { head, masthead, footer, urlFor } from '../layout.mjs';
 import { viewHref, teaserOf } from './view.mjs';
 
 const HIBISCUS = '<svg class="hibiscus" viewBox="-12 -12 24 24" aria-hidden="true" focusable="false"><g fill="currentColor"><ellipse cx="0" cy="-6" rx="4.8" ry="6.4" transform="rotate(0)"/><ellipse cx="0" cy="-6" rx="4.8" ry="6.4" transform="rotate(72)"/><ellipse cx="0" cy="-6" rx="4.8" ry="6.4" transform="rotate(144)"/><ellipse cx="0" cy="-6" rx="4.8" ry="6.4" transform="rotate(216)"/><ellipse cx="0" cy="-6" rx="4.8" ry="6.4" transform="rotate(288)"/></g><circle r="2.2" class="hib-eye"/><path d="M0 0 L3.5 -8.5" class="hib-st"/><circle cx="3.5" cy="-8.5" r="1.3" class="hib-tip"/></svg>';
@@ -11,7 +11,7 @@ const jsonLd = (site, seo) => {
     '@context': 'https://schema.org',
     '@graph': [
       { '@type': 'WebSite', '@id': `${url}#website`, url, name: v(site.full_name), inLanguage: ['ms', 'en', 'zh'], about: { '@id': `${url}#person` } },
-      { '@type': 'ProfilePage', '@id': `${url}#profile`, url, name: v(seo.title), isPartOf: { '@id': `${url}#website` }, mainEntity: { '@id': `${url}#person` } },
+      { '@type': 'ProfilePage', '@id': `${urlFor('')}#profile`, url: urlFor(''), inLanguage: lang(), name: v(seo.title), isPartOf: { '@id': `${url}#website` }, mainEntity: { '@id': `${url}#person` } },
       {
         '@type': 'Person', '@id': `${url}#person`, name: v(site.full_name),
         alternateName: [v(site.name_zh), v(site.name)],
@@ -54,7 +54,7 @@ ${h.team?.logo?.src ? `        <a class="kicker kicker-team" ${link(h.team.url)}
         </h1>
         <p class="role reveal"${T(h.role)}</p>
         <div class="actions reveal">
-${join(h.buttons, (b) => `          <a href="${esc(v(b.href))}" class="btn${v(b.style) === 'line' ? ' btn-line' : ''}"${T(b.label)}</a>`)}
+${join(h.buttons, (b) => `          <a ${link(b.href)} class="btn${v(b.style) === 'line' ? ' btn-line' : ''}"${T(b.label)}</a>`)}
         </div>
       </div>
       <figure class="hero-photo">
@@ -223,9 +223,8 @@ export default function renderIndex({ site, home, views: viewItems, news: newsIt
   <meta property="og:site_name" content="${esc(v(site.full_name))}">
   <meta property="og:title" content="${esc(v(seo.title))}">
   <meta property="og:description" content="${esc(v(seo.og_description))}">
-  <meta property="og:url" content="https://alwinlim.com/">
+  <meta property="og:url" content="${urlFor('')}">
   <meta property="og:image" content="${esc(abs(seo.image))}">
-  <meta property="og:locale" content="ms_MY">
 `;
   return `${head({ title: seo.title, description: seo.description, path: '', extra: og + jsonLd(site, seo).replace(/^/, '') })}
 <body>
