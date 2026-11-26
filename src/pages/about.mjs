@@ -1,11 +1,11 @@
 // About 页。内容:content/about.json
-import { T, v, esc, link, join, ARROW } from '../h.mjs';
+import { T, v, esc, link, join, ARROW, imgSrc } from '../h.mjs';
 import { head, masthead, footer } from '../layout.mjs';
 
 export default function renderAbout({ site, about: a }) {
   const chapters = a.chapters.map((c, i) => {
     const body = [];
-    if (c.logo?.src) body.push(`<img class="edu-logo" src="${esc(v(c.logo.src))}" alt="${esc(v(c.logo.alt))}"${c.logo.w ? ` width="${c.logo.w}" height="${c.logo.h}"` : ''}>`);
+    if (c.logo?.src) body.push(`<img class="edu-logo" ${imgSrc(c.logo.src)} alt="${esc(v(c.logo.alt))}"${c.logo.w ? ` width="${c.logo.w}" height="${c.logo.h}"` : ''}>`);
     for (const p of c.paragraphs || []) body.push(`<p${T(p.text)}</p>`);
     if (c.wins?.length) body.push(`<ul class="wins">\n${join(c.wins, (w) => `            <li${T(w.text)}</li>`)}\n          </ul>`);
     if (v(c.quote)) body.push(`<blockquote class="about-quote"><p${T(c.quote)}</p>${v(c.quote_cite) ? `<cite${T(c.quote_cite)}</cite>` : ''}</blockquote>`);
@@ -39,8 +39,8 @@ ${masthead(site, 'about')}
 ${join(a.chapters, (c) => `          <a href="#${esc(v(c.anchor))}"${T(c.title)}</a>`)}
         </nav>
       </div>
-      <figure class="about-photo reveal">
-        <img src="${esc(v(a.photo.src))}" alt="${esc(v(a.photo.alt))}"${a.photo.w ? ` width="${a.photo.w}" height="${a.photo.h}"` : ''}>
+      <figure class="about-photo">
+        <img ${imgSrc(a.photo.src, '(max-width: 900px) min(420px, 90vw), 500px', a.photo.w)} fetchpriority="high" alt="${esc(v(a.photo.alt))}"${a.photo.w ? ` width="${a.photo.w}" height="${a.photo.h}"` : ''}>
       </figure>
     </div>
     <div class="wrap">

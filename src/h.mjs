@@ -1,6 +1,8 @@
 // 模板小工具。内容里的三语文字在加载时被合成 { ms, en, zh }(见 scripts/build.mjs 的 merge)。
 // 文字值按 HTML 片段处理(和 script.js 的 setLang 写 innerHTML 一致),只在属性里转义。
 
+import fs from 'node:fs';
+
 export const LANGS = ['ms', 'en', 'zh'];
 
 export const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -59,3 +61,19 @@ const richOne = (s) => String(s ?? '').replace(/\*([^*\n]+?)\*/g, '<strong>$1</s
 export const rich = (x) => (isL(x) ? Object.fromEntries(LANGS.map((l) => [l, richOne(x[l])])) : richOne(x));
 
 export const join = (arr, f) => (arr || []).map(f).join('\n');
+
+/**
+ * 图片的 src(+ srcset)属性:本地 /images/x.jpg|png 旁边有 x.webp 就改用 webp(小 3–5 倍),
+ * 再有 x-640.webp(手机用的窄版)就加 srcset + sizes。没有 webp 的(如后台上传的)原样。
+ * webp 是手工生成提交的(cwebp),换照片要重新生成,见 log.md。og:image 仍用 jpg。
+ */
+const ROOT = new URL('../', import.meta.url);
+const has = (p) => fs.existsSync(new URL(p.replace(/^\//, ''), ROOT));
+/** w:原图宽(构建时 annotateImages 补的 i.w) */
+export const imgSrc = (src, sizes = '100vw', w = 1066) => {
+  const s = String(v(src) ?? '');
+  const m = /^(\/images\/.+)\.(?:jpe?g|png)$/i.exec(s);
+  if (!m || !has(`${m[1]}.webp`)) return `src="${esc(s)}"`;
+  if (!has(`${m[1]}-640.webp`)) return `src="${esc(m[1])}.webp"`;
+  return `src="${esc(m[1])}.webp" srcset="${esc(m[1])}-640.webp 640w, ${esc(m[1])}.webp ${w}w" sizes="${sizes}"`;
+};

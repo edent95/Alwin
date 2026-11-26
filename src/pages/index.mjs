@@ -1,5 +1,5 @@
 // 首页。内容:content/site.json、content/home.json、content/views/*.json、content/news/*.json
-import { T, v, esc, link, join, dmy, rich, ARROW, lang } from '../h.mjs';
+import { T, v, esc, link, join, dmy, rich, ARROW, lang, imgSrc } from '../h.mjs';
 import { head, masthead, footer, urlFor } from '../layout.mjs';
 import { viewHref, teaserOf } from './view.mjs';
 
@@ -36,7 +36,7 @@ const when = (x) => {
 };
 const abs = (p) => `https://alwinlim.com/${String(v(p)).replace(/^\//, '')}`;
 
-const img = (i, attrs = '') => `<img src="${esc(v(i.src))}" alt="${esc(v(i.alt))}"${i.w ? ` width="${i.w}" height="${i.h}"` : ''}${attrs}>`;
+const img = (i, attrs = '', sizes) => `<img ${imgSrc(i.src, sizes, i.w)} alt="${esc(v(i.alt))}"${i.w ? ` width="${i.w}" height="${i.h}"` : ''}${attrs}>`;
 
 const hero = (h) => `  <!-- HERO -->
   <section class="hero" id="top">
@@ -58,13 +58,13 @@ ${join(h.buttons, (b) => `          <a ${link(b.href)} class="btn${v(b.style) ==
         </div>
       </div>
       <figure class="hero-photo">
-        ${img(h.photo, ' fetchpriority="high"')}
+        ${img(h.photo, ' fetchpriority="high"', '(max-width: 900px) 86vw, 460px')}
       </figure>
     </div>
 
     <div class="wrap">
       <dl class="stats">
-${join(h.stats, (s) => `        <div>${s.logo?.src ? img(s.logo).replace('<img ', '<img class="stat-logo" ') : ''}<dt${T(s.value)}</dt><dd${T(s.label)}</dd></div>`)}
+${join(h.stats, (s) => `        <div><dt>${s.logo?.src ? img(s.logo).replace('<img ', '<img class="stat-logo" ') : ''}<span${T(s.value)}</span></dt><dd${T(s.label)}</dd></div>`)}
       </dl>
     </div>
   </section>`;
@@ -72,7 +72,7 @@ ${join(h.stats, (s) => `        <div>${s.logo?.src ? img(s.logo).replace('<img '
 const stance = (s) => `  <!-- STANCE -->
   <section class="stance" id="stance">
     <div class="wrap">
-      <p class="label"${T(s.label)}</p>
+      <h2 class="label"${T(s.label)}</h2>
       <blockquote class="pull reveal">
         <p${T(s.quote)}</p>
         <footer>

@@ -415,11 +415,11 @@ collections:
             collapsed: true
             fields:
               - { name: title, label: 网页标题(浏览器分页上的), widget: string, i18n: true }
-              - { name: description, label: 搜索结果里的描述(网站只用马来文这栏), widget: text, i18n: true }
-              - { name: og_description, label: 分享预览的描述(只用马来文这栏), widget: text, i18n: true }
+              - { name: description, label: 搜索结果里的描述, widget: text, i18n: true }
+              - { name: og_description, label: 分享预览的描述, widget: text, i18n: true }
               - { name: image, label: 分享预览的照片, widget: image, i18n: duplicate }
-              - { name: job_title, label: 职业(给 Google 看，只用马来文这栏), widget: string, i18n: true }
-              - { name: person_description, label: 个人简介(给 Google 看，只用马来文这栏), widget: text, i18n: true }
+              - { name: job_title, label: 职业(给 Google 看), widget: string, i18n: true }
+              - { name: person_description, label: 个人简介(给 Google 看), widget: text, i18n: true }
               - name: same_as
                 label: 本人的其他页面(Facebook、Instagram、经纪页…)
                 widget: list
@@ -506,7 +506,7 @@ collections:
             collapsed: true
             fields:
               - { name: title, label: 网页标题, widget: string, i18n: true }
-              - { name: description, label: 搜索结果里的描述(只用马来文这栏), widget: text, i18n: true }
+              - { name: description, label: 搜索结果里的描述, widget: text, i18n: true }
 
       # ---------------- 相册页
       - name: gallery_page
@@ -538,7 +538,7 @@ collections:
             collapsed: true
             fields:
               - { name: title, label: 网页标题, widget: string, i18n: true }
-              - { name: description, label: 搜索结果里的描述(只用马来文这栏), widget: text, i18n: true }
+              - { name: description, label: 搜索结果里的描述, widget: text, i18n: true }
 
       # ---------------- 全站
       - name: site

@@ -9,6 +9,8 @@ let pagePath = '';
 /** 某语言版本的完整网址;path 不带语言前缀,如 '' / 'about' / 'views/x' */
 export const urlFor = (path, l = lang()) => BASE + P(`/${path}`, l);
 
+const FONTS = 'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&amp;family=Inter:wght@400;500;600&amp;family=Noto+Serif+SC:wght@600;700&amp;display=swap';
+
 const SKYLINE = fs.readFileSync(new URL('./partials/skyline.html', import.meta.url), 'utf8').trimEnd();
 
 /**
@@ -16,9 +18,19 @@ const SKYLINE = fs.readFileSync(new URL('./partials/skyline.html', import.meta.u
  * @param {string} o.title   <title> 文字(马来文;三语时传 { ms, en, zh })
  * @param {string} o.description
  * @param {string} o.path    '' | 'about' | 'gallery' | 'views/<网址名>'(不带语言前缀;canonical、hreflang 用。全站网址不带 .html,GitHub Pages 会自动找 .html 文件)
- * @param {string} [o.extra] 额外放进 <head> 的(og、JSON-LD)
+ * @param {string} [o.extra] 额外放进 <head> 的(og、JSON-LD)。没写 og:title 的页面自动补一组基本 og(标题、描述、网址、照片)
+ * @param {string} [o.image] 自动补的 og:image(默认 Alwin 的照片)
  */
-export const head = ({ title, description, path, extra = '' }) => { pagePath = path; return `<!doctype html>
+export const head = ({ title, description, path, extra = '', image = '/images/alwin.jpg' }) => {
+  pagePath = path;
+  if (!extra.includes('og:title')) extra = `  <meta property="og:type" content="website">
+  <meta property="og:title" content="${esc(v(title))}">
+  <meta property="og:description" content="${esc(v(description))}">
+  <meta property="og:url" content="${urlFor(path)}">
+  <meta property="og:image" content="${BASE}${esc(image)}">
+  <meta name="twitter:card" content="summary">
+${extra}`;
+  return `<!doctype html>
 <html lang="${lang()}">
 <head>
   <meta charset="utf-8">
@@ -39,7 +51,9 @@ ${extra}  <meta name="theme-color" content="#f4efe6">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet">
+  <!-- 字体不挡首屏:先用本机字体显示,字体到了再换(display=swap)。没有 JS 时 noscript 照常加载 -->
+  <link rel="preload" as="style" href="${FONTS}" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="${FONTS}"></noscript>
   <link rel="stylesheet" href="/styles.css">
   <link rel="canonical" href="${urlFor(path)}">
 ${LANGS.map((l) => `  <link rel="alternate" hreflang="${l}" href="${urlFor(path, l)}">`).join('\n')}
