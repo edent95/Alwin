@@ -11,16 +11,16 @@ const KIND = {
   mixed: T('Pembangunan bercampur', 'Mixed development', '综合发展'),
 };
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+// 新盘与房源卡片点开都是 Alwin 的 WhatsApp(号码在 content/home.json 的 projects.whatsapp,模板写进两个 grid 的 data-wa),
+// 带上项目 / 房源名,开场白用页面语言;没有号码时退回 Zeon 的页面
+const WA_HI = { ms: (t) => `Hi Alwin, saya berminat dengan ${t}.`, en: (t) => `Hi Alwin, I'm interested in ${t}.`, zh: (t) => `Hi Alwin，我想了解 ${t}。` };
+const waLink = (wa, t) => `https://wa.me/${wa}?text=${encodeURIComponent((WA_HI[document.documentElement.lang] || WA_HI.en)(t))}`;
 (function renderProjects() {
   const grid = document.getElementById('project-grid');
   if (!grid || !Array.isArray(window.PROJECTS)) return;
   const total = document.getElementById('project-total');
   if (total) total.textContent = window.PROJECTS.length;
-  // 卡片点开是 Alwin 的 WhatsApp(号码在 content/home.json 的 projects.whatsapp),带上项目名;点的时候按当前语言换开场白
   const wa = grid.dataset.wa;
-  const HI = { ms: (t) => `Hi Alwin, saya berminat dengan ${t}.`, en: (t) => `Hi Alwin, I'm interested in ${t}.`, zh: (t) => `Hi Alwin，我想了解 ${t}。` };
-  const waHref = (t, l = 'en') => `https://wa.me/${wa}?text=${encodeURIComponent((HI[l] || HI.en)(t))}`;
-  grid.addEventListener('click', (e) => { const a = e.target.closest('a[data-wa-t]'); if (a) a.href = waHref(a.dataset.waT, document.documentElement.lang); });
   grid.innerHTML = window.PROJECTS.map((p) => {
     const status = p.st === 'upcoming' ? T('Akan datang', 'Upcoming', '即将推出') : T('Pelancaran baharu', 'New launch', '新盘推出');
     const price = p.p ? `<p class="project-meta"><small ${T('Dari', 'From', '起价')}</small> <strong>RM ${p.p.toLocaleString('en')}</strong></p>` : '';
@@ -30,7 +30,7 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
       p.ten === 'freehold' ? `<span ${T('Pegangan bebas', 'Freehold', '永久地契')}</span>` : p.ten === 'leasehold' ? `<span ${T('Pajakan', 'Leasehold', '租赁地契')}</span>` : '',
       p.done ? `<span data-ms="Siap ${esc(p.done)}" data-en="Completion ${esc(p.done)}" data-zh="${esc(p.done)} 年完工">Siap ${esc(p.done)}</span>` : '',
     ].filter(Boolean).join(' · ');
-    return `<article class="project project-launch" data-cat="${p.k}"><a href="${esc(wa ? waHref(p.t) : p.u)}"${wa ? ` data-wa-t="${esc(p.t)}"` : ''} target="_blank" rel="noopener">
+    return `<article class="project project-launch" data-cat="${p.k}"><a href="${esc(wa ? waLink(wa, p.t) : p.u)}" target="_blank" rel="noopener">
       <div class="project-img">${p.img ? `<img src="${esc(p.img)}" alt="" loading="lazy" decoding="async">` : ''}<span class="tag tag-launch" ${status}</span></div>
       <div class="project-body">
         <h3>${esc(p.t)}</h3>
@@ -46,13 +46,14 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
   if (!grid || !Array.isArray(window.LISTINGS)) return;
   const total = document.getElementById('listing-total');
   if (total) total.textContent = window.LISTINGS.length;
+  const wa = grid.dataset.wa;
   grid.innerHTML = window.LISTINGS.map((p) => {
     const cats = [p.s, p.k === 'commercial' ? 'commercial' : ''].join(' ').trim();
     const status = p.s === 'rent' ? T('Disewa', 'For rent', '出租') : T('Dijual', 'For sale', '出售');
     const per = p.s === 'rent' ? ` <small ${T('/ bulan', '/ month', '/ 月')}</small>` : '';
     const kind = KIND[p.k] ? ` · <span ${KIND[p.k]}</span>` : '';
     const size = p.sq ? `<span class="project-size">${p.sq.toLocaleString('en')} sq ft</span>` : '';
-    return `<article class="project" data-cat="${cats}"><a href="${esc(p.u)}" target="_blank" rel="noopener">
+    return `<article class="project" data-cat="${cats}"><a href="${esc(wa ? waLink(wa, p.t) : p.u)}" target="_blank" rel="noopener">
       <div class="project-img">${p.img ? `<img src="${esc(p.img)}" alt="" loading="lazy" decoding="async">` : ''}<span class="tag tag-${p.s}" ${status}</span></div>
       <div class="project-body">
         <h3>${esc(p.t)}</h3>
