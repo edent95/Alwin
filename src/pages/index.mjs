@@ -165,7 +165,7 @@ const projects = (p) => `  <!-- PROJECTS(新盘):卡片由 projects.js(scripts/z
     </div>
   </section>`;
 
-const listings = (l) => `  <!-- LISTINGS(房源):卡片由 listings.js(scripts/zeon-projects.py 从 Zeon 经纪页生成)渲染进 #listing-grid -->
+const listings = (l, wa) => `  <!-- LISTINGS(房源):卡片由 listings.js(scripts/zeon-projects.py 从 Zeon 经纪页生成)渲染进 #listing-grid;卡片点开也是 Alwin 的 WhatsApp(号码同新盘 projects.whatsapp,用户 2026-11-27 要的),不是 Zeon 网站 -->
   <section class="projects listings" id="listings">
     <div class="wrap">
       <div class="section-head projects-head">
@@ -178,7 +178,7 @@ const listings = (l) => `  <!-- LISTINGS(房源):卡片由 listings.js(scripts/z
       <div class="chips" role="group" aria-label="Jenis" data-filter="#listing-grid">
 ${join(['all', 'sale', 'rent', 'commercial'], (k, i) => `        <button type="button" data-cat="${k}" aria-pressed="${i === 0}"${T(l.chips[k])}</button>`)}
       </div>
-      <div class="project-grid" id="listing-grid"></div>
+      <div class="project-grid" id="listing-grid" data-wa="${esc(v(wa))}"></div>
       <div class="projects-foot">
         <button type="button" class="btn btn-line" id="listing-more"${T(l.more)}</button>
         <a class="job-link-inline" href="https://www.zeonproperties.com.my/find-agent/alwin-lim-38297" target="_blank" rel="noopener"><span${T(l.all)}</span> ${ARROW}</a>
@@ -242,7 +242,7 @@ ${journey(home.journey)}
 
 ${projects(home.projects)}
 
-${listings(home.listings)}
+${listings(home.listings, home.projects.whatsapp)}
 
 ${news(home.news, newsItems, site)}
 </main>
